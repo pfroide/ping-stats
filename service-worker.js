@@ -9,9 +9,7 @@ const CORE = [
   "./service-worker.js",
   "./assets/icons/icon-192.png",
   "./assets/icons/icon-512.png",
-  "./assets/icons/icon-180.png",
-  "./site_data.json",
-  "./assets/charts.js"
+  "./assets/icons/icon-180.png"
 ];
 
 self.addEventListener("install", (event) => {
