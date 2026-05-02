@@ -1,0 +1,12 @@
+# Auto-generated (ping_mobile_v8)
+*
+!.gitignore
+!index.html
+!build_meta.json
+!manifest.webmanifest
+!service-worker.js
+!README.md
+!assets/
+!assets/**
+!data/
+!data/**
