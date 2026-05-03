@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <link rel="manifest" href="./manifest.webmanifest"/>
 <meta name="theme-color" content="#0b0e14"/>
-<meta name="build-id" content="20260503134809"/>
+<meta name="build-id" content="20260503150045"/>
 <link rel="icon" href="./assets/icons/icon-192.png"/>
 <link rel="apple-touch-icon" href="./assets/icons/icon-180.png"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
@@ -248,8 +248,8 @@ th.sortable[data-dir="desc"]::after{content:" ▼";color:var(--muted);font-size:
 .playermodal-title{font-weight:900;font-size:14px;line-height:1.2;flex:1;display:flex;align-items:center;gap:10px}
 .playermodal-title .pmodal-avatar{
   height:56px;
-  /* largeur auto : respecte le ratio naturel de l'image (souvent portrait) */
-  width:auto;
+  /* Pour le fallback initiales : carré 56x56 */
+  width:56px;
   min-width:42px;
   border-radius:12px;
   background:linear-gradient(135deg,#1b2433,#0f1620);
@@ -259,14 +259,24 @@ th.sortable[data-dir="desc"]::after{content:" ▼";color:var(--muted);font-size:
   display:inline-flex;align-items:center;justify-content:center;
   position:relative;
 }
-.playermodal-title .pmodal-avatar img{
-  height:100%;
+.playermodal-title .pmodal-avatar.has-photo{
+  /* Avec photo : largeur auto pour respecter le ratio naturel de l'image.
+     Pas de bordure ni de fond pour éviter le liseré sombre. */
   width:auto;
   display:block;
+  border:none;
+  background:transparent;
+}
+.playermodal-title .pmodal-avatar img{
+  height:56px;
+  width:auto;
+  display:block;
+  object-fit:cover;
+  object-position:center;
 }
 .playermodal-title .pmodal-avatar-init{
-  /* En l'absence de photo, on bascule sur un carré 56x56 */
-  width:56px;height:100%;
+  width:56px;
+  height:56px;
   align-items:center;justify-content:center;
   font-family:var(--skin-mono,ui-monospace,monospace);
   font-weight:700;font-size:18px;
@@ -1363,415 +1373,15 @@ html[data-skin="P"] .sr-bar-bg{background:#0a0118;border-radius:0;border:1px sol
   <div class="skin-l3 skin-l3-C statusbar"><span>● PING-STATS [v8] · CONNECTED</span><span class="blink">_</span></div>
   <div class="header">
     <div class="h1">BREVANNAISE AS • Stats</div>
-    <div class="h2">Export mobile • 2026-05-03 13:48</div>
-    <div class="tabs"><button class="tab-btn" type="button" data-tab="accueil">🏠 Accueil</button><button class="tab-btn" type="button" data-tab="joueurs">👤 Joueurs</button><button class="tab-btn" type="button" data-tab="equipe">🏓 Équipe</button><button class="tab-btn" type="button" data-tab="stats">📊 Stats avancées</button><button class="tab-btn" type="button" data-tab="tools">🎯 Outils</button><button class="tab-btn" type="button" data-tab="scoreboards">🏆 Scoreboards</button><button class="tab-btn" type="button" data-tab="settings">⚙️ Réglages</button></div>
+    <div class="h2">Export mobile • 2026-05-03 15:00</div>
+    <div class="tabs"><button class="tab-btn" type="button" data-tab="joueurs">👤 Joueurs</button><button class="tab-btn" type="button" data-tab="equipe">🏓 Équipe</button><button class="tab-btn" type="button" data-tab="stats">📊 Stats avancées</button><button class="tab-btn" type="button" data-tab="tools">🎯 Outils</button><button class="tab-btn" type="button" data-tab="scoreboards">🏆 Scoreboards</button><button class="tab-btn" type="button" data-tab="settings">⚙️ Réglages</button></div>
   </div>
   <div class="season-bar" id="season-bar" role="navigation" aria-label="Sélection de saison"><span class="season-bar-label">📅 Saison :</span><span class="season-bar-pills"><a class="season-pill" href="../index.html">Cumul</a><a class="season-pill" href="../2022-2023/index.html">2022-2023</a><a class="season-pill" href="../2023-2024/index.html">2023-2024</a><span class="season-pill is-active">2024-2025</span><a class="season-pill" href="../2025-2026/index.html">2025-2026</a></span><span class="season-bar-info">Saison 2024-2025</span></div>
   <div class="skin-l3 skin-l3-A scorebar"><div><div class="l3-lbl">Matchs</div><div class="l3-val" data-l3="matches">—</div></div><div><div class="l3-lbl">Victoires</div><div class="l3-val win" data-l3="wins">—</div></div><div><div class="l3-lbl">Points</div><div class="l3-val" data-l3="points">—</div></div></div>
   <div class="skin-l3 skin-l3-P scorebar-p"><div class="l3-lbl">★ HIGH SCORE ★</div><div class="l3-row"><div><div class="l3-val yellow" data-l3="matches">—</div><div class="l3-sub">GAMES</div></div><div><div class="l3-val" data-l3="wins">—</div><div class="l3-sub">WINS</div></div><div><div class="l3-val accent" data-l3="points">—</div><div class="l3-sub">PTS</div></div></div></div>
   <div class="skin-l3 skin-l3-P combo-strip" data-l3="combo"></div>
   <div class="container">
-    <div class="tab-panel" data-tab="accueil">
-<style>
-/* ────────────────────────────────────────────────────────────────────────
-   Onglet Accueil — utilise les variables CSS du site (skinnable) :
-     --bg, --card, --txt, --muted, --accent, --good, --bad, --line,
-     --skin-mono, --skin-display
-   ──────────────────────────────────────────────────────────────────────── */
-
-.home-tab-wrap { padding: 12px 8px; max-width: 760px; margin: 0 auto; }
-
-.home-section {
-  margin-bottom: 18px;
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 14px 16px;
-}
-.home-section-h {
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--txt);
-  margin-bottom: 12px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid var(--line);
-}
-
-/* KPIs */
-.home-kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.kpi-block { padding: 4px; }
-.kpi-block-title {
-  font-family: var(--skin-mono, ui-monospace, monospace);
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 8px;
-}
-.kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 6px;
-}
-.kpi {
-  background: rgba(255,255,255,0.02);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 8px;
-  text-align: center;
-}
-.kpi-val {
-  font-family: var(--skin-mono, ui-monospace, monospace);
-  font-size: 18px;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em;
-  color: var(--txt);
-  line-height: 1;
-}
-.kpi-val .sm { font-size: 12px; color: var(--muted); margin-left: 1px; }
-.kpi-val.good { color: var(--good); }
-.kpi-val.warn { color: var(--mid, #fbbf24); }
-.kpi-val.bad  { color: var(--bad); }
-.kpi-lbl {
-  font-family: var(--skin-mono, ui-monospace, monospace);
-  font-size: 9px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-top: 4px;
-}
-@media (max-width: 480px) {
-  .home-kpis { grid-template-columns: 1fr; }
-}
-
-/* Liste équipes (rang en poule) */
-.home-teams { display: flex; flex-direction: column; gap: 8px; }
-.home-teams-empty {
-  text-align: center;
-  color: var(--muted);
-  font-size: 12px;
-  padding: 20px;
-}
-.home-teams-empty .hint { font-family: var(--skin-mono, ui-monospace, monospace); font-size: 10px; }
-.team-row {
-  display: grid;
-  grid-template-columns: 60px 1fr auto;
-  align-items: center;
-  gap: 12px;
-  padding: 10px;
-  background: rgba(255,255,255,0.02);
-  border-radius: 8px;
-  border-left: 3px solid var(--accent);
-}
-.team-rang {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-family: var(--skin-mono, ui-monospace, monospace);
-}
-.team-rang .rang-n {
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--accent);
-  line-height: 1;
-}
-.team-rang.good .rang-n { color: var(--good); }
-.team-rang.bad  .rang-n { color: var(--bad); }
-.team-rang .rang-of {
-  font-size: 10px;
-  color: var(--muted);
-  margin-top: 2px;
-}
-.team-name {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--txt);
-}
-.team-div {
-  font-family: var(--skin-mono, ui-monospace, monospace);
-  font-size: 10px;
-  color: var(--muted);
-  margin-top: 2px;
-  letter-spacing: 0.04em;
-}
-.team-stats {
-  font-family: var(--skin-mono, ui-monospace, monospace);
-  font-size: 11px;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-}
-.team-stats .t-w { color: var(--good); }
-.team-stats .t-n { color: var(--mid, #fbbf24); }
-.team-stats .t-l { color: var(--bad); }
-
-/* Prochain match (un sous-bloc par équipe) */
-.next-empty {
-  text-align: center;
-  color: var(--muted);
-  font-size: 12px;
-  padding: 20px;
-}
-.next-team-block {
-  margin-bottom: 16px;
-  padding: 12px 14px;
-  background: rgba(255,255,255,0.02);
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  border-left: 3px solid var(--accent);
-}
-.next-team-block:last-child { margin-bottom: 0; }
-.next-team-h {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--txt);
-  margin-bottom: 8px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--line);
-}
-.next-when-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 8px;
-}
-.next-when {
-  font-family: var(--skin-mono, ui-monospace, monospace);
-  font-size: 10px;
-  letter-spacing: 0.20em;
-  text-transform: uppercase;
-  color: var(--accent);
-  font-weight: 700;
-}
-.next-date {
-  font-family: var(--skin-mono, ui-monospace, monospace);
-  font-size: 11px;
-  color: var(--muted);
-}
-.next-match {
-  margin: 8px 0;
-}
-.next-vs {
-  font-size: 13px;
-  color: var(--muted);
-}
-.next-vs strong { color: var(--txt); font-weight: 700; }
-.next-meta {
-  font-family: var(--skin-mono, ui-monospace, monospace);
-  font-size: 10px;
-  color: var(--muted);
-  margin-top: 6px;
-  letter-spacing: 0.04em;
-}
-.next-pred {
-  margin-top: 12px;
-  padding: 12px;
-  background: rgba(255,255,255,0.02);
-  border-radius: 8px;
-  border: 1px solid var(--line);
-}
-.pred-scores {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  gap: 12px;
-}
-.pred-side { text-align: center; min-width: 0; }
-.pred-side .pred-lbl {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.pred-score {
-  font-family: var(--skin-mono, ui-monospace, monospace);
-  font-size: 28px;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  color: var(--txt);
-  letter-spacing: -0.02em;
-  line-height: 1;
-}
-.pred-score.good { color: var(--good); }
-.pred-score.warn { color: var(--mid, #fbbf24); }
-.pred-score.bad  { color: var(--bad); }
-.pred-lbl {
-  font-family: var(--skin-mono, ui-monospace, monospace);
-  font-size: 9px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-top: 6px;
-}
-.pred-sep {
-  font-family: var(--skin-mono, ui-monospace, monospace);
-  font-size: 14px;
-  color: var(--muted);
-}
-.pred-verdict {
-  font-size: 12px;
-  font-weight: 700;
-  margin-top: 10px;
-  padding-top: 8px;
-  border-top: 1px solid var(--line);
-  text-align: center;
-}
-.pred-verdict.good { color: var(--good); }
-.pred-verdict.warn { color: var(--mid, #fbbf24); }
-.pred-verdict.bad  { color: var(--bad); }
-.pred-meta {
-  font-family: var(--skin-mono, ui-monospace, monospace);
-  font-size: 10px;
-  color: var(--muted);
-  margin-top: 4px;
-  letter-spacing: 0.04em;
-  text-align: center;
-}
-
-/* Top 3 perfs / progressions */
-.topm-cat {
-  margin-bottom: 18px;
-  padding: 12px;
-  background: rgba(255,255,255,0.02);
-  border: 1px solid var(--line);
-  border-radius: 10px;
-}
-.topm-cat:last-child { margin-bottom: 0; }
-.topm-cat-h {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--accent);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  margin-bottom: 12px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--line);
-}
-.home-top-month {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-.topm-col { min-width: 0; }
-.topm-h {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--txt);
-  letter-spacing: 0.06em;
-  margin-bottom: 10px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--line);
-}
-.topm-h-sub {
-  font-family: var(--skin-mono, ui-monospace, monospace);
-  font-size: 9px;
-  font-weight: 400;
-  color: var(--muted);
-  letter-spacing: 0.04em;
-  text-transform: none;
-  margin-left: 6px;
-}
-.topm-list { display: flex; flex-direction: column; gap: 6px; }
-.topm-row {
-  display: grid;
-  grid-template-columns: 28px 1fr auto;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
-  background: rgba(255,255,255,0.02);
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-.topm-row.clickable:hover { background: rgba(255,255,255,0.05); }
-.topm-row.clickable:focus { outline: 1px solid var(--accent); outline-offset: -1px; }
-.topm-pos {
-  font-family: var(--skin-mono, ui-monospace, monospace);
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--accent);
-  text-align: left;
-}
-.topm-name {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--txt);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-align: left;
-}
-.topm-val {
-  font-family: var(--skin-mono, ui-monospace, monospace);
-  font-weight: 700;
-  font-size: 14px;
-  font-variant-numeric: tabular-nums;
-  text-align: right;
-  white-space: nowrap;
-}
-.topm-val.good { color: var(--good); }
-.topm-val.bad  { color: var(--bad); }
-.topm-empty {
-  font-family: var(--skin-mono, ui-monospace, monospace);
-  font-size: 10px;
-  color: var(--muted);
-  text-align: center;
-  padding: 16px 8px;
-  letter-spacing: 0.04em;
-}
-
-/* Lien vers stats avancées */
-.home-stats-link {
-  display: block;
-  text-align: center;
-  padding: 12px;
-  background: rgba(255,255,255,0.02);
-  border: 1px dashed var(--line);
-  border-radius: 8px;
-  font-family: var(--skin-mono, ui-monospace, monospace);
-  font-size: 11px;
-  letter-spacing: 0.06em;
-  color: var(--muted);
-  text-decoration: none;
-  cursor: pointer;
-}
-.home-stats-link:hover { background: rgba(255,255,255,0.05); color: var(--accent); }
-</style>
-<div class="club-section" data-club-id="8940866"><div class="home-tab-wrap"><div class="home-section"><div class="home-section-h">📊 Vue d'ensemble</div><div class="home-kpis"><div class="kpi-block"><div class="kpi-block-title">Matchs individuels</div><div class="kpi-grid"><div class="kpi"><div class="kpi-val">2416</div><div class="kpi-lbl">Matchs</div></div><div class="kpi"><div class="kpi-val good">1127</div><div class="kpi-lbl">Victoires</div></div><div class="kpi"><div class="kpi-val bad">1289</div><div class="kpi-lbl">Défaites</div></div><div class="kpi"><div class="kpi-val warn">47<span class="sm">%</span></div><div class="kpi-lbl">Win rate</div></div></div></div><div class="kpi-block"><div class="kpi-block-title">Rencontres équipes</div><div class="kpi-grid"><div class="kpi"><div class="kpi-val">90</div><div class="kpi-lbl">Joué</div></div><div class="kpi"><div class="kpi-val good">48</div><div class="kpi-lbl">Victoires</div></div><div class="kpi"><div class="kpi-val warn">9</div><div class="kpi-lbl">Nuls</div></div><div class="kpi"><div class="kpi-val bad">33</div><div class="kpi-lbl">Défaites</div></div></div></div></div></div><div class="home-section"><div class="home-section-h">⏭️ Prochains matchs par équipe</div><div class="next-team-block"><div class="next-team-h">BREVANNAISE AS (1)</div><div class="next-when-row"><span class="next-when">15/05/2026</span><span class="next-date">15/05/2026</span></div><div class="next-match"><div class="next-vs">vs <strong>FONTENAY-TRESIGNY TT (1)</strong></div><div class="next-meta">✈️ Extérieur · L08_Honneur Poule 9</div></div><div class="next-pred"><div class="pred-scores"><div class="pred-side bre"><div class="pred-score good">98.2</div><div class="pred-lbl">Brévannes</div></div><div class="pred-sep">vs</div><div class="pred-side opp"><div class="pred-score">63.8</div><div class="pred-lbl">FONTENAY-TRESIGNY TT (1)</div></div></div><div class="pred-verdict good">Victoire probable</div><div class="pred-meta">Score attendu sur 27 simples</div></div></div>
-<div class="next-team-block"><div class="next-team-h">BREVANNAISE AS 1</div><div class="next-when-row"><span class="next-when">Dans 6 jours</span><span class="next-date">09/05/2026</span></div><div class="next-match"><div class="next-vs">vs <strong>ESP REUILLY 2</strong></div><div class="next-meta">🏠 Domicile · L08_R2 Messieurs phase 2 Poule 7</div></div><div class="next-pred"><div class="pred-scores"><div class="pred-side bre"><div class="pred-score good">6.7</div><div class="pred-lbl">Brévannes</div></div><div class="pred-sep">vs</div><div class="pred-side opp"><div class="pred-score">5.3</div><div class="pred-lbl">ESP REUILLY 2</div></div></div><div class="pred-verdict good">Victoire probable</div><div class="pred-meta">Score attendu sur 12 simples</div></div></div>
-<div class="next-team-block"><div class="next-team-h">BREVANNAISE AS (2)</div><div class="next-when-row"><span class="next-when">15/05/2026</span><span class="next-date">15/05/2026</span></div><div class="next-match"><div class="next-vs">vs <strong>OZOIR AP (2)</strong></div><div class="next-meta">✈️ Extérieur · L08_2eme Division Poule 20</div></div><div class="next-pred"><div class="pred-scores"><div class="pred-side bre"><div class="pred-score good">46.9</div><div class="pred-lbl">Brévannes</div></div><div class="pred-sep">vs</div><div class="pred-side opp"><div class="pred-score">16.1</div><div class="pred-lbl">OZOIR AP (2)</div></div></div><div class="pred-verdict good">Victoire probable</div><div class="pred-meta">Score attendu sur 9 simples</div></div></div>
-<div class="next-team-block"><div class="next-team-h">BREVANNAISE AS 2</div><div class="next-when-row"><span class="next-when">Dans 6 jours</span><span class="next-date">09/05/2026</span></div><div class="next-match"><div class="next-vs">vs <strong>PONTAULT UMS TT 5</strong></div><div class="next-meta">🏠 Domicile · L08_R3 Messieurs phase 2 Poule 7</div></div><div class="next-pred"><div class="pred-scores"><div class="pred-side bre"><div class="pred-score good">6.6</div><div class="pred-lbl">Brévannes</div></div><div class="pred-sep">vs</div><div class="pred-side opp"><div class="pred-score">5.4</div><div class="pred-lbl">PONTAULT UMS TT 5</div></div></div><div class="pred-verdict good">Victoire probable</div><div class="pred-meta">Score attendu sur 12 simples</div></div></div>
-<div class="next-team-block"><div class="next-team-h">BREVANNAISE AS (3)</div><div class="next-when-row"><span class="next-when">15/05/2026</span><span class="next-date">15/05/2026</span></div><div class="next-match"><div class="next-vs">vs <strong>ROISSY TT US (3)</strong></div><div class="next-meta">✈️ Extérieur · L08_2eme Division Poule 24</div></div><div class="next-pred"><div class="pred-scores"><div class="pred-side bre"><div class="pred-score bad">30.4</div><div class="pred-lbl">Brévannes</div></div><div class="pred-sep">vs</div><div class="pred-side opp"><div class="pred-score">32.6</div><div class="pred-lbl">ROISSY TT US (3)</div></div></div><div class="pred-verdict bad">Défaite probable</div><div class="pred-meta">Score attendu sur 9 simples</div></div></div>
-<div class="next-team-block"><div class="next-team-h">BREVANNAISE AS 3</div><div class="next-when-row"><span class="next-when">Dans 4 jours</span><span class="next-date">07/05/2026</span></div><div class="next-match"><div class="next-vs">vs <strong>MAISONS-ALFORT TT 4</strong></div><div class="next-meta">✈️ Extérieur · PR  Masculine  Phase 2 Poule 1</div></div><div class="next-pred"><div class="pred-scores"><div class="pred-side bre"><div class="pred-score good">6.7</div><div class="pred-lbl">Brévannes</div></div><div class="pred-sep">vs</div><div class="pred-side opp"><div class="pred-score">5.3</div><div class="pred-lbl">MAISONS-ALFORT TT 4</div></div></div><div class="pred-verdict good">Victoire probable</div><div class="pred-meta">Score attendu sur 12 simples</div></div></div>
-<div class="next-team-block"><div class="next-team-h">BREVANNAISE AS (4)</div><div class="next-when-row"><span class="next-when">15/05/2026</span><span class="next-date">15/05/2026</span></div><div class="next-match"><div class="next-vs">vs <strong>OZOIR AP (3)</strong></div><div class="next-meta">✈️ Extérieur · L08_2eme Division Poule 22</div></div><div class="next-pred"><div class="pred-scores"><div class="pred-side bre"><div class="pred-score good">49.0</div><div class="pred-lbl">Brévannes</div></div><div class="pred-sep">vs</div><div class="pred-side opp"><div class="pred-score">14.0</div><div class="pred-lbl">OZOIR AP (3)</div></div></div><div class="pred-verdict good">Victoire probable</div><div class="pred-meta">Score attendu sur 9 simples</div></div></div>
-<div class="next-team-block"><div class="next-team-h">BREVANNAISE AS 4</div><div class="next-when-row"><span class="next-when">Dans 4 jours</span><span class="next-date">07/05/2026</span></div><div class="next-match"><div class="next-vs">vs <strong>ELAN ARCUEIL 1</strong></div><div class="next-meta">✈️ Extérieur · D2 Masculine Phase 2 Poule 1</div></div><div class="next-pred"><div class="pred-scores"><div class="pred-side bre"><div class="pred-score good">15.7</div><div class="pred-lbl">Brévannes</div></div><div class="pred-sep">vs</div><div class="pred-side opp"><div class="pred-score">2.3</div><div class="pred-lbl">ELAN ARCUEIL 1</div></div></div><div class="pred-verdict good">Victoire probable</div><div class="pred-meta">Score attendu sur 18 simples</div></div></div>
-<div class="next-team-block"><div class="next-team-h">BREVANNAISE AS 5</div><div class="next-when-row"><span class="next-when">Dans 4 jours</span><span class="next-date">07/05/2026</span></div><div class="next-match"><div class="next-vs">vs <strong>ES VITRY 5</strong></div><div class="next-meta">✈️ Extérieur · D2 Masculine Phase 2 Poule 2</div></div><div class="next-pred"><div class="pred-scores"><div class="pred-side bre"><div class="pred-score warn">8.8</div><div class="pred-lbl">Brévannes</div></div><div class="pred-sep">vs</div><div class="pred-side opp"><div class="pred-score">9.2</div><div class="pred-lbl">ES VITRY 5</div></div></div><div class="pred-verdict warn">Match serré</div><div class="pred-meta">Score attendu sur 18 simples</div></div></div>
-<div class="next-team-block"><div class="next-team-h">BREVANNAISE AS 6</div><div class="next-when-row"><span class="next-when">Dans 4 jours</span><span class="next-date">07/05/2026</span></div><div class="next-match"><div class="next-vs">vs <strong>CHOISY TT 3</strong></div><div class="next-meta">✈️ Extérieur · D3 Masculine Phase 2 Poule 1</div></div><div class="next-pred"><div class="pred-scores"><div class="pred-side bre"><div class="pred-score bad">8.1</div><div class="pred-lbl">Brévannes</div></div><div class="pred-sep">vs</div><div class="pred-side opp"><div class="pred-score">9.9</div><div class="pred-lbl">CHOISY TT 3</div></div></div><div class="pred-verdict bad">Défaite probable</div><div class="pred-meta">Score attendu sur 18 simples</div></div></div></div><div class="home-section"><div class="home-section-h">⭐ Mai — top performances</div><div class="topm-cat"><div class="topm-cat-h">👥 Adultes</div><div class="home-top-month"><div class="topm-col"><div class="topm-h">🏆 Top 3 perfs <span class="topm-h-sub">(écart de points)</span></div><div class="topm-list"><div class="topm-row clickable" data-lic="949252" tabindex="0" role="button"><div class="topm-pos">1</div><div class="topm-body"><div class="topm-name">COLIN Morgan</div></div><div class="topm-val good">+376</div></div><div class="topm-row clickable" data-lic="949252" tabindex="0" role="button"><div class="topm-pos">2</div><div class="topm-body"><div class="topm-name">COLIN Morgan</div></div><div class="topm-val good">+233</div></div><div class="topm-row clickable" data-lic="9445162" tabindex="0" role="button"><div class="topm-pos">3</div><div class="topm-body"><div class="topm-name">WONG Nathalie</div></div><div class="topm-val good">+181</div></div></div></div><div class="topm-col"><div class="topm-h">📈 Top 3 progressions <span class="topm-h-sub">(points FFTT)</span></div><div class="topm-list"><div class="topm-row clickable" data-lic="9467741" tabindex="0" role="button"><div class="topm-pos">1</div><div class="topm-body"><div class="topm-name">DELOR Jean Marie</div></div><div class="topm-val good">+38.6</div></div><div class="topm-row clickable" data-lic="9443354" tabindex="0" role="button"><div class="topm-pos">2</div><div class="topm-body"><div class="topm-name">AUDEON Jorris</div></div><div class="topm-val good">+33.4</div></div><div class="topm-row clickable" data-lic="949252" tabindex="0" role="button"><div class="topm-pos">3</div><div class="topm-body"><div class="topm-name">COLIN Morgan</div></div><div class="topm-val good">+25.0</div></div></div></div></div></div>
-<div class="topm-cat"><div class="topm-cat-h">🧒 Jeunes</div><div class="home-top-month"><div class="topm-col"><div class="topm-h">🏆 Top 3 perfs <span class="topm-h-sub">(écart de points)</span></div><div class="topm-list"><div class="topm-row clickable" data-lic="9462284" tabindex="0" role="button"><div class="topm-pos">1</div><div class="topm-body"><div class="topm-name">DALLOT Timéo</div></div><div class="topm-val good">+149</div></div><div class="topm-row clickable" data-lic="9462284" tabindex="0" role="button"><div class="topm-pos">2</div><div class="topm-body"><div class="topm-name">DALLOT Timéo</div></div><div class="topm-val good">+114</div></div><div class="topm-row clickable" data-lic="9461347" tabindex="0" role="button"><div class="topm-pos">3</div><div class="topm-body"><div class="topm-name">BABIN Jordan</div></div><div class="topm-val good">+106</div></div></div></div><div class="topm-col"><div class="topm-h">📈 Top 3 progressions <span class="topm-h-sub">(points FFTT)</span></div><div class="topm-list"><div class="topm-row clickable" data-lic="9462284" tabindex="0" role="button"><div class="topm-pos">1</div><div class="topm-body"><div class="topm-name">DALLOT Timéo</div></div><div class="topm-val good">+33.5</div></div><div class="topm-row clickable" data-lic="9460246" tabindex="0" role="button"><div class="topm-pos">2</div><div class="topm-body"><div class="topm-name">TIGAIZIN Outhman</div></div><div class="topm-val good">+22.0</div></div><div class="topm-row clickable" data-lic="9462649" tabindex="0" role="button"><div class="topm-pos">3</div><div class="topm-body"><div class="topm-name">NEHME Raphael</div></div><div class="topm-val good">+21.1</div></div></div></div></div></div><a class="home-stats-link" data-target-tab="stats" href="#" style="margin-top:14px">Voir l'historique mensuel complet → 📊 Stats avancées</a></div><div class="home-section"><div class="home-section-h">🏆 Équipes — classement actuel</div><div class="home-teams"><div class="team-row"><div class="team-rang good"><span class="rang-n">2</span><span class="rang-of">/8</span></div><div class="team-body"><div class="team-name">BREVANNAISE AS 1</div><div class="team-div">L08_R2 Messieurs phase 2 Poule 7</div></div><div class="team-stats"><span class="t-w">3V</span><span class="t-l">·1D</span></div></div><div class="team-row"><div class="team-rang good"><span class="rang-n">2</span><span class="rang-of">/8</span></div><div class="team-body"><div class="team-name">BREVANNAISE AS 2</div><div class="team-div">L08_R3 Messieurs phase 2 Poule 7</div></div><div class="team-stats"><span class="t-w">3V</span><span class="t-n">·1N</span><span class="t-l">·0D</span></div></div><div class="team-row"><div class="team-rang bad"><span class="rang-n">7</span><span class="rang-of">/8</span></div><div class="team-body"><div class="team-name">BREVANNAISE AS 3</div><div class="team-div">PR  Masculine  Phase 2 Poule 1</div></div><div class="team-stats"><span class="t-w">0V</span><span class="t-l">·4D</span></div></div><div class="team-row"><div class="team-rang "><span class="rang-n">3</span><span class="rang-of">/8</span></div><div class="team-body"><div class="team-name">BREVANNAISE AS 4</div><div class="team-div">D2 Masculine Phase 2 Poule 1</div></div><div class="team-stats"><span class="t-w">2V</span><span class="t-l">·2D</span></div></div><div class="team-row"><div class="team-rang "><span class="rang-n">5</span><span class="rang-of">/8</span></div><div class="team-body"><div class="team-name">BREVANNAISE AS 5</div><div class="team-div">D2 Masculine Phase 2 Poule 2</div></div><div class="team-stats"><span class="t-w">2V</span><span class="t-l">·2D</span></div></div><div class="team-row"><div class="team-rang "><span class="rang-n">4</span><span class="rang-of">/8</span></div><div class="team-body"><div class="team-name">BREVANNAISE AS 6</div><div class="team-div">D3 Masculine Phase 2 Poule 1</div></div><div class="team-stats"><span class="t-w">2V</span><span class="t-l">·2D</span></div></div></div></div></div></div>
-<script>
-(function(){
-  // Délégation d'événement : clic sur une ligne du top mois ouvre le dashboard
-  document.addEventListener('click', function(e){
-    const row = e.target.closest('.home-top-month .topm-row.clickable[data-lic]');
-    if(!row) return;
-    const lic = row.dataset.lic;
-    if(typeof window._openPlayerDashboard === 'function'){
-      window._openPlayerDashboard(lic);
-    }
-  });
-  // Lien "Voir tous les classements mensuels" → bascule sur l'onglet Stats
-  document.addEventListener('click', function(e){
-    const a = e.target.closest('.home-stats-link[data-target-tab]');
-    if(!a) return;
-    e.preventDefault();
-    const tab = a.dataset.targetTab;
-    const btn = document.querySelector('.tab-btn[data-tab="' + tab + '"]');
-    if(btn) btn.click();
-  });
-})();
-</script>
-</div><div class="tab-panel" data-tab="joueurs">
+    <div class="tab-panel" data-tab="joueurs">
 <style>
 .players-tab-wrap { padding: 0 8px; }
 .players-tab-wrap .muted { color: var(--fg-mute, #5b6573); padding: 16px; }
@@ -1829,6 +1439,29 @@ table.players-table tbody td {
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.02em;
+  overflow: hidden;
+  position: relative;
+  flex: 0 0 auto;
+}
+/* Avec photo : on retire la bordure et le fond (l'image les recouvre).
+   On garde border-radius:50% sur le conteneur ET sur l'image pour
+   garantir la forme ronde même si l'image n'est pas carrée. */
+.avatar-mini.has-photo {
+  background: transparent;
+  border: none;
+}
+.avatar-mini img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+.avatar-mini-init {
+  display: flex;
+  width: 100%; height: 100%;
+  align-items: center; justify-content: center;
 }
 .players-name {
   font-family: var(--font-sans, system-ui, sans-serif);
@@ -1874,7 +1507,7 @@ table.players-table tbody td {
   table.players-table tbody td:nth-child(4) { display: none; }
 }
 </style>
-<div class="club-section" data-club-id="8940866"><section class="card"><div class="card-h"><div class="card-title">👤 Joueurs — BREVANNAISE AS</div><div class="card-sub">59 licenciés · trié par points</div></div><div class="players-tab-wrap"><table class="players-table"><thead><tr><th>#</th><th></th><th>Nom</th><th>Cat</th><th>Pts</th><th>V/D</th><th>Win%</th></tr></thead><tbody><tr class="players-row" data-lic="9413306" tabindex="0" role="button"><td class="players-rank">1</td><td class="players-avatar"><span class="avatar-mini">MJ</span></td><td class="players-name">MITONGA Jonas</td><td class="players-cat">S</td><td class="players-pts">1963</td><td class="players-vd"><span class="vd-v">44V</span>·<span class="vd-d">4D</span></td><td class="players-wr wr-good">92%</td></tr><tr class="players-row" data-lic="942619" tabindex="0" role="button"><td class="players-rank">2</td><td class="players-avatar"><span class="avatar-mini">MJ</span></td><td class="players-name">MALISSARD Julien</td><td class="players-cat">V45</td><td class="players-pts">1751</td><td class="players-vd"><span class="vd-v">16V</span>·<span class="vd-d">29D</span></td><td class="players-wr wr-bad">36%</td></tr><tr class="players-row" data-lic="9412122" tabindex="0" role="button"><td class="players-rank">3</td><td class="players-avatar"><span class="avatar-mini">BA</span></td><td class="players-name">BRIANT Alexandre</td><td class="players-cat">S</td><td class="players-pts">1560</td><td class="players-vd"><span class="vd-v">13V</span>·<span class="vd-d">37D</span></td><td class="players-wr wr-bad">26%</td></tr><tr class="players-row" data-lic="9443986" tabindex="0" role="button"><td class="players-rank">4</td><td class="players-avatar"><span class="avatar-mini">FD</span></td><td class="players-name">FLASQUE Dorian</td><td class="players-cat">S</td><td class="players-pts">1527</td><td class="players-vd"><span class="vd-v">56V</span>·<span class="vd-d">31D</span></td><td class="players-wr ">64%</td></tr><tr class="players-row" data-lic="949252" tabindex="0" role="button"><td class="players-rank">5</td><td class="players-avatar"><span class="avatar-mini">CM</span></td><td class="players-name">COLIN Morgan</td><td class="players-cat">V40</td><td class="players-pts">1516</td><td class="players-vd"><span class="vd-v">8V</span>·<span class="vd-d">35D</span></td><td class="players-wr wr-bad">19%</td></tr><tr class="players-row" data-lic="9440490" tabindex="0" role="button"><td class="players-rank">6</td><td class="players-avatar"><span class="avatar-mini">NC</span></td><td class="players-name">NIHOUARN Christophe</td><td class="players-cat">S</td><td class="players-pts">1476</td><td class="players-vd"><span class="vd-v">18V</span>·<span class="vd-d">21D</span></td><td class="players-wr ">46%</td></tr><tr class="players-row" data-lic="948809" tabindex="0" role="button"><td class="players-rank">7</td><td class="players-avatar"><span class="avatar-mini">LY</span></td><td class="players-name">LAZARDEUX Yann</td><td class="players-cat">V45</td><td class="players-pts">1447</td><td class="players-vd"><span class="vd-v">18V</span>·<span class="vd-d">27D</span></td><td class="players-wr ">40%</td></tr><tr class="players-row" data-lic="519020" tabindex="0" role="button"><td class="players-rank">8</td><td class="players-avatar"><span class="avatar-mini">GB</span></td><td class="players-name">GRUNDELER Bastien</td><td class="players-cat">S</td><td class="players-pts">1436</td><td class="players-vd"><span class="vd-v">12V</span>·<span class="vd-d">24D</span></td><td class="players-wr wr-bad">33%</td></tr><tr class="players-row" data-lic="9411557" tabindex="0" role="button"><td class="players-rank">9</td><td class="players-avatar"><span class="avatar-mini">BJ</span></td><td class="players-name">BAILLON Jean-Christophe</td><td class="players-cat">—</td><td class="players-pts">1353</td><td class="players-vd"><span class="vd-v">5V</span>·<span class="vd-d">4D</span></td><td class="players-wr ">56%</td></tr><tr class="players-row" data-lic="9424231" tabindex="0" role="button"><td class="players-rank">10</td><td class="players-avatar"><span class="avatar-mini">JJ</span></td><td class="players-name">JALER Julien</td><td class="players-cat">V40</td><td class="players-pts">1246</td><td class="players-vd"><span class="vd-v">30V</span>·<span class="vd-d">18D</span></td><td class="players-wr ">62%</td></tr><tr class="players-row" data-lic="9447687" tabindex="0" role="button"><td class="players-rank">11</td><td class="players-avatar"><span class="avatar-mini">JL</span></td><td class="players-name">JERRAIN Laurent</td><td class="players-cat">V50</td><td class="players-pts">1149</td><td class="players-vd"><span class="vd-v">42V</span>·<span class="vd-d">29D</span></td><td class="players-wr ">59%</td></tr><tr class="players-row" data-lic="9227492" tabindex="0" role="button"><td class="players-rank">12</td><td class="players-avatar"><span class="avatar-mini">TJ</span></td><td class="players-name">TERRAIN Jose</td><td class="players-cat">V55</td><td class="players-pts">1043</td><td class="players-vd"><span class="vd-v">17V</span>·<span class="vd-d">22D</span></td><td class="players-wr ">44%</td></tr><tr class="players-row" data-lic="789198" tabindex="0" role="button"><td class="players-rank">13</td><td class="players-avatar"><span class="avatar-mini">CC</span></td><td class="players-name">CORNE Christophe</td><td class="players-cat">V55</td><td class="players-pts">902</td><td class="players-vd"><span class="vd-v">21V</span>·<span class="vd-d">17D</span></td><td class="players-wr ">55%</td></tr><tr class="players-row" data-lic="9463714" tabindex="0" role="button"><td class="players-rank">14</td><td class="players-avatar"><span class="avatar-mini">LM</span></td><td class="players-name">LALANNE Mael</td><td class="players-cat">J1</td><td class="players-pts">860</td><td class="players-vd"><span class="vd-v">72V</span>·<span class="vd-d">27D</span></td><td class="players-wr wr-good">73%</td></tr><tr class="players-row" data-lic="9443419" tabindex="0" role="button"><td class="players-rank">15</td><td class="players-avatar"><span class="avatar-mini">LT</span></td><td class="players-name">LARME Thomas</td><td class="players-cat">S</td><td class="players-pts">838</td><td class="players-vd"><span class="vd-v">5V</span>·<span class="vd-d">7D</span></td><td class="players-wr ">42%</td></tr><tr class="players-row" data-lic="9460482" tabindex="0" role="button"><td class="players-rank">16</td><td class="players-avatar"><span class="avatar-mini">AT</span></td><td class="players-name">ADRIANO Toni</td><td class="players-cat">V40</td><td class="players-pts">827</td><td class="players-vd"><span class="vd-v">21V</span>·<span class="vd-d">27D</span></td><td class="players-wr ">44%</td></tr><tr class="players-row" data-lic="9445687" tabindex="0" role="button"><td class="players-rank">17</td><td class="players-avatar"><span class="avatar-mini">CH</span></td><td class="players-name">CHARPENTIER Helene</td><td class="players-cat">V45</td><td class="players-pts">824</td><td class="players-vd"><span class="vd-v">15V</span>·<span class="vd-d">22D</span></td><td class="players-wr ">41%</td></tr><tr class="players-row" data-lic="9454694" tabindex="0" role="button"><td class="players-rank">18</td><td class="players-avatar"><span class="avatar-mini">QL</span></td><td class="players-name">QUESADA Luis</td><td class="players-cat">V55</td><td class="players-pts">824</td><td class="players-vd"><span class="vd-v">9V</span>·<span class="vd-d">23D</span></td><td class="players-wr wr-bad">28%</td></tr><tr class="players-row" data-lic="9462649" tabindex="0" role="button"><td class="players-rank">19</td><td class="players-avatar"><span class="avatar-mini">NR</span></td><td class="players-name">NEHME Raphael</td><td class="players-cat">M2</td><td class="players-pts">802</td><td class="players-vd"><span class="vd-v">82V</span>·<span class="vd-d">41D</span></td><td class="players-wr wr-good">67%</td></tr><tr class="players-row" data-lic="9462284" tabindex="0" role="button"><td class="players-rank">20</td><td class="players-avatar"><span class="avatar-mini">DT</span></td><td class="players-name">DALLOT Timéo</td><td class="players-cat">C2</td><td class="players-pts">784</td><td class="players-vd"><span class="vd-v">72V</span>·<span class="vd-d">43D</span></td><td class="players-wr ">63%</td></tr><tr class="players-row" data-lic="9463937" tabindex="0" role="button"><td class="players-rank">21</td><td class="players-avatar"><span class="avatar-mini">NC</span></td><td class="players-name">NEHME Christian</td><td class="players-cat">J1</td><td class="players-pts">776</td><td class="players-vd"><span class="vd-v">71V</span>·<span class="vd-d">46D</span></td><td class="players-wr ">61%</td></tr><tr class="players-row" data-lic="941327" tabindex="0" role="button"><td class="players-rank">22</td><td class="players-avatar"><span class="avatar-mini">TB</span></td><td class="players-name">TREUIL Bernard</td><td class="players-cat">V80</td><td class="players-pts">764</td><td class="players-vd"><span class="vd-v">12V</span>·<span class="vd-d">9D</span></td><td class="players-wr ">57%</td></tr><tr class="players-row" data-lic="9452410" tabindex="0" role="button"><td class="players-rank">23</td><td class="players-avatar"><span class="avatar-mini">CM</span></td><td class="players-name">COURTINARD Marvin</td><td class="players-cat">S</td><td class="players-pts">744</td><td class="players-vd"><span class="vd-v">28V</span>·<span class="vd-d">46D</span></td><td class="players-wr wr-bad">38%</td></tr><tr class="players-row" data-lic="9410275" tabindex="0" role="button"><td class="players-rank">24</td><td class="players-avatar"><span class="avatar-mini">GS</span></td><td class="players-name">GANNEAU Sylvain</td><td class="players-cat">V45</td><td class="players-pts">738</td><td class="players-vd"><span class="vd-v">20V</span>·<span class="vd-d">27D</span></td><td class="players-wr ">43%</td></tr><tr class="players-row" data-lic="9443354" tabindex="0" role="button"><td class="players-rank">25</td><td class="players-avatar"><span class="avatar-mini">AJ</span></td><td class="players-name">AUDEON Jorris</td><td class="players-cat">S</td><td class="players-pts">732</td><td class="players-vd"><span class="vd-v">33V</span>·<span class="vd-d">6D</span></td><td class="players-wr wr-good">85%</td></tr><tr class="players-row" data-lic="9467508" tabindex="0" role="button"><td class="players-rank">26</td><td class="players-avatar"><span class="avatar-mini">DF</span></td><td class="players-name">DA ROLD Florian</td><td class="players-cat">S</td><td class="players-pts">732</td><td class="players-vd"><span class="vd-v">60V</span>·<span class="vd-d">26D</span></td><td class="players-wr wr-good">70%</td></tr><tr class="players-row" data-lic="9460246" tabindex="0" role="button"><td class="players-rank">27</td><td class="players-avatar"><span class="avatar-mini">TO</span></td><td class="players-name">TIGAIZIN Outhman</td><td class="players-cat">C2</td><td class="players-pts">688</td><td class="players-vd"><span class="vd-v">42V</span>·<span class="vd-d">30D</span></td><td class="players-wr ">58%</td></tr><tr class="players-row" data-lic="9124653" tabindex="0" role="button"><td class="players-rank">28</td><td class="players-avatar"><span class="avatar-mini">NP</span></td><td class="players-name">NOIROT Philippe</td><td class="players-cat">V60</td><td class="players-pts">667</td><td class="players-vd"><span class="vd-v">22V</span>·<span class="vd-d">9D</span></td><td class="players-wr wr-good">71%</td></tr><tr class="players-row" data-lic="9465345" tabindex="0" role="button"><td class="players-rank">29</td><td class="players-avatar"><span class="avatar-mini">SM</span></td><td class="players-name">SAUX Matthieu</td><td class="players-cat">V40</td><td class="players-pts">652</td><td class="players-vd"><span class="vd-v">24V</span>·<span class="vd-d">10D</span></td><td class="players-wr wr-good">71%</td></tr><tr class="players-row" data-lic="9460164" tabindex="0" role="button"><td class="players-rank">30</td><td class="players-avatar"><span class="avatar-mini">LM</span></td><td class="players-name">LABLAK Mohamed</td><td class="players-cat">S</td><td class="players-pts">648</td><td class="players-vd"><span class="vd-v">12V</span>·<span class="vd-d">21D</span></td><td class="players-wr wr-bad">36%</td></tr><tr class="players-row" data-lic="9467429" tabindex="0" role="button"><td class="players-rank">31</td><td class="players-avatar"><span class="avatar-mini">LC</span></td><td class="players-name">LALANNE Clément</td><td class="players-cat">V40</td><td class="players-pts">608</td><td class="players-vd"><span class="vd-v">23V</span>·<span class="vd-d">10D</span></td><td class="players-wr wr-good">70%</td></tr><tr class="players-row" data-lic="9445162" tabindex="0" role="button"><td class="players-rank">32</td><td class="players-avatar"><span class="avatar-mini">WN</span></td><td class="players-name">WONG Nathalie</td><td class="players-cat">S</td><td class="players-pts">598</td><td class="players-vd"><span class="vd-v">26V</span>·<span class="vd-d">81D</span></td><td class="players-wr wr-bad">24%</td></tr><tr class="players-row" data-lic="9424065" tabindex="0" role="button"><td class="players-rank">33</td><td class="players-avatar"><span class="avatar-mini">MJ</span></td><td class="players-name">MOULIN Jean Jacques</td><td class="players-cat">V50</td><td class="players-pts">566</td><td class="players-vd"><span class="vd-v">34V</span>·<span class="vd-d">34D</span></td><td class="players-wr ">50%</td></tr><tr class="players-row" data-lic="9467741" tabindex="0" role="button"><td class="players-rank">34</td><td class="players-avatar"><span class="avatar-mini">DM</span></td><td class="players-name">DELOR Jean Marie</td><td class="players-cat">S</td><td class="players-pts">556</td><td class="players-vd"><span class="vd-v">33V</span>·<span class="vd-d">36D</span></td><td class="players-wr ">48%</td></tr><tr class="players-row" data-lic="9421604" tabindex="0" role="button"><td class="players-rank">35</td><td class="players-avatar"><span class="avatar-mini">WY</span></td><td class="players-name">WONGWANIT Yves</td><td class="players-cat">—</td><td class="players-pts">542</td><td class="players-vd"><span class="vd-v">1V</span>·<span class="vd-d">3D</span></td><td class="players-wr wr-bad">25%</td></tr><tr class="players-row" data-lic="9464392" tabindex="0" role="button"><td class="players-rank">36</td><td class="players-avatar"><span class="avatar-mini">AJ</span></td><td class="players-name">ALVES Jessica</td><td class="players-cat">C1</td><td class="players-pts">515</td><td class="players-vd"><span class="vd-v">13V</span>·<span class="vd-d">19D</span></td><td class="players-wr ">41%</td></tr><tr class="players-row" data-lic="9456502" tabindex="0" role="button"><td class="players-rank">37</td><td class="players-avatar"><span class="avatar-mini">DR</span></td><td class="players-name">DELBE Remi</td><td class="players-cat">V65</td><td class="players-pts">514</td><td class="players-vd"><span class="vd-v">12V</span>·<span class="vd-d">24D</span></td><td class="players-wr wr-bad">33%</td></tr><tr class="players-row" data-lic="9461978" tabindex="0" role="button"><td class="players-rank">38</td><td class="players-avatar"><span class="avatar-mini">MN</span></td><td class="players-name">MORDOMO Nolan</td><td class="players-cat">M1</td><td class="players-pts">507</td><td class="players-vd"><span class="vd-v">11V</span>·<span class="vd-d">10D</span></td><td class="players-wr ">52%</td></tr><tr class="players-row" data-lic="9459041" tabindex="0" role="button"><td class="players-rank">39</td><td class="players-avatar"><span class="avatar-mini">PA</span></td><td class="players-name">PAYEUX Arno</td><td class="players-cat">S</td><td class="players-pts">497</td><td class="players-vd"><span class="vd-v">1V</span>·<span class="vd-d">3D</span></td><td class="players-wr wr-bad">25%</td></tr><tr class="players-row" data-lic="9467945" tabindex="0" role="button"><td class="players-rank">40</td><td class="players-avatar"><span class="avatar-mini">LM</span></td><td class="players-name">LACLAU LACROUTS Marie</td><td class="players-cat">—</td><td class="players-pts">496</td><td class="players-vd"><span class="vd-v">1V</span>·<span class="vd-d">3D</span></td><td class="players-wr wr-bad">25%</td></tr><tr class="players-row" data-lic="9465680" tabindex="0" role="button"><td class="players-rank">41</td><td class="players-avatar"><span class="avatar-mini">BL</span></td><td class="players-name">BOREL Lea</td><td class="players-cat">C2</td><td class="players-pts">493</td><td class="players-vd"><span class="vd-v">2V</span>·<span class="vd-d">10D</span></td><td class="players-wr wr-bad">17%</td></tr><tr class="players-row" data-lic="9462733" tabindex="0" role="button"><td class="players-rank">42</td><td class="players-avatar"><span class="avatar-mini">SA</span></td><td class="players-name">SMAOUI Anouar</td><td class="players-cat">—</td><td class="players-pts">493</td><td class="players-vd"><span class="vd-v">1V</span>·<span class="vd-d">5D</span></td><td class="players-wr wr-bad">17%</td></tr><tr class="players-row" data-lic="9456944" tabindex="0" role="button"><td class="players-rank">43</td><td class="players-avatar"><span class="avatar-mini">ON</span></td><td class="players-name">ODIE Nadine</td><td class="players-cat">V65</td><td class="players-pts">490</td><td class="players-vd"><span class="vd-v">0V</span>·<span class="vd-d">4D</span></td><td class="players-wr wr-bad">0%</td></tr><tr class="players-row" data-lic="9461793" tabindex="0" role="button"><td class="players-rank">44</td><td class="players-avatar"><span class="avatar-mini">IS</span></td><td class="players-name">IDDIR Silla</td><td class="players-cat">C1</td><td class="players-pts">490</td><td class="players-vd"><span class="vd-v">0V</span>·<span class="vd-d">10D</span></td><td class="players-wr wr-bad">0%</td></tr><tr class="players-row" data-lic="9462705" tabindex="0" role="button"><td class="players-rank">45</td><td class="players-avatar"><span class="avatar-mini">ML</span></td><td class="players-name">MORDONO Lily</td><td class="players-cat">—</td><td class="players-pts">490</td><td class="players-vd"><span class="vd-v">1V</span>·<span class="vd-d">11D</span></td><td class="players-wr wr-bad">8%</td></tr><tr class="players-row" data-lic="9460616" tabindex="0" role="button"><td class="players-rank">46</td><td class="players-avatar"><span class="avatar-mini">NT</span></td><td class="players-name">NICOLAI Theo</td><td class="players-cat">M2</td><td class="players-pts">486</td><td class="players-vd"><span class="vd-v">2V</span>·<span class="vd-d">10D</span></td><td class="players-wr wr-bad">17%</td></tr><tr class="players-row" data-lic="9467431" tabindex="0" role="button"><td class="players-rank">47</td><td class="players-avatar"><span class="avatar-mini">CV</span></td><td class="players-name">CREUS Vikèn</td><td class="players-cat">—</td><td class="players-pts">485</td><td class="players-vd"><span class="vd-v">0V</span>·<span class="vd-d">3D</span></td><td class="players-wr wr-bad">0%</td></tr><tr class="players-row" data-lic="9461977" tabindex="0" role="button"><td class="players-rank">48</td><td class="players-avatar"><span class="avatar-mini">MS</span></td><td class="players-name">MORDOMO Sasha</td><td class="players-cat">B2</td><td class="players-pts">485</td><td class="players-vd"><span class="vd-v">2V</span>·<span class="vd-d">9D</span></td><td class="players-wr wr-bad">18%</td></tr><tr class="players-row" data-lic="9464234" tabindex="0" role="button"><td class="players-rank">49</td><td class="players-avatar"><span class="avatar-mini">HE</span></td><td class="players-name">HUOT Emma</td><td class="players-cat">J3</td><td class="players-pts">483</td><td class="players-vd"><span class="vd-v">15V</span>·<span class="vd-d">26D</span></td><td class="players-wr wr-bad">37%</td></tr><tr class="players-row" data-lic="9465901" tabindex="0" role="button"><td class="players-rank">50</td><td class="players-avatar"><span class="avatar-mini">AE</span></td><td class="players-name">ALICI Eva</td><td class="players-cat">C2</td><td class="players-pts">477</td><td class="players-vd"><span class="vd-v">6V</span>·<span class="vd-d">23D</span></td><td class="players-wr wr-bad">21%</td></tr><tr class="players-row" data-lic="9467249" tabindex="0" role="button"><td class="players-rank">51</td><td class="players-avatar"><span class="avatar-mini">MS</span></td><td class="players-name">MEJABER Samy</td><td class="players-cat">—</td><td class="players-pts">473</td><td class="players-vd"><span class="vd-v">0V</span>·<span class="vd-d">11D</span></td><td class="players-wr wr-bad">0%</td></tr><tr class="players-row" data-lic="9467881" tabindex="0" role="button"><td class="players-rank">52</td><td class="players-avatar"><span class="avatar-mini">BE</span></td><td class="players-name">BAZIZI Even</td><td class="players-cat">M2</td><td class="players-pts">465</td><td class="players-vd"><span class="vd-v">3V</span>·<span class="vd-d">20D</span></td><td class="players-wr wr-bad">13%</td></tr><tr class="players-row" data-lic="7855708" tabindex="0" role="button"><td class="players-rank">53</td><td class="players-avatar"><span class="avatar-mini">SE</span></td><td class="players-name">SEIBEL Edouard</td><td class="players-cat">S</td><td class="players-pts">464</td><td class="players-vd"><span class="vd-v">6V</span>·<span class="vd-d">17D</span></td><td class="players-wr wr-bad">26%</td></tr><tr class="players-row" data-lic="9467247" tabindex="0" role="button"><td class="players-rank">54</td><td class="players-avatar"><span class="avatar-mini">MT</span></td><td class="players-name">MARTINS Tiago</td><td class="players-cat">—</td><td class="players-pts">455</td><td class="players-vd"><span class="vd-v">0V</span>·<span class="vd-d">12D</span></td><td class="players-wr wr-bad">0%</td></tr><tr class="players-row" data-lic="9467925" tabindex="0" role="button"><td class="players-rank">55</td><td class="players-avatar"><span class="avatar-mini">DS</span></td><td class="players-name">DAVIE Steven</td><td class="players-cat">—</td><td class="players-pts">454</td><td class="players-vd"><span class="vd-v">7V</span>·<span class="vd-d">23D</span></td><td class="players-wr wr-bad">23%</td></tr><tr class="players-row" data-lic="9467750" tabindex="0" role="button"><td class="players-rank">56</td><td class="players-avatar"><span class="avatar-mini">LP</span></td><td class="players-name">LEVALLOIS Marie Pierre</td><td class="players-cat">—</td><td class="players-pts">452</td><td class="players-vd"><span class="vd-v">6V</span>·<span class="vd-d">35D</span></td><td class="players-wr wr-bad">15%</td></tr><tr class="players-row" data-lic="9464233" tabindex="0" role="button"><td class="players-rank">57</td><td class="players-avatar"><span class="avatar-mini">HL</span></td><td class="players-name">HUOT Lucas</td><td class="players-cat">M2</td><td class="players-pts">450</td><td class="players-vd"><span class="vd-v">1V</span>·<span class="vd-d">22D</span></td><td class="players-wr wr-bad">4%</td></tr><tr class="players-row" data-lic="9438212" tabindex="0" role="button"><td class="players-rank">58</td><td class="players-avatar"><span class="avatar-mini">DY</span></td><td class="players-name">DEVAS Yvon</td><td class="players-cat">V75</td><td class="players-pts">427</td><td class="players-vd"><span class="vd-v">6V</span>·<span class="vd-d">43D</span></td><td class="players-wr wr-bad">12%</td></tr><tr class="players-row" data-lic="9461347" tabindex="0" role="button"><td class="players-rank">59</td><td class="players-avatar"><span class="avatar-mini">BJ</span></td><td class="players-name">BABIN Jordan</td><td class="players-cat">C2</td><td class="players-pts">410</td><td class="players-vd"><span class="vd-v">14V</span>·<span class="vd-d">54D</span></td><td class="players-wr wr-bad">21%</td></tr></tbody></table></div></section></div>
+<div class="club-section" data-club-id="8940866"><section class="card"><div class="card-h"><div class="card-title">👤 Joueurs — BREVANNAISE AS</div><div class="card-sub">59 licenciés · trié par points</div></div><div class="players-tab-wrap"><table class="players-table"><thead><tr><th>#</th><th></th><th>Nom</th><th>Cat</th><th>Pts</th><th>V/D</th><th>Win%</th></tr></thead><tbody><tr class="players-row" data-lic="9413306" tabindex="0" role="button"><td class="players-rank">1</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9413306.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">MJ</span></span></td><td class="players-name">MITONGA Jonas</td><td class="players-cat">S</td><td class="players-pts">1963</td><td class="players-vd"><span class="vd-v">44V</span>·<span class="vd-d">4D</span></td><td class="players-wr wr-good">92%</td></tr><tr class="players-row" data-lic="942619" tabindex="0" role="button"><td class="players-rank">2</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/942619.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">MJ</span></span></td><td class="players-name">MALISSARD Julien</td><td class="players-cat">V45</td><td class="players-pts">1751</td><td class="players-vd"><span class="vd-v">16V</span>·<span class="vd-d">29D</span></td><td class="players-wr wr-bad">36%</td></tr><tr class="players-row" data-lic="9412122" tabindex="0" role="button"><td class="players-rank">3</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9412122.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">BA</span></span></td><td class="players-name">BRIANT Alexandre</td><td class="players-cat">S</td><td class="players-pts">1560</td><td class="players-vd"><span class="vd-v">13V</span>·<span class="vd-d">37D</span></td><td class="players-wr wr-bad">26%</td></tr><tr class="players-row" data-lic="9443986" tabindex="0" role="button"><td class="players-rank">4</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9443986.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">FD</span></span></td><td class="players-name">FLASQUE Dorian</td><td class="players-cat">S</td><td class="players-pts">1527</td><td class="players-vd"><span class="vd-v">56V</span>·<span class="vd-d">31D</span></td><td class="players-wr ">64%</td></tr><tr class="players-row" data-lic="949252" tabindex="0" role="button"><td class="players-rank">5</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/949252.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">CM</span></span></td><td class="players-name">COLIN Morgan</td><td class="players-cat">V40</td><td class="players-pts">1516</td><td class="players-vd"><span class="vd-v">8V</span>·<span class="vd-d">35D</span></td><td class="players-wr wr-bad">19%</td></tr><tr class="players-row" data-lic="9440490" tabindex="0" role="button"><td class="players-rank">6</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9440490.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">NC</span></span></td><td class="players-name">NIHOUARN Christophe</td><td class="players-cat">S</td><td class="players-pts">1476</td><td class="players-vd"><span class="vd-v">18V</span>·<span class="vd-d">21D</span></td><td class="players-wr ">46%</td></tr><tr class="players-row" data-lic="948809" tabindex="0" role="button"><td class="players-rank">7</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/948809.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">LY</span></span></td><td class="players-name">LAZARDEUX Yann</td><td class="players-cat">V45</td><td class="players-pts">1447</td><td class="players-vd"><span class="vd-v">18V</span>·<span class="vd-d">27D</span></td><td class="players-wr ">40%</td></tr><tr class="players-row" data-lic="519020" tabindex="0" role="button"><td class="players-rank">8</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/519020.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">GB</span></span></td><td class="players-name">GRUNDELER Bastien</td><td class="players-cat">S</td><td class="players-pts">1436</td><td class="players-vd"><span class="vd-v">12V</span>·<span class="vd-d">24D</span></td><td class="players-wr wr-bad">33%</td></tr><tr class="players-row" data-lic="9411557" tabindex="0" role="button"><td class="players-rank">9</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9411557.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">BJ</span></span></td><td class="players-name">BAILLON Jean-Christophe</td><td class="players-cat">—</td><td class="players-pts">1353</td><td class="players-vd"><span class="vd-v">5V</span>·<span class="vd-d">4D</span></td><td class="players-wr ">56%</td></tr><tr class="players-row" data-lic="9424231" tabindex="0" role="button"><td class="players-rank">10</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9424231.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">JJ</span></span></td><td class="players-name">JALER Julien</td><td class="players-cat">V40</td><td class="players-pts">1246</td><td class="players-vd"><span class="vd-v">30V</span>·<span class="vd-d">18D</span></td><td class="players-wr ">62%</td></tr><tr class="players-row" data-lic="9447687" tabindex="0" role="button"><td class="players-rank">11</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9447687.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">JL</span></span></td><td class="players-name">JERRAIN Laurent</td><td class="players-cat">V50</td><td class="players-pts">1149</td><td class="players-vd"><span class="vd-v">42V</span>·<span class="vd-d">29D</span></td><td class="players-wr ">59%</td></tr><tr class="players-row" data-lic="9227492" tabindex="0" role="button"><td class="players-rank">12</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9227492.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">TJ</span></span></td><td class="players-name">TERRAIN Jose</td><td class="players-cat">V55</td><td class="players-pts">1043</td><td class="players-vd"><span class="vd-v">17V</span>·<span class="vd-d">22D</span></td><td class="players-wr ">44%</td></tr><tr class="players-row" data-lic="789198" tabindex="0" role="button"><td class="players-rank">13</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/789198.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">CC</span></span></td><td class="players-name">CORNE Christophe</td><td class="players-cat">V55</td><td class="players-pts">902</td><td class="players-vd"><span class="vd-v">21V</span>·<span class="vd-d">17D</span></td><td class="players-wr ">55%</td></tr><tr class="players-row" data-lic="9463714" tabindex="0" role="button"><td class="players-rank">14</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9463714.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">LM</span></span></td><td class="players-name">LALANNE Mael</td><td class="players-cat">J1</td><td class="players-pts">860</td><td class="players-vd"><span class="vd-v">72V</span>·<span class="vd-d">27D</span></td><td class="players-wr wr-good">73%</td></tr><tr class="players-row" data-lic="9443419" tabindex="0" role="button"><td class="players-rank">15</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9443419.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">LT</span></span></td><td class="players-name">LARME Thomas</td><td class="players-cat">S</td><td class="players-pts">838</td><td class="players-vd"><span class="vd-v">5V</span>·<span class="vd-d">7D</span></td><td class="players-wr ">42%</td></tr><tr class="players-row" data-lic="9460482" tabindex="0" role="button"><td class="players-rank">16</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9460482.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">AT</span></span></td><td class="players-name">ADRIANO Toni</td><td class="players-cat">V40</td><td class="players-pts">827</td><td class="players-vd"><span class="vd-v">21V</span>·<span class="vd-d">27D</span></td><td class="players-wr ">44%</td></tr><tr class="players-row" data-lic="9445687" tabindex="0" role="button"><td class="players-rank">17</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9445687.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">CH</span></span></td><td class="players-name">CHARPENTIER Helene</td><td class="players-cat">V45</td><td class="players-pts">824</td><td class="players-vd"><span class="vd-v">15V</span>·<span class="vd-d">22D</span></td><td class="players-wr ">41%</td></tr><tr class="players-row" data-lic="9454694" tabindex="0" role="button"><td class="players-rank">18</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9454694.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">QL</span></span></td><td class="players-name">QUESADA Luis</td><td class="players-cat">V55</td><td class="players-pts">824</td><td class="players-vd"><span class="vd-v">9V</span>·<span class="vd-d">23D</span></td><td class="players-wr wr-bad">28%</td></tr><tr class="players-row" data-lic="9462649" tabindex="0" role="button"><td class="players-rank">19</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9462649.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">NR</span></span></td><td class="players-name">NEHME Raphael</td><td class="players-cat">M2</td><td class="players-pts">802</td><td class="players-vd"><span class="vd-v">82V</span>·<span class="vd-d">41D</span></td><td class="players-wr wr-good">67%</td></tr><tr class="players-row" data-lic="9462284" tabindex="0" role="button"><td class="players-rank">20</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9462284.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">DT</span></span></td><td class="players-name">DALLOT Timéo</td><td class="players-cat">C2</td><td class="players-pts">784</td><td class="players-vd"><span class="vd-v">72V</span>·<span class="vd-d">43D</span></td><td class="players-wr ">63%</td></tr><tr class="players-row" data-lic="9463937" tabindex="0" role="button"><td class="players-rank">21</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9463937.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">NC</span></span></td><td class="players-name">NEHME Christian</td><td class="players-cat">J1</td><td class="players-pts">776</td><td class="players-vd"><span class="vd-v">71V</span>·<span class="vd-d">46D</span></td><td class="players-wr ">61%</td></tr><tr class="players-row" data-lic="941327" tabindex="0" role="button"><td class="players-rank">22</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/941327.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">TB</span></span></td><td class="players-name">TREUIL Bernard</td><td class="players-cat">V80</td><td class="players-pts">764</td><td class="players-vd"><span class="vd-v">12V</span>·<span class="vd-d">9D</span></td><td class="players-wr ">57%</td></tr><tr class="players-row" data-lic="9452410" tabindex="0" role="button"><td class="players-rank">23</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9452410.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">CM</span></span></td><td class="players-name">COURTINARD Marvin</td><td class="players-cat">S</td><td class="players-pts">744</td><td class="players-vd"><span class="vd-v">28V</span>·<span class="vd-d">46D</span></td><td class="players-wr wr-bad">38%</td></tr><tr class="players-row" data-lic="9410275" tabindex="0" role="button"><td class="players-rank">24</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9410275.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">GS</span></span></td><td class="players-name">GANNEAU Sylvain</td><td class="players-cat">V45</td><td class="players-pts">738</td><td class="players-vd"><span class="vd-v">20V</span>·<span class="vd-d">27D</span></td><td class="players-wr ">43%</td></tr><tr class="players-row" data-lic="9443354" tabindex="0" role="button"><td class="players-rank">25</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9443354.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">AJ</span></span></td><td class="players-name">AUDEON Jorris</td><td class="players-cat">S</td><td class="players-pts">732</td><td class="players-vd"><span class="vd-v">33V</span>·<span class="vd-d">6D</span></td><td class="players-wr wr-good">85%</td></tr><tr class="players-row" data-lic="9467508" tabindex="0" role="button"><td class="players-rank">26</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9467508.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">DF</span></span></td><td class="players-name">DA ROLD Florian</td><td class="players-cat">S</td><td class="players-pts">732</td><td class="players-vd"><span class="vd-v">60V</span>·<span class="vd-d">26D</span></td><td class="players-wr wr-good">70%</td></tr><tr class="players-row" data-lic="9460246" tabindex="0" role="button"><td class="players-rank">27</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9460246.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">TO</span></span></td><td class="players-name">TIGAIZIN Outhman</td><td class="players-cat">C2</td><td class="players-pts">688</td><td class="players-vd"><span class="vd-v">42V</span>·<span class="vd-d">30D</span></td><td class="players-wr ">58%</td></tr><tr class="players-row" data-lic="9124653" tabindex="0" role="button"><td class="players-rank">28</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9124653.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">NP</span></span></td><td class="players-name">NOIROT Philippe</td><td class="players-cat">V60</td><td class="players-pts">667</td><td class="players-vd"><span class="vd-v">22V</span>·<span class="vd-d">9D</span></td><td class="players-wr wr-good">71%</td></tr><tr class="players-row" data-lic="9465345" tabindex="0" role="button"><td class="players-rank">29</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9465345.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">SM</span></span></td><td class="players-name">SAUX Matthieu</td><td class="players-cat">V40</td><td class="players-pts">652</td><td class="players-vd"><span class="vd-v">24V</span>·<span class="vd-d">10D</span></td><td class="players-wr wr-good">71%</td></tr><tr class="players-row" data-lic="9460164" tabindex="0" role="button"><td class="players-rank">30</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9460164.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">LM</span></span></td><td class="players-name">LABLAK Mohamed</td><td class="players-cat">S</td><td class="players-pts">648</td><td class="players-vd"><span class="vd-v">12V</span>·<span class="vd-d">21D</span></td><td class="players-wr wr-bad">36%</td></tr><tr class="players-row" data-lic="9467429" tabindex="0" role="button"><td class="players-rank">31</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9467429.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">LC</span></span></td><td class="players-name">LALANNE Clément</td><td class="players-cat">V40</td><td class="players-pts">608</td><td class="players-vd"><span class="vd-v">23V</span>·<span class="vd-d">10D</span></td><td class="players-wr wr-good">70%</td></tr><tr class="players-row" data-lic="9445162" tabindex="0" role="button"><td class="players-rank">32</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9445162.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">WN</span></span></td><td class="players-name">WONG Nathalie</td><td class="players-cat">S</td><td class="players-pts">598</td><td class="players-vd"><span class="vd-v">26V</span>·<span class="vd-d">81D</span></td><td class="players-wr wr-bad">24%</td></tr><tr class="players-row" data-lic="9424065" tabindex="0" role="button"><td class="players-rank">33</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9424065.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">MJ</span></span></td><td class="players-name">MOULIN Jean Jacques</td><td class="players-cat">V50</td><td class="players-pts">566</td><td class="players-vd"><span class="vd-v">34V</span>·<span class="vd-d">34D</span></td><td class="players-wr ">50%</td></tr><tr class="players-row" data-lic="9467741" tabindex="0" role="button"><td class="players-rank">34</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9467741.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">DM</span></span></td><td class="players-name">DELOR Jean Marie</td><td class="players-cat">S</td><td class="players-pts">556</td><td class="players-vd"><span class="vd-v">33V</span>·<span class="vd-d">36D</span></td><td class="players-wr ">48%</td></tr><tr class="players-row" data-lic="9421604" tabindex="0" role="button"><td class="players-rank">35</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9421604.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">WY</span></span></td><td class="players-name">WONGWANIT Yves</td><td class="players-cat">—</td><td class="players-pts">542</td><td class="players-vd"><span class="vd-v">1V</span>·<span class="vd-d">3D</span></td><td class="players-wr wr-bad">25%</td></tr><tr class="players-row" data-lic="9464392" tabindex="0" role="button"><td class="players-rank">36</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9464392.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">AJ</span></span></td><td class="players-name">ALVES Jessica</td><td class="players-cat">C1</td><td class="players-pts">515</td><td class="players-vd"><span class="vd-v">13V</span>·<span class="vd-d">19D</span></td><td class="players-wr ">41%</td></tr><tr class="players-row" data-lic="9456502" tabindex="0" role="button"><td class="players-rank">37</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9456502.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">DR</span></span></td><td class="players-name">DELBE Remi</td><td class="players-cat">V65</td><td class="players-pts">514</td><td class="players-vd"><span class="vd-v">12V</span>·<span class="vd-d">24D</span></td><td class="players-wr wr-bad">33%</td></tr><tr class="players-row" data-lic="9461978" tabindex="0" role="button"><td class="players-rank">38</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9461978.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">MN</span></span></td><td class="players-name">MORDOMO Nolan</td><td class="players-cat">M1</td><td class="players-pts">507</td><td class="players-vd"><span class="vd-v">11V</span>·<span class="vd-d">10D</span></td><td class="players-wr ">52%</td></tr><tr class="players-row" data-lic="9459041" tabindex="0" role="button"><td class="players-rank">39</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9459041.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">PA</span></span></td><td class="players-name">PAYEUX Arno</td><td class="players-cat">S</td><td class="players-pts">497</td><td class="players-vd"><span class="vd-v">1V</span>·<span class="vd-d">3D</span></td><td class="players-wr wr-bad">25%</td></tr><tr class="players-row" data-lic="9467945" tabindex="0" role="button"><td class="players-rank">40</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9467945.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">LM</span></span></td><td class="players-name">LACLAU LACROUTS Marie</td><td class="players-cat">—</td><td class="players-pts">496</td><td class="players-vd"><span class="vd-v">1V</span>·<span class="vd-d">3D</span></td><td class="players-wr wr-bad">25%</td></tr><tr class="players-row" data-lic="9465680" tabindex="0" role="button"><td class="players-rank">41</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9465680.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">BL</span></span></td><td class="players-name">BOREL Lea</td><td class="players-cat">C2</td><td class="players-pts">493</td><td class="players-vd"><span class="vd-v">2V</span>·<span class="vd-d">10D</span></td><td class="players-wr wr-bad">17%</td></tr><tr class="players-row" data-lic="9462733" tabindex="0" role="button"><td class="players-rank">42</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9462733.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">SA</span></span></td><td class="players-name">SMAOUI Anouar</td><td class="players-cat">—</td><td class="players-pts">493</td><td class="players-vd"><span class="vd-v">1V</span>·<span class="vd-d">5D</span></td><td class="players-wr wr-bad">17%</td></tr><tr class="players-row" data-lic="9456944" tabindex="0" role="button"><td class="players-rank">43</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9456944.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">ON</span></span></td><td class="players-name">ODIE Nadine</td><td class="players-cat">V65</td><td class="players-pts">490</td><td class="players-vd"><span class="vd-v">0V</span>·<span class="vd-d">4D</span></td><td class="players-wr wr-bad">0%</td></tr><tr class="players-row" data-lic="9461793" tabindex="0" role="button"><td class="players-rank">44</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9461793.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">IS</span></span></td><td class="players-name">IDDIR Silla</td><td class="players-cat">C1</td><td class="players-pts">490</td><td class="players-vd"><span class="vd-v">0V</span>·<span class="vd-d">10D</span></td><td class="players-wr wr-bad">0%</td></tr><tr class="players-row" data-lic="9462705" tabindex="0" role="button"><td class="players-rank">45</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9462705.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">ML</span></span></td><td class="players-name">MORDONO Lily</td><td class="players-cat">—</td><td class="players-pts">490</td><td class="players-vd"><span class="vd-v">1V</span>·<span class="vd-d">11D</span></td><td class="players-wr wr-bad">8%</td></tr><tr class="players-row" data-lic="9460616" tabindex="0" role="button"><td class="players-rank">46</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9460616.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">NT</span></span></td><td class="players-name">NICOLAI Theo</td><td class="players-cat">M2</td><td class="players-pts">486</td><td class="players-vd"><span class="vd-v">2V</span>·<span class="vd-d">10D</span></td><td class="players-wr wr-bad">17%</td></tr><tr class="players-row" data-lic="9467431" tabindex="0" role="button"><td class="players-rank">47</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9467431.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">CV</span></span></td><td class="players-name">CREUS Vikèn</td><td class="players-cat">—</td><td class="players-pts">485</td><td class="players-vd"><span class="vd-v">0V</span>·<span class="vd-d">3D</span></td><td class="players-wr wr-bad">0%</td></tr><tr class="players-row" data-lic="9461977" tabindex="0" role="button"><td class="players-rank">48</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9461977.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">MS</span></span></td><td class="players-name">MORDOMO Sasha</td><td class="players-cat">B2</td><td class="players-pts">485</td><td class="players-vd"><span class="vd-v">2V</span>·<span class="vd-d">9D</span></td><td class="players-wr wr-bad">18%</td></tr><tr class="players-row" data-lic="9464234" tabindex="0" role="button"><td class="players-rank">49</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9464234.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">HE</span></span></td><td class="players-name">HUOT Emma</td><td class="players-cat">J3</td><td class="players-pts">483</td><td class="players-vd"><span class="vd-v">15V</span>·<span class="vd-d">26D</span></td><td class="players-wr wr-bad">37%</td></tr><tr class="players-row" data-lic="9465901" tabindex="0" role="button"><td class="players-rank">50</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9465901.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">AE</span></span></td><td class="players-name">ALICI Eva</td><td class="players-cat">C2</td><td class="players-pts">477</td><td class="players-vd"><span class="vd-v">6V</span>·<span class="vd-d">23D</span></td><td class="players-wr wr-bad">21%</td></tr><tr class="players-row" data-lic="9467249" tabindex="0" role="button"><td class="players-rank">51</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9467249.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">MS</span></span></td><td class="players-name">MEJABER Samy</td><td class="players-cat">—</td><td class="players-pts">473</td><td class="players-vd"><span class="vd-v">0V</span>·<span class="vd-d">11D</span></td><td class="players-wr wr-bad">0%</td></tr><tr class="players-row" data-lic="9467881" tabindex="0" role="button"><td class="players-rank">52</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9467881.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">BE</span></span></td><td class="players-name">BAZIZI Even</td><td class="players-cat">M2</td><td class="players-pts">465</td><td class="players-vd"><span class="vd-v">3V</span>·<span class="vd-d">20D</span></td><td class="players-wr wr-bad">13%</td></tr><tr class="players-row" data-lic="7855708" tabindex="0" role="button"><td class="players-rank">53</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/7855708.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">SE</span></span></td><td class="players-name">SEIBEL Edouard</td><td class="players-cat">S</td><td class="players-pts">464</td><td class="players-vd"><span class="vd-v">6V</span>·<span class="vd-d">17D</span></td><td class="players-wr wr-bad">26%</td></tr><tr class="players-row" data-lic="9467247" tabindex="0" role="button"><td class="players-rank">54</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9467247.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">MT</span></span></td><td class="players-name">MARTINS Tiago</td><td class="players-cat">—</td><td class="players-pts">455</td><td class="players-vd"><span class="vd-v">0V</span>·<span class="vd-d">12D</span></td><td class="players-wr wr-bad">0%</td></tr><tr class="players-row" data-lic="9467925" tabindex="0" role="button"><td class="players-rank">55</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9467925.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">DS</span></span></td><td class="players-name">DAVIE Steven</td><td class="players-cat">—</td><td class="players-pts">454</td><td class="players-vd"><span class="vd-v">7V</span>·<span class="vd-d">23D</span></td><td class="players-wr wr-bad">23%</td></tr><tr class="players-row" data-lic="9467750" tabindex="0" role="button"><td class="players-rank">56</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9467750.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">LP</span></span></td><td class="players-name">LEVALLOIS Marie Pierre</td><td class="players-cat">—</td><td class="players-pts">452</td><td class="players-vd"><span class="vd-v">6V</span>·<span class="vd-d">35D</span></td><td class="players-wr wr-bad">15%</td></tr><tr class="players-row" data-lic="9464233" tabindex="0" role="button"><td class="players-rank">57</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9464233.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">HL</span></span></td><td class="players-name">HUOT Lucas</td><td class="players-cat">M2</td><td class="players-pts">450</td><td class="players-vd"><span class="vd-v">1V</span>·<span class="vd-d">22D</span></td><td class="players-wr wr-bad">4%</td></tr><tr class="players-row" data-lic="9438212" tabindex="0" role="button"><td class="players-rank">58</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9438212.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">DY</span></span></td><td class="players-name">DEVAS Yvon</td><td class="players-cat">V75</td><td class="players-pts">427</td><td class="players-vd"><span class="vd-v">6V</span>·<span class="vd-d">43D</span></td><td class="players-wr wr-bad">12%</td></tr><tr class="players-row" data-lic="9461347" tabindex="0" role="button"><td class="players-rank">59</td><td class="players-avatar"><span class="avatar-mini has-photo"><img src="images_joueurs/9461347.webp" data-fi="0" onerror="(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;if(i&lt;t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}else{el.style.display='none';var av=el.parentNode;if(av){av.classList.remove('has-photo');}var s=av&amp;&amp;av.querySelector('.avatar-mini-init');if(s)s.style.display='flex';}})(this)" loading="lazy" alt=""><span class="avatar-mini-init" style="display:none">BJ</span></span></td><td class="players-name">BABIN Jordan</td><td class="players-cat">C2</td><td class="players-pts">410</td><td class="players-vd"><span class="vd-v">14V</span>·<span class="vd-d">54D</span></td><td class="players-wr wr-bad">21%</td></tr></tbody></table></div></section></div>
 <script>
 (function(){
   // Délégation d'événement pour les lignes du tableau Joueurs
@@ -10051,10 +9684,14 @@ function _setPlayerModalTitle(name, key){
   const onerr = (
     "(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;" +
     "if(i<t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}" +
-    "else{el.style.display='none';var s=el.parentNode.querySelector('.pmodal-avatar-init');if(s)s.style.display='flex';}})(this)"
+    "else{el.style.display='none';" +
+        // Toutes les extensions ont échoué : retirer has-photo et afficher initiales
+        "var av=el.parentNode;if(av){av.classList.remove('has-photo');}" +
+        "var s=av&&av.querySelector('.pmodal-avatar-init');if(s)s.style.display='flex';" +
+    "}})(this)"
   );
   pTitle.innerHTML =
-    '<span class="pmodal-avatar">' +
+    '<span class="pmodal-avatar has-photo">' +
       '<img src="images_joueurs/' + encodeURIComponent(lic) + '.webp" ' +
            'data-fi="0" onerror="' + onerr + '" loading="lazy" alt="">' +
       '<span class="pmodal-avatar-init" style="display:none">' + escHtml(ini) + '</span>' +
@@ -11098,7 +10735,7 @@ document.addEventListener('click', (e)=>{
 // PWA: service worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function(){
-    navigator.serviceWorker.register('./service-worker.js?v=20260503134809');
+    navigator.serviceWorker.register('./service-worker.js?v=20260503150045');
   });
 }
 </script>
@@ -12140,8 +11777,7 @@ if ('serviceWorker' in navigator) {
 }
 .dashboard-overlay .avatar {
   height: 56px;
-  /* width auto : respecte le ratio naturel de l'image (souvent portrait).
-     Pour les initiales (fallback sans photo), on bascule sur 56x56 carré. */
+  /* Pour le fallback initiales : taille carrée 56x56 */
   width: 56px;
   border-radius: 12px;
   border: 1px solid var(--dbo-border);
@@ -12154,23 +11790,34 @@ if ('serviceWorker' in navigator) {
   letter-spacing: 0.02em;
   overflow: hidden;
   position: relative;
+  flex: 0 0 auto;
 }
 .dashboard-overlay .avatar.avatar-photo {
-  /* En présence d'une photo, on libère la largeur pour respecter le ratio
-     naturel de l'image (portrait si l'image est plus haute que large). */
+  /* Avec photo : ne pas contraindre la largeur. L'image va définir la
+     largeur du conteneur via son ratio naturel (height:56px → width:auto).
+     On retire la bordure et le fond pour éviter le liseré sombre autour
+     de la photo (l'image remplit tout l'espace). */
   width: auto;
   min-width: 42px;
+  display: block;
   padding: 0;
+  border: none;
+  background: transparent;
 }
 .dashboard-overlay .avatar.avatar-photo img {
-  height: 100%;
+  /* L'image définit elle-même la largeur du conteneur.
+     object-fit:cover pour remplir tout l'espace sans laisser
+     de bande de fond visible (au cas où la hauteur native diffère). */
+  height: 56px;
   width: auto;
   display: block;
+  object-fit: cover;
+  object-position: center;
 }
 .dashboard-overlay .dbo-avatar-init {
-  /* Le fallback initiales force un format carré 56x56 lisible */
+  /* Fallback initiales : carré 56x56 lisible */
   width: 56px;
-  height: 100%;
+  height: 56px;
   align-items: center; justify-content: center;
   font-family: var(--dbo-mono);
   font-weight: 700;
@@ -12731,7 +12378,11 @@ if ('serviceWorker' in navigator) {
     const onerr = (
       "(function(el){var t=['png','jpg','jpeg'];var i=el.dataset.fi|0;" +
       "if(i<t.length){el.dataset.fi=i+1;el.src=el.src.replace(/[.][^.]*$/,'.')+t[i];}" +
-      "else{el.style.display='none';var s=el.parentNode.querySelector('.dbo-avatar-init');if(s)s.style.display='flex';}})(this)"
+      "else{el.style.display='none';" +
+          // Toutes les extensions ont échoué : retirer avatar-photo + afficher initiales
+          "var av=el.parentNode;if(av){av.classList.remove('avatar-photo');}" +
+          "var s=av&&av.querySelector('.dbo-avatar-init');if(s)s.style.display='flex';" +
+      "}})(this)"
     );
     const avatarHtml = lic
       ? ('<div class="avatar avatar-photo">' +
