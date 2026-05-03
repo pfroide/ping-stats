@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <link rel="manifest" href="./manifest.webmanifest"/>
 <meta name="theme-color" content="#0b0e14"/>
-<meta name="build-id" content="20260503170104"/>
+<meta name="build-id" content="20260503195846"/>
 <link rel="icon" href="./assets/icons/icon-192.png"/>
 <link rel="apple-touch-icon" href="./assets/icons/icon-180.png"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
@@ -1377,7 +1377,7 @@ html[data-skin="P"] .sr-bar-bg{background:#0a0118;border-radius:0;border:1px sol
   <div class="skin-l3 skin-l3-C statusbar"><span>● PING-STATS [v8] · CONNECTED</span><span class="blink">_</span></div>
   <div class="header">
     <div class="h1">BREVANNAISE AS • Stats</div>
-    <div class="h2">Export mobile • 2026-05-03 17:01</div>
+    <div class="h2">Export mobile • 2026-05-03 19:58</div>
     <div class="tabs"><button class="tab-btn" type="button" data-tab="accueil">🏠 Accueil</button><button class="tab-btn" type="button" data-tab="joueurs">👤 Joueurs</button><button class="tab-btn" type="button" data-tab="equipe">🏓 Équipe</button><button class="tab-btn" type="button" data-tab="stats">📊 Stats avancées</button><button class="tab-btn" type="button" data-tab="tools">🎯 Outils</button><button class="tab-btn" type="button" data-tab="scoreboards">🏆 Scoreboards</button><button class="tab-btn" type="button" data-tab="settings">⚙️ Réglages</button></div>
   </div>
   <div class="season-bar" id="season-bar" role="navigation" aria-label="Sélection de saison"><span class="season-bar-label">📅 Saison :</span><span class="season-bar-pills"><a class="season-pill" href="../index.html">Cumul</a><a class="season-pill" href="../2022-2023/index.html">2022-2023</a><a class="season-pill" href="../2023-2024/index.html">2023-2024</a><span class="season-pill is-active">2024-2025</span><a class="season-pill" href="../2025-2026/index.html">2025-2026</a></span><span class="season-bar-info">Saison 2024-2025</span></div>
@@ -11131,7 +11131,7 @@ document.addEventListener('click', (e)=>{
 // PWA: service worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function(){
-    navigator.serviceWorker.register('./service-worker.js?v=20260503170104');
+    navigator.serviceWorker.register('./service-worker.js?v=20260503195846');
   });
 }
 </script>
@@ -12737,6 +12737,169 @@ if ('serviceWorker' in navigator) {
   border-top: 1px solid var(--dbo-border-soft);
 }
 
+/* ─── Toggle Officiel / Mensuel ─────────────────────────────────────── */
+.dashboard-overlay .rang-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.dashboard-overlay .rang-toggle {
+  display: inline-flex;
+  background: var(--dbo-bg-deep, rgba(0,0,0,0.25));
+  border: 1px solid var(--dbo-border-soft);
+  border-radius: 8px;
+  padding: 2px;
+  gap: 2px;
+}
+.dashboard-overlay .rang-toggle-btn {
+  background: transparent;
+  border: none;
+  color: var(--dbo-fg-mute);
+  font-family: var(--dbo-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.dashboard-overlay .rang-toggle-btn:hover {
+  color: var(--dbo-fg);
+}
+.dashboard-overlay .rang-toggle-btn.active {
+  background: var(--dbo-accent);
+  color: var(--dbo-bg, #0a0e14);
+}
+.dashboard-overlay .rang-history-btn {
+  background: transparent;
+  border: 1px solid var(--dbo-border);
+  color: var(--dbo-fg);
+  font-family: var(--dbo-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.dashboard-overlay .rang-history-btn:hover {
+  background: var(--dbo-border-soft);
+  border-color: var(--dbo-accent);
+}
+
+/* Affichage conditionnel selon data-rang-mode */
+.dashboard-overlay .rang-card[data-rang-mode="off"] .rang-grid-m,
+.dashboard-overlay .rang-card[data-rang-mode="m"]   .rang-grid-off {
+  display: none;
+}
+
+/* ─── Popup historique des rangs ─────────────────────────────────────── */
+.dashboard-overlay .rang-history-popup {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+.dashboard-overlay .rang-history-popup.active {
+  display: flex;
+}
+.dashboard-overlay .rhp-card {
+  background: var(--dbo-bg-card);
+  border: 1px solid var(--dbo-border);
+  border-radius: var(--dbo-radius-l);
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 18px;
+  position: relative;
+}
+.dashboard-overlay .rhp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--dbo-border-soft);
+}
+.dashboard-overlay .rhp-title {
+  font-family: var(--dbo-mono);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--dbo-accent);
+}
+.dashboard-overlay .rhp-close {
+  background: transparent;
+  border: 1px solid var(--dbo-border);
+  color: var(--dbo-fg);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dashboard-overlay .rhp-close:hover {
+  background: var(--dbo-border-soft);
+}
+.dashboard-overlay .rhp-svg-wrap {
+  width: 100%;
+  background: var(--dbo-bg-deep, rgba(0,0,0,0.2));
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 12px;
+}
+.dashboard-overlay .rhp-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.dashboard-overlay .rhp-legend {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+.dashboard-overlay .rhp-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--dbo-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--dbo-fg);
+}
+.dashboard-overlay .rhp-legend-color {
+  display: inline-block;
+  width: 12px;
+  height: 3px;
+  border-radius: 2px;
+}
+.dashboard-overlay .rhp-empty {
+  text-align: center;
+  color: var(--dbo-fg-mute);
+  font-family: var(--dbo-mono);
+  font-size: 11px;
+  padding: 30px;
+}
+
 .dashboard-overlay .placeholder {
   text-align: center;
   color: var(--dbo-fg-mute);
@@ -13036,7 +13199,6 @@ if ('serviceWorker' in navigator) {
     }
     const cat = r.categorie || '?';
     const superCat = r.super_categorie || null;
-    const isPartial = !!r.is_partial;
 
     function rt(info){
       if(!info || info.rang == null || info.total == null) return '<span class="rt-na">—</span>';
@@ -13049,85 +13211,125 @@ if ('serviceWorker' in navigator) {
       if(p <= 0.40) return '';
       return 'mute';
     }
-
-    const scopes = isPartial
-      ? [{key:'departemental', lbl:'Département', sub: r.departemental && r.departemental.scope}]
-      : [
-          {key:'departemental', lbl:'Département', sub: r.departemental && r.departemental.scope},
-          {key:'regional',      lbl:'Région',      sub: r.regional     && r.regional.scope},
-          {key:'national',      lbl:'National',    sub: 'France'},
-        ];
-
-    // Détection des cas où la super-catégorie est REDONDANTE avec la catégorie
-    // précise. Cas typiques :
-    //   - Seniors : categorie="S", super_categorie="Seniors" → mêmes rangs
-    //     (tous les S sont des Seniors et inversement → 1:1)
-    //   - Poussins : categorie="P", super_categorie="Poussins" → idem
-    // Détection : si les rangs/totaux sont identiques entre cat précise et
-    // super pour TOUS les niveaux disponibles, on n'affiche qu'une colonne.
     function _sameRanks(a, b){
       if(!a || !b) return false;
       return a.rang === b.rang && a.total === b.total;
     }
-    let _isRedundant = false;
-    if(superCat && r.super){
-      // Comparer les niveaux qui ont des données
-      const _levels = ['departemental','regional','national'];
-      let _allSame = true;
-      let _hasAny = false;
-      for(const lvl of _levels){
-        const _cat = r[lvl];
-        const _sup = r.super[lvl];
-        if(_cat && _cat.rang != null && _sup && _sup.rang != null){
-          _hasAny = true;
-          if(!_sameRanks(_cat, _sup)){ _allSame = false; break; }
+
+    // Construit une grille (header + rows) pour une "source" de rangs donnée.
+    // sourceObj a la même structure que r : {departemental, regional, national, super}.
+    // is_partial est lu de l'objet r (commun aux 2 sources).
+    function _buildGrid(sourceObj){
+      if(!sourceObj) return null;
+      const isPartial = !!r.is_partial;
+      const scopes = isPartial
+        ? [{key:'departemental', lbl:'Département', sub: sourceObj.departemental && sourceObj.departemental.scope}]
+        : [
+            {key:'departemental', lbl:'Département', sub: sourceObj.departemental && sourceObj.departemental.scope},
+            {key:'regional',      lbl:'Région',      sub: sourceObj.regional     && sourceObj.regional.scope},
+            {key:'national',      lbl:'National',    sub: 'France'},
+          ];
+
+      // Détection redondance super (Seniors=S, Poussins=P)
+      let _isRedundant = false;
+      if(superCat && sourceObj.super){
+        const _levels = ['departemental','regional','national'];
+        let _allSame = true, _hasAny = false;
+        for(const lvl of _levels){
+          const _cat = sourceObj[lvl], _sup = sourceObj.super[lvl];
+          if(_cat && _cat.rang != null && _sup && _sup.rang != null){
+            _hasAny = true;
+            if(!_sameRanks(_cat, _sup)){ _allSame = false; break; }
+          }
         }
+        _isRedundant = _hasAny && _allSame;
       }
-      _isRedundant = _hasAny && _allSame;
-    }
+      const hasSuperCat = !!superCat && !!sourceObj.super && !_isRedundant;
+      const _normCat = (s) => String(s||'').trim().toLowerCase();
+      const _nameRedundant = !!superCat && _normCat(cat) === _normCat(superCat);
+      const showSuperLabelOnly = !!superCat && !sourceObj.super && !_nameRedundant;
 
-    const hasSuperCat = !!superCat && !!r.super && !_isRedundant;
-    // Si on a la super_categorie mais pas le sous-bloc r.super (ex: CSV
-    // ancien sans rangs super calculés), on l'affiche comme sous-titre
-    // SAUF si le nom de cat == nom de super (cas Seniors, Poussins).
-    const _normCat = (s) => String(s||'').trim().toLowerCase();
-    const _nameRedundant = !!superCat && _normCat(cat) === _normCat(superCat);
-    const showSuperLabelOnly = !!superCat && !r.super && !_nameRedundant;
+      let catHeader = '<div class="rang-col-h">' + safeText(cat);
+      if(showSuperLabelOnly){
+        catHeader += '<div class="rang-col-h-sub">' + safeText(superCat) + '</div>';
+      }
+      catHeader += '</div>';
 
-    let catHeader = '<div class="rang-col-h">' + safeText(cat);
-    if(showSuperLabelOnly){
-      catHeader += '<div class="rang-col-h-sub">' + safeText(superCat) + '</div>';
-    }
-    catHeader += '</div>';
-
-    const header = '<div class="rang-grid-h">' +
-      '<div></div>' +
-      catHeader +
-      (hasSuperCat ? '<div class="rang-col-h">' + safeText(superCat) + '</div>' : '') +
-    '</div>';
-
-    const rows = scopes.map(s => {
-      const cell = r[s.key];
-      const cellSup = hasSuperCat ? (r.super && r.super[s.key]) : null;
-      const cls = topClass(cell);
-      const clsSup = topClass(cellSup);
-      return '<div class="rang-grid-r">' +
-        '<div class="rang-scope-cell">' +
-          '<div class="rang-scope-lbl">' + safeText(s.lbl) + '</div>' +
-          (s.sub ? '<div class="rang-scope-sub">' + safeText(s.sub) + '</div>' : '') +
-        '</div>' +
-        '<div class="rang-cell ' + cls + '">' + rt(cell) + '</div>' +
-        (hasSuperCat ? '<div class="rang-cell ' + clsSup + '">' + rt(cellSup) + '</div>' : '') +
+      const header = '<div class="rang-grid-h">' +
+        '<div></div>' +
+        catHeader +
+        (hasSuperCat ? '<div class="rang-col-h">' + safeText(superCat) + '</div>' : '') +
       '</div>';
-    }).join('');
 
-    const partialHint = isPartial
-      ? '<div class="rang-hint">Régional &amp; national en cours de calcul</div>'
+      const rows = scopes.map(s => {
+        const cell = sourceObj[s.key];
+        const cellSup = hasSuperCat ? (sourceObj.super && sourceObj.super[s.key]) : null;
+        const cls = topClass(cell);
+        const clsSup = topClass(cellSup);
+        return '<div class="rang-grid-r">' +
+          '<div class="rang-scope-cell">' +
+            '<div class="rang-scope-lbl">' + safeText(s.lbl) + '</div>' +
+            (s.sub ? '<div class="rang-scope-sub">' + safeText(s.sub) + '</div>' : '') +
+          '</div>' +
+          '<div class="rang-cell ' + cls + '">' + rt(cell) + '</div>' +
+          (hasSuperCat ? '<div class="rang-cell ' + clsSup + '">' + rt(cellSup) + '</div>' : '') +
+        '</div>';
+      }).join('');
+
+      const partialHint = isPartial
+        ? '<div class="rang-hint">Régional &amp; national en cours de calcul</div>'
+        : '';
+
+      return {
+        html: header + rows + partialHint,
+        hasSuperCat: hasSuperCat,
+      };
+    }
+
+    // Source officielle (toujours présente si r.rang est là)
+    const gridOff = _buildGrid(r);
+
+    // Source mensuelle (présente seulement si compute_rangs_categoriels.py
+    // a tourné avec capture des points_mensuel et que generate_graph_data
+    // a injecté le sous-bloc r.mensuel)
+    const hasMensuel = !!(r.mensuel
+                          && r.mensuel.departemental
+                          && r.mensuel.departemental.rang != null);
+    const gridM = hasMensuel ? _buildGrid(r.mensuel) : null;
+
+    if(!gridOff) return ''; // sécurité
+
+    // Présence d'un historique mensuel ?
+    const hasHistory = !!(r.history && Array.isArray(r.history) && r.history.length >= 2);
+    const historyBtnHtml = hasHistory
+      ? '<button type="button" class="rang-history-btn" title="Voir l\'historique mensuel">📈 Historique</button>'
       : '';
 
+    // Si pas de mode mensuel disponible : affichage simple comme avant
+    if(!gridM){
+      return renderSectionTitle('07', 'Rang catégoriel') +
+        '<div class="card rang-card ' + (gridOff.hasSuperCat ? 'with-super' : '') + '">' +
+          (hasHistory ? '<div class="rang-toolbar">' + historyBtnHtml + '</div>' : '') +
+          gridOff.html +
+        '</div>';
+    }
+
+    // Sinon : on génère les 2 grilles avec un toggle pour basculer entre les 2
+    // Le toggle est géré par un attribut data-rang-mode et CSS pour masquer/afficher
+    const cardClasses = ['rang-card'];
+    if(gridOff.hasSuperCat || gridM.hasSuperCat) cardClasses.push('with-super');
+
     return renderSectionTitle('07', 'Rang catégoriel') +
-      '<div class="card rang-card ' + (hasSuperCat ? 'with-super' : '') + '">' +
-        header + rows + partialHint +
+      '<div class="card ' + cardClasses.join(' ') + '" data-rang-mode="off">' +
+        '<div class="rang-toolbar">' +
+          '<div class="rang-toggle">' +
+            '<button type="button" class="rang-toggle-btn active" data-mode="off">Officiel</button>' +
+            '<button type="button" class="rang-toggle-btn" data-mode="m">Mensuel</button>' +
+          '</div>' +
+          historyBtnHtml +
+        '</div>' +
+        '<div class="rang-grid-wrap rang-grid-off">' + gridOff.html + '</div>' +
+        '<div class="rang-grid-wrap rang-grid-m">' + gridM.html + '</div>' +
       '</div>';
   }
 
@@ -13147,6 +13349,7 @@ if ('serviceWorker' in navigator) {
   // ─── Logique d'overlay ────────────────────────────────────────────
   let _previousScroll = 0;
   let _currentLic = null;
+  let _currentPlayerData = null;  // pour le popup historique des rangs
 
   function showOverlay(){
     const overlay = document.querySelector('.dashboard-overlay');
@@ -13190,6 +13393,7 @@ if ('serviceWorker' in navigator) {
       })
       .then(data => {
         if(_currentLic !== lic) return; // l'utilisateur a navigué entre temps
+        _currentPlayerData = data;
         content.innerHTML = '<div class="wrap">' + renderDashboard(data) + '</div>';
       })
       .catch(err => {
@@ -13279,6 +13483,230 @@ if ('serviceWorker' in navigator) {
         window._closePlayerDashboard();
       }
     });
+    // Toggle Officiel/Mensuel sur le bloc Rang catégoriel.
+    // Délégation d'event sur l'overlay : marche pour tous les contenus
+    // re-rendus par renderDashboard.
+    const overlayRoot = document.querySelector('.dashboard-overlay');
+    if(overlayRoot){
+      overlayRoot.addEventListener('click', function(e){
+        // Toggle Officiel/Mensuel
+        const btnToggle = e.target.closest('.rang-toggle-btn');
+        if(btnToggle){
+          e.preventDefault();
+          const card = btnToggle.closest('.rang-card');
+          if(!card) return;
+          const mode = btnToggle.getAttribute('data-mode') || 'off';
+          card.setAttribute('data-rang-mode', mode);
+          const allBtns = card.querySelectorAll('.rang-toggle-btn');
+          allBtns.forEach(function(b){
+            b.classList.toggle('active', b === btnToggle);
+          });
+          return;
+        }
+        // Bouton "📈 Historique" : ouvre la popup graphique
+        const btnHistory = e.target.closest('.rang-history-btn');
+        if(btnHistory){
+          e.preventDefault();
+          _openHistoryPopup();
+          return;
+        }
+        // Fermeture popup historique
+        const btnClose = e.target.closest('.rhp-close');
+        if(btnClose){
+          e.preventDefault();
+          _closeHistoryPopup();
+          return;
+        }
+        // Click hors carte = fermer la popup
+        if(e.target.classList && e.target.classList.contains('rang-history-popup')){
+          _closeHistoryPopup();
+        }
+      });
+    }
+
+    // ─── Popup historique des rangs ─────────────────────────────────────
+    function _openHistoryPopup(){
+      if(!_currentPlayerData || !_currentPlayerData.rang || !_currentPlayerData.rang.history){
+        return;
+      }
+      const r = _currentPlayerData.rang;
+      const history = r.history;
+      const cat = r.categorie || '?';
+      const superCat = r.super_categorie || null;
+
+      // Détecter si super est redondant (Seniors=S, Poussins=P) en regardant
+      // les rangs actuels (pas l'historique)
+      let _isRedundant = false;
+      if(superCat && r.super){
+        const _levels = ['departemental','regional','national'];
+        let _allSame = true, _hasAny = false;
+        for(const lvl of _levels){
+          const _cat = r[lvl], _sup = r.super[lvl];
+          if(_cat && _cat.rang != null && _sup && _sup.rang != null){
+            _hasAny = true;
+            if(_cat.rang !== _sup.rang || _cat.total !== _sup.total){
+              _allSame = false; break;
+            }
+          }
+        }
+        _isRedundant = _hasAny && _allSame;
+      }
+      const showSuperLine = !!superCat && !_isRedundant
+                            && history.some(function(e){ return e.rang_super != null; });
+
+      // Créer ou récupérer l'élément popup
+      let popup = document.getElementById('rang-history-popup');
+      if(!popup){
+        popup = document.createElement('div');
+        popup.id = 'rang-history-popup';
+        popup.className = 'rang-history-popup';
+        document.body.appendChild(popup);
+      }
+
+      const playerName = (_currentPlayerData.name || '?').replace(/\s*\(\d+\)\s*$/, '').trim();
+      const svg = _renderHistorySvg(history, cat, showSuperLine ? superCat : null);
+
+      const legend = '<div class="rhp-legend">' +
+        '<span class="rhp-legend-item">' +
+          '<span class="rhp-legend-color" style="background:#7dd3fc"></span> ' + safeText(cat) +
+        '</span>' +
+        (showSuperLine
+          ? '<span class="rhp-legend-item">' +
+              '<span class="rhp-legend-color" style="background:#facc15"></span> ' + safeText(superCat) +
+            '</span>'
+          : '') +
+      '</div>';
+
+      popup.innerHTML =
+        '<div class="rhp-card">' +
+          '<div class="rhp-header">' +
+            '<div class="rhp-title">📈 ' + safeText(playerName) + ' — Évolution du rang</div>' +
+            '<button type="button" class="rhp-close" aria-label="Fermer">✕</button>' +
+          '</div>' +
+          legend +
+          '<div class="rhp-svg-wrap">' + svg + '</div>' +
+        '</div>';
+      popup.classList.add('active');
+    }
+
+    function _closeHistoryPopup(){
+      const popup = document.getElementById('rang-history-popup');
+      if(popup) popup.classList.remove('active');
+    }
+
+    function _renderHistorySvg(history, catLabel, superLabel){
+      // Trace 2 lignes : rang_cat (toujours) + rang_super (si superLabel donné)
+      // Axe Y : rang DÉCROISSANT (1 en haut = meilleur)
+      // Axe X : mois (ym chronologique)
+      if(!history || history.length < 2){
+        return '<div class="rhp-empty">Pas assez de données historiques.</div>';
+      }
+      const W = 540, H = 240;
+      const PAD_L = 50, PAD_R = 20, PAD_T = 16, PAD_B = 36;
+      const plotW = W - PAD_L - PAD_R;
+      const plotH = H - PAD_T - PAD_B;
+
+      // Données
+      const xs = history.map(function(e){ return e.ym; });
+      const cats = history.map(function(e){ return e.rang_cat; });
+      const supers = superLabel ? history.map(function(e){ return e.rang_super; }) : [];
+
+      // Échelle Y : on prend le min/max des rangs (en ignorant null)
+      const allRanks = cats.concat(supers).filter(function(v){ return v != null; });
+      if(allRanks.length === 0){
+        return '<div class="rhp-empty">Aucun rang valide à tracer.</div>';
+      }
+      const minR = Math.min.apply(null, allRanks);
+      const maxR = Math.max.apply(null, allRanks);
+      // Marge visuelle 10%
+      const margin = Math.max(1, Math.round((maxR - minR) * 0.1));
+      const yMin = Math.max(1, minR - margin);
+      const yMax = maxR + margin;
+
+      // Helpers
+      function xPos(i){ return PAD_L + (xs.length === 1 ? plotW / 2 : (i / (xs.length - 1)) * plotW); }
+      function yPos(rang){
+        // Inverser : rang 1 (meilleur) = en haut
+        const t = (rang - yMin) / (yMax - yMin);
+        return PAD_T + t * plotH;
+      }
+
+      // Génère un path "M x y L x y..." en sautant les valeurs null
+      function makePath(values){
+        let d = '';
+        for(let i = 0; i < values.length; i++){
+          const v = values[i];
+          if(v == null) continue;
+          const cmd = (d === '') ? 'M' : 'L';
+          d += cmd + xPos(i).toFixed(1) + ' ' + yPos(v).toFixed(1) + ' ';
+        }
+        return d;
+      }
+      function makeDots(values, color){
+        let dots = '';
+        for(let i = 0; i < values.length; i++){
+          const v = values[i];
+          if(v == null) continue;
+          dots += '<circle cx="' + xPos(i).toFixed(1) + '" cy="' + yPos(v).toFixed(1) +
+                  '" r="3" fill="' + color + '"/>';
+        }
+        return dots;
+      }
+
+      // Lignes de grille horizontales (5 niveaux)
+      let grid = '';
+      for(let k = 0; k <= 4; k++){
+        const y = PAD_T + (k / 4) * plotH;
+        const rangVal = Math.round(yMin + (k / 4) * (yMax - yMin));
+        grid += '<line x1="' + PAD_L + '" y1="' + y + '" x2="' + (W - PAD_R) + '" y2="' + y +
+                '" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>';
+        grid += '<text x="' + (PAD_L - 6) + '" y="' + (y + 3) +
+                '" text-anchor="end" font-family="ui-monospace,monospace" font-size="9" fill="#9aa4b2">' +
+                rangVal + '</text>';
+      }
+
+      // Labels axe X (mois)
+      let xLabels = '';
+      const stepX = Math.max(1, Math.ceil(xs.length / 8));
+      for(let i = 0; i < xs.length; i += stepX){
+        xLabels += '<text x="' + xPos(i).toFixed(1) + '" y="' + (H - 12) +
+                   '" text-anchor="middle" font-family="ui-monospace,monospace" font-size="9" fill="#9aa4b2">' +
+                   safeText(xs[i]) + '</text>';
+      }
+
+      // Tracés
+      const pathCat = makePath(cats);
+      const dotsCat = makeDots(cats, '#7dd3fc');
+      const pathSuper = superLabel ? makePath(supers) : '';
+      const dotsSuper = superLabel ? makeDots(supers, '#facc15') : '';
+
+      return '<svg class="rhp-svg" viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg">' +
+        grid +
+        // Axe Y label
+        '<text x="' + (PAD_L - 36) + '" y="' + (PAD_T + plotH / 2) +
+          '" text-anchor="middle" font-family="ui-monospace,monospace" font-size="9" fill="#9aa4b2" ' +
+          'transform="rotate(-90 ' + (PAD_L - 36) + ' ' + (PAD_T + plotH / 2) + ')">RANG</text>' +
+        xLabels +
+        // Lignes (super en arrière-plan, cat au premier plan)
+        (pathSuper ? '<path d="' + pathSuper + '" fill="none" stroke="#facc15" stroke-width="2" stroke-linejoin="round"/>' : '') +
+        (dotsSuper) +
+        '<path d="' + pathCat + '" fill="none" stroke="#7dd3fc" stroke-width="2.5" stroke-linejoin="round"/>' +
+        dotsCat +
+      '</svg>';
+    }
+
+    // Fermeture popup avec Escape (réutilise le keydown existant pour overlay
+    // mais on intercepte avant que ça ferme l'overlay parent)
+    document.addEventListener('keydown', function(e){
+      if(e.key === 'Escape'){
+        const popup = document.getElementById('rang-history-popup');
+        if(popup && popup.classList.contains('active')){
+          e.stopPropagation();
+          _closeHistoryPopup();
+        }
+      }
+    }, true); // capture pour passer avant l'autre handler
+
     // Hashchange + état initial
     window.addEventListener('hashchange', handleHashChange);
     handleHashChange();
