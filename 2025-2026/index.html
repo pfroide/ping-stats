@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <link rel="manifest" href="./manifest.webmanifest"/>
 <meta name="theme-color" content="#0b0e14"/>
-<meta name="build-id" content="20260503160607"/>
+<meta name="build-id" content="20260503170325"/>
 <link rel="icon" href="./assets/icons/icon-192.png"/>
 <link rel="apple-touch-icon" href="./assets/icons/icon-180.png"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
@@ -1377,15 +1377,416 @@ html[data-skin="P"] .sr-bar-bg{background:#0a0118;border-radius:0;border:1px sol
   <div class="skin-l3 skin-l3-C statusbar"><span>● PING-STATS [v8] · CONNECTED</span><span class="blink">_</span></div>
   <div class="header">
     <div class="h1">BREVANNAISE AS • Stats</div>
-    <div class="h2">Export mobile • 2026-05-03 16:06</div>
-    <div class="tabs"><button class="tab-btn" type="button" data-tab="joueurs">👤 Joueurs</button><button class="tab-btn" type="button" data-tab="equipe">🏓 Équipe</button><button class="tab-btn" type="button" data-tab="stats">📊 Stats avancées</button><button class="tab-btn" type="button" data-tab="tools">🎯 Outils</button><button class="tab-btn" type="button" data-tab="scoreboards">🏆 Scoreboards</button><button class="tab-btn" type="button" data-tab="settings">⚙️ Réglages</button></div>
+    <div class="h2">Export mobile • 2026-05-03 17:03</div>
+    <div class="tabs"><button class="tab-btn" type="button" data-tab="accueil">🏠 Accueil</button><button class="tab-btn" type="button" data-tab="joueurs">👤 Joueurs</button><button class="tab-btn" type="button" data-tab="equipe">🏓 Équipe</button><button class="tab-btn" type="button" data-tab="stats">📊 Stats avancées</button><button class="tab-btn" type="button" data-tab="tools">🎯 Outils</button><button class="tab-btn" type="button" data-tab="scoreboards">🏆 Scoreboards</button><button class="tab-btn" type="button" data-tab="settings">⚙️ Réglages</button></div>
   </div>
   <div class="season-bar" id="season-bar" role="navigation" aria-label="Sélection de saison"><span class="season-bar-label">📅 Saison :</span><span class="season-bar-pills"><a class="season-pill" href="../index.html">Cumul</a><a class="season-pill" href="../2022-2023/index.html">2022-2023</a><a class="season-pill" href="../2023-2024/index.html">2023-2024</a><a class="season-pill" href="../2024-2025/index.html">2024-2025</a><span class="season-pill is-active">2025-2026</span></span><span class="season-bar-info">Saison 2025-2026</span></div>
   <div class="skin-l3 skin-l3-A scorebar"><div><div class="l3-lbl">Matchs</div><div class="l3-val" data-l3="matches">—</div></div><div><div class="l3-lbl">Victoires</div><div class="l3-val win" data-l3="wins">—</div></div><div><div class="l3-lbl">Points</div><div class="l3-val" data-l3="points">—</div></div></div>
   <div class="skin-l3 skin-l3-P scorebar-p"><div class="l3-lbl">★ HIGH SCORE ★</div><div class="l3-row"><div><div class="l3-val yellow" data-l3="matches">—</div><div class="l3-sub">GAMES</div></div><div><div class="l3-val" data-l3="wins">—</div><div class="l3-sub">WINS</div></div><div><div class="l3-val accent" data-l3="points">—</div><div class="l3-sub">PTS</div></div></div></div>
   <div class="skin-l3 skin-l3-P combo-strip" data-l3="combo"></div>
   <div class="container">
-    <div class="tab-panel" data-tab="joueurs">
+    <div class="tab-panel" data-tab="accueil">
+<style>
+/* ────────────────────────────────────────────────────────────────────────
+   Onglet Accueil — utilise les variables CSS du site (skinnable) :
+     --bg, --card, --txt, --muted, --accent, --good, --bad, --line,
+     --skin-mono, --skin-display
+   ──────────────────────────────────────────────────────────────────────── */
+
+.home-tab-wrap { padding: 12px 8px; max-width: 760px; margin: 0 auto; }
+
+.home-section {
+  margin-bottom: 18px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 14px 16px;
+}
+.home-section-h {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--txt);
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+}
+
+/* KPIs */
+.home-kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.home-kpis.home-kpis-single { grid-template-columns: 1fr; }
+.kpi-block { padding: 4px; }
+.kpi-block-title {
+  font-family: var(--skin-mono, ui-monospace, monospace);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+}
+.kpi {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px;
+  text-align: center;
+}
+.kpi-val {
+  font-family: var(--skin-mono, ui-monospace, monospace);
+  font-size: 18px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  color: var(--txt);
+  line-height: 1;
+}
+.kpi-val .sm { font-size: 12px; color: var(--muted); margin-left: 1px; }
+.kpi-val.good { color: var(--good); }
+.kpi-val.warn { color: var(--mid, #fbbf24); }
+.kpi-val.bad  { color: var(--bad); }
+.kpi-lbl {
+  font-family: var(--skin-mono, ui-monospace, monospace);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 4px;
+}
+@media (max-width: 480px) {
+  .home-kpis { grid-template-columns: 1fr; }
+}
+
+/* Liste équipes (rang en poule) */
+.home-teams { display: flex; flex-direction: column; gap: 8px; }
+.home-teams-empty {
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+  padding: 20px;
+}
+.home-teams-empty .hint { font-family: var(--skin-mono, ui-monospace, monospace); font-size: 10px; }
+.team-row {
+  display: grid;
+  grid-template-columns: 60px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  background: rgba(255,255,255,0.02);
+  border-radius: 8px;
+  border-left: 3px solid var(--accent);
+}
+.team-rang {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: var(--skin-mono, ui-monospace, monospace);
+}
+.team-rang .rang-n {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+}
+.team-rang.good .rang-n { color: var(--good); }
+.team-rang.bad  .rang-n { color: var(--bad); }
+.team-rang .rang-of {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+.team-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--txt);
+}
+.team-div {
+  font-family: var(--skin-mono, ui-monospace, monospace);
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 2px;
+  letter-spacing: 0.04em;
+}
+.team-stats {
+  font-family: var(--skin-mono, ui-monospace, monospace);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.team-stats .t-w { color: var(--good); }
+.team-stats .t-n { color: var(--mid, #fbbf24); }
+.team-stats .t-l { color: var(--bad); }
+
+/* Prochain match (un sous-bloc par équipe) */
+.next-empty {
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+  padding: 20px;
+}
+.next-team-block {
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  border-left: 3px solid var(--accent);
+}
+.next-team-block:last-child { margin-bottom: 0; }
+.next-team-h {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--txt);
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+.next-when-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+.next-when {
+  font-family: var(--skin-mono, ui-monospace, monospace);
+  font-size: 10px;
+  letter-spacing: 0.20em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 700;
+}
+.next-date {
+  font-family: var(--skin-mono, ui-monospace, monospace);
+  font-size: 11px;
+  color: var(--muted);
+}
+.next-match {
+  margin: 8px 0;
+}
+.next-vs {
+  font-size: 13px;
+  color: var(--muted);
+}
+.next-vs strong { color: var(--txt); font-weight: 700; }
+.next-meta {
+  font-family: var(--skin-mono, ui-monospace, monospace);
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 6px;
+  letter-spacing: 0.04em;
+}
+.next-pred {
+  margin-top: 12px;
+  padding: 12px;
+  background: rgba(255,255,255,0.02);
+  border-radius: 8px;
+  border: 1px solid var(--line);
+}
+.pred-scores {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+}
+.pred-side { text-align: center; min-width: 0; }
+.pred-side .pred-lbl {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.pred-score {
+  font-family: var(--skin-mono, ui-monospace, monospace);
+  font-size: 28px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--txt);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.pred-score.good { color: var(--good); }
+.pred-score.warn { color: var(--mid, #fbbf24); }
+.pred-score.bad  { color: var(--bad); }
+.pred-lbl {
+  font-family: var(--skin-mono, ui-monospace, monospace);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 6px;
+}
+.pred-sep {
+  font-family: var(--skin-mono, ui-monospace, monospace);
+  font-size: 14px;
+  color: var(--muted);
+}
+.pred-verdict {
+  font-size: 12px;
+  font-weight: 700;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+  text-align: center;
+}
+.pred-verdict.good { color: var(--good); }
+.pred-verdict.warn { color: var(--mid, #fbbf24); }
+.pred-verdict.bad  { color: var(--bad); }
+.pred-meta {
+  font-family: var(--skin-mono, ui-monospace, monospace);
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 4px;
+  letter-spacing: 0.04em;
+  text-align: center;
+}
+
+/* Top 3 perfs / progressions */
+.topm-cat {
+  margin-bottom: 18px;
+  padding: 12px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.topm-cat:last-child { margin-bottom: 0; }
+.topm-cat-h {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+.home-top-month {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.topm-col { min-width: 0; }
+.topm-h {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--txt);
+  letter-spacing: 0.06em;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+.topm-h-sub {
+  font-family: var(--skin-mono, ui-monospace, monospace);
+  font-size: 9px;
+  font-weight: 400;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  text-transform: none;
+  margin-left: 6px;
+}
+.topm-list { display: flex; flex-direction: column; gap: 6px; }
+.topm-row {
+  display: grid;
+  grid-template-columns: 28px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: rgba(255,255,255,0.02);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.topm-row.clickable:hover { background: rgba(255,255,255,0.05); }
+.topm-row.clickable:focus { outline: 1px solid var(--accent); outline-offset: -1px; }
+.topm-pos {
+  font-family: var(--skin-mono, ui-monospace, monospace);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent);
+  text-align: left;
+}
+.topm-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--txt);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+}
+.topm-val {
+  font-family: var(--skin-mono, ui-monospace, monospace);
+  font-weight: 700;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+}
+.topm-val.good { color: var(--good); }
+.topm-val.bad  { color: var(--bad); }
+.topm-empty {
+  font-family: var(--skin-mono, ui-monospace, monospace);
+  font-size: 10px;
+  color: var(--muted);
+  text-align: center;
+  padding: 16px 8px;
+  letter-spacing: 0.04em;
+}
+
+/* Lien vers stats avancées */
+.home-stats-link {
+  display: block;
+  text-align: center;
+  padding: 12px;
+  background: rgba(255,255,255,0.02);
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  font-family: var(--skin-mono, ui-monospace, monospace);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  text-decoration: none;
+  cursor: pointer;
+}
+.home-stats-link:hover { background: rgba(255,255,255,0.05); color: var(--accent); }
+</style>
+<div class="club-section" data-club-id="8940866"><div class="home-tab-wrap"><div class="home-section"><div class="home-section-h">📊 Vue d'ensemble</div><div class="home-kpis"><div class="kpi-block"><div class="kpi-block-title">Matchs individuels</div><div class="kpi-grid"><div class="kpi"><div class="kpi-val">2500</div><div class="kpi-lbl">Matchs</div></div><div class="kpi"><div class="kpi-val good">1286</div><div class="kpi-lbl">Victoires</div></div><div class="kpi"><div class="kpi-val bad">1214</div><div class="kpi-lbl">Défaites</div></div><div class="kpi"><div class="kpi-val warn">51<span class="sm">%</span></div><div class="kpi-lbl">Win rate</div></div></div></div><div class="kpi-block"><div class="kpi-block-title">Rencontres équipes</div><div class="kpi-grid"><div class="kpi"><div class="kpi-val">90</div><div class="kpi-lbl">Joué</div></div><div class="kpi"><div class="kpi-val good">48</div><div class="kpi-lbl">Victoires</div></div><div class="kpi"><div class="kpi-val warn">9</div><div class="kpi-lbl">Nuls</div></div><div class="kpi"><div class="kpi-val bad">33</div><div class="kpi-lbl">Défaites</div></div></div></div></div></div><div class="home-section"><div class="home-section-h">⏭️ Prochains matchs par équipe</div><div class="next-team-block"><div class="next-team-h">BREVANNAISE AS (1)</div><div class="next-when-row"><span class="next-when">15/05/2026</span><span class="next-date">15/05/2026</span></div><div class="next-match"><div class="next-vs">vs <strong>FONTENAY-TRESIGNY TT (1)</strong></div><div class="next-meta">✈️ Extérieur · L08_Honneur Poule 9</div></div><div class="next-pred"><div class="pred-scores"><div class="pred-side bre"><div class="pred-score good">98.2</div><div class="pred-lbl">Brévannes</div></div><div class="pred-sep">vs</div><div class="pred-side opp"><div class="pred-score">63.8</div><div class="pred-lbl">FONTENAY-TRESIGNY TT (1)</div></div></div><div class="pred-verdict good">Victoire probable</div><div class="pred-meta">Score attendu sur 27 simples</div></div></div>
+<div class="next-team-block"><div class="next-team-h">BREVANNAISE AS 1</div><div class="next-when-row"><span class="next-when">Dans 6 jours</span><span class="next-date">09/05/2026</span></div><div class="next-match"><div class="next-vs">vs <strong>ESP REUILLY 2</strong></div><div class="next-meta">🏠 Domicile · L08_R2 Messieurs phase 2 Poule 7</div></div><div class="next-pred"><div class="pred-scores"><div class="pred-side bre"><div class="pred-score good">6.7</div><div class="pred-lbl">Brévannes</div></div><div class="pred-sep">vs</div><div class="pred-side opp"><div class="pred-score">5.3</div><div class="pred-lbl">ESP REUILLY 2</div></div></div><div class="pred-verdict good">Victoire probable</div><div class="pred-meta">Score attendu sur 12 simples</div></div></div>
+<div class="next-team-block"><div class="next-team-h">BREVANNAISE AS (2)</div><div class="next-when-row"><span class="next-when">15/05/2026</span><span class="next-date">15/05/2026</span></div><div class="next-match"><div class="next-vs">vs <strong>OZOIR AP (2)</strong></div><div class="next-meta">✈️ Extérieur · L08_2eme Division Poule 20</div></div><div class="next-pred"><div class="pred-scores"><div class="pred-side bre"><div class="pred-score good">46.9</div><div class="pred-lbl">Brévannes</div></div><div class="pred-sep">vs</div><div class="pred-side opp"><div class="pred-score">16.1</div><div class="pred-lbl">OZOIR AP (2)</div></div></div><div class="pred-verdict good">Victoire probable</div><div class="pred-meta">Score attendu sur 9 simples</div></div></div>
+<div class="next-team-block"><div class="next-team-h">BREVANNAISE AS 2</div><div class="next-when-row"><span class="next-when">Dans 6 jours</span><span class="next-date">09/05/2026</span></div><div class="next-match"><div class="next-vs">vs <strong>PONTAULT UMS TT 5</strong></div><div class="next-meta">🏠 Domicile · L08_R3 Messieurs phase 2 Poule 7</div></div><div class="next-pred"><div class="pred-scores"><div class="pred-side bre"><div class="pred-score good">6.6</div><div class="pred-lbl">Brévannes</div></div><div class="pred-sep">vs</div><div class="pred-side opp"><div class="pred-score">5.4</div><div class="pred-lbl">PONTAULT UMS TT 5</div></div></div><div class="pred-verdict good">Victoire probable</div><div class="pred-meta">Score attendu sur 12 simples</div></div></div>
+<div class="next-team-block"><div class="next-team-h">BREVANNAISE AS (3)</div><div class="next-when-row"><span class="next-when">15/05/2026</span><span class="next-date">15/05/2026</span></div><div class="next-match"><div class="next-vs">vs <strong>ROISSY TT US (3)</strong></div><div class="next-meta">✈️ Extérieur · L08_2eme Division Poule 24</div></div><div class="next-pred"><div class="pred-scores"><div class="pred-side bre"><div class="pred-score bad">30.4</div><div class="pred-lbl">Brévannes</div></div><div class="pred-sep">vs</div><div class="pred-side opp"><div class="pred-score">32.6</div><div class="pred-lbl">ROISSY TT US (3)</div></div></div><div class="pred-verdict bad">Défaite probable</div><div class="pred-meta">Score attendu sur 9 simples</div></div></div>
+<div class="next-team-block"><div class="next-team-h">BREVANNAISE AS 3</div><div class="next-when-row"><span class="next-when">Dans 4 jours</span><span class="next-date">07/05/2026</span></div><div class="next-match"><div class="next-vs">vs <strong>MAISONS-ALFORT TT 4</strong></div><div class="next-meta">✈️ Extérieur · PR  Masculine  Phase 2 Poule 1</div></div><div class="next-pred"><div class="pred-scores"><div class="pred-side bre"><div class="pred-score good">6.7</div><div class="pred-lbl">Brévannes</div></div><div class="pred-sep">vs</div><div class="pred-side opp"><div class="pred-score">5.3</div><div class="pred-lbl">MAISONS-ALFORT TT 4</div></div></div><div class="pred-verdict good">Victoire probable</div><div class="pred-meta">Score attendu sur 12 simples</div></div></div>
+<div class="next-team-block"><div class="next-team-h">BREVANNAISE AS (4)</div><div class="next-when-row"><span class="next-when">15/05/2026</span><span class="next-date">15/05/2026</span></div><div class="next-match"><div class="next-vs">vs <strong>OZOIR AP (3)</strong></div><div class="next-meta">✈️ Extérieur · L08_2eme Division Poule 22</div></div><div class="next-pred"><div class="pred-scores"><div class="pred-side bre"><div class="pred-score good">49.0</div><div class="pred-lbl">Brévannes</div></div><div class="pred-sep">vs</div><div class="pred-side opp"><div class="pred-score">14.0</div><div class="pred-lbl">OZOIR AP (3)</div></div></div><div class="pred-verdict good">Victoire probable</div><div class="pred-meta">Score attendu sur 9 simples</div></div></div>
+<div class="next-team-block"><div class="next-team-h">BREVANNAISE AS 4</div><div class="next-when-row"><span class="next-when">Dans 4 jours</span><span class="next-date">07/05/2026</span></div><div class="next-match"><div class="next-vs">vs <strong>ELAN ARCUEIL 1</strong></div><div class="next-meta">✈️ Extérieur · D2 Masculine Phase 2 Poule 1</div></div><div class="next-pred"><div class="pred-scores"><div class="pred-side bre"><div class="pred-score good">15.7</div><div class="pred-lbl">Brévannes</div></div><div class="pred-sep">vs</div><div class="pred-side opp"><div class="pred-score">2.3</div><div class="pred-lbl">ELAN ARCUEIL 1</div></div></div><div class="pred-verdict good">Victoire probable</div><div class="pred-meta">Score attendu sur 18 simples</div></div></div>
+<div class="next-team-block"><div class="next-team-h">BREVANNAISE AS 5</div><div class="next-when-row"><span class="next-when">Dans 4 jours</span><span class="next-date">07/05/2026</span></div><div class="next-match"><div class="next-vs">vs <strong>ES VITRY 5</strong></div><div class="next-meta">✈️ Extérieur · D2 Masculine Phase 2 Poule 2</div></div><div class="next-pred"><div class="pred-scores"><div class="pred-side bre"><div class="pred-score warn">8.8</div><div class="pred-lbl">Brévannes</div></div><div class="pred-sep">vs</div><div class="pred-side opp"><div class="pred-score">9.2</div><div class="pred-lbl">ES VITRY 5</div></div></div><div class="pred-verdict warn">Match serré</div><div class="pred-meta">Score attendu sur 18 simples</div></div></div>
+<div class="next-team-block"><div class="next-team-h">BREVANNAISE AS 6</div><div class="next-when-row"><span class="next-when">Dans 4 jours</span><span class="next-date">07/05/2026</span></div><div class="next-match"><div class="next-vs">vs <strong>CHOISY TT 3</strong></div><div class="next-meta">✈️ Extérieur · D3 Masculine Phase 2 Poule 1</div></div><div class="next-pred"><div class="pred-scores"><div class="pred-side bre"><div class="pred-score bad">8.1</div><div class="pred-lbl">Brévannes</div></div><div class="pred-sep">vs</div><div class="pred-side opp"><div class="pred-score">9.9</div><div class="pred-lbl">CHOISY TT 3</div></div></div><div class="pred-verdict bad">Défaite probable</div><div class="pred-meta">Score attendu sur 18 simples</div></div></div></div><div class="home-section"><div class="home-section-h">⭐ Avril — top performances</div><div class="topm-cat"><div class="topm-cat-h">👥 Adultes</div><div class="home-top-month"><div class="topm-col"><div class="topm-h">🏆 Top 3 perfs <span class="topm-h-sub">(écart de points)</span></div><div class="topm-list"><div class="topm-row clickable" data-lic="9443986" tabindex="0" role="button"><div class="topm-pos">1</div><div class="topm-body"><div class="topm-name">FLASQUE Dorian</div></div><div class="topm-val good">+328</div></div><div class="topm-row clickable" data-lic="942619" tabindex="0" role="button"><div class="topm-pos">2</div><div class="topm-body"><div class="topm-name">MALISSARD Julien</div></div><div class="topm-val good">+209</div></div><div class="topm-row clickable" data-lic="9443354" tabindex="0" role="button"><div class="topm-pos">3</div><div class="topm-body"><div class="topm-name">AUDEON Joris</div></div><div class="topm-val good">+95</div></div></div></div><div class="topm-col"><div class="topm-h">📈 Top 3 progressions <span class="topm-h-sub">(points FFTT)</span></div><div class="topm-list"><div class="topm-row clickable" data-lic="9443986" tabindex="0" role="button"><div class="topm-pos">1</div><div class="topm-body"><div class="topm-name">FLASQUE Dorian</div></div><div class="topm-val good">+31.5</div></div><div class="topm-row clickable" data-lic="942619" tabindex="0" role="button"><div class="topm-pos">2</div><div class="topm-body"><div class="topm-name">MALISSARD Julien</div></div><div class="topm-val good">+24.0</div></div><div class="topm-row clickable" data-lic="9443354" tabindex="0" role="button"><div class="topm-pos">3</div><div class="topm-body"><div class="topm-name">AUDEON Joris</div></div><div class="topm-val good">+19.5</div></div></div></div></div></div>
+<div class="topm-cat"><div class="topm-cat-h">🧒 Jeunes</div><div class="home-top-month"><div class="topm-col"><div class="topm-h">🏆 Top 3 perfs <span class="topm-h-sub">(écart de points)</span></div><div class="topm-list"><div class="topm-row clickable" data-lic="9462284" tabindex="0" role="button"><div class="topm-pos">1</div><div class="topm-body"><div class="topm-name">DALLOT Timéo</div></div><div class="topm-val good">+318</div></div><div class="topm-row clickable" data-lic="9460246" tabindex="0" role="button"><div class="topm-pos">2</div><div class="topm-body"><div class="topm-name">TIGAIZIN Outhman</div></div><div class="topm-val good">+144</div></div><div class="topm-row clickable" data-lic="9462284" tabindex="0" role="button"><div class="topm-pos">3</div><div class="topm-body"><div class="topm-name">DALLOT Timéo</div></div><div class="topm-val good">+25</div></div></div></div><div class="topm-col"><div class="topm-h">📈 Top 3 progressions <span class="topm-h-sub">(points FFTT)</span></div><div class="topm-list"><div class="topm-row clickable" data-lic="9462284" tabindex="0" role="button"><div class="topm-pos">1</div><div class="topm-body"><div class="topm-name">DALLOT Timéo</div></div><div class="topm-val good">+25.0</div></div><div class="topm-row clickable" data-lic="9463714" tabindex="0" role="button"><div class="topm-pos">2</div><div class="topm-body"><div class="topm-name">LALANNE Mael</div></div><div class="topm-val good">+12.0</div></div><div class="topm-row clickable" data-lic="9460246" tabindex="0" role="button"><div class="topm-pos">3</div><div class="topm-body"><div class="topm-name">TIGAIZIN Outhman</div></div><div class="topm-val good">+8.5</div></div></div></div></div></div><a class="home-stats-link" data-target-tab="stats" href="#" style="margin-top:14px;display:block">Voir l'historique mensuel complet → 📊 Stats avancées</a></div><div class="home-section"><div class="home-section-h">🏆 Équipes — classement actuel</div><div class="home-teams"><div class="team-row"><div class="team-rang good"><span class="rang-n">2</span><span class="rang-of">/8</span></div><div class="team-body"><div class="team-name">BREVANNAISE AS 1</div><div class="team-div">L08_R2 Messieurs phase 2 Poule 7</div></div><div class="team-stats"><span class="t-w">3V</span><span class="t-l">·1D</span></div></div><div class="team-row"><div class="team-rang good"><span class="rang-n">2</span><span class="rang-of">/8</span></div><div class="team-body"><div class="team-name">BREVANNAISE AS 2</div><div class="team-div">L08_R3 Messieurs phase 2 Poule 7</div></div><div class="team-stats"><span class="t-w">3V</span><span class="t-n">·1N</span><span class="t-l">·0D</span></div></div><div class="team-row"><div class="team-rang bad"><span class="rang-n">7</span><span class="rang-of">/8</span></div><div class="team-body"><div class="team-name">BREVANNAISE AS 3</div><div class="team-div">PR  Masculine  Phase 2 Poule 1</div></div><div class="team-stats"><span class="t-w">0V</span><span class="t-l">·4D</span></div></div><div class="team-row"><div class="team-rang "><span class="rang-n">3</span><span class="rang-of">/8</span></div><div class="team-body"><div class="team-name">BREVANNAISE AS 4</div><div class="team-div">D2 Masculine Phase 2 Poule 1</div></div><div class="team-stats"><span class="t-w">2V</span><span class="t-l">·2D</span></div></div><div class="team-row"><div class="team-rang "><span class="rang-n">5</span><span class="rang-of">/8</span></div><div class="team-body"><div class="team-name">BREVANNAISE AS 5</div><div class="team-div">D2 Masculine Phase 2 Poule 2</div></div><div class="team-stats"><span class="t-w">2V</span><span class="t-l">·2D</span></div></div><div class="team-row"><div class="team-rang "><span class="rang-n">4</span><span class="rang-of">/8</span></div><div class="team-body"><div class="team-name">BREVANNAISE AS 6</div><div class="team-div">D3 Masculine Phase 2 Poule 1</div></div><div class="team-stats"><span class="t-w">2V</span><span class="t-l">·2D</span></div></div></div></div></div></div>
+<script>
+(function(){
+  // Délégation d'événement : clic sur une ligne du top mois ouvre le dashboard
+  document.addEventListener('click', function(e){
+    const row = e.target.closest('.home-top-month .topm-row.clickable[data-lic]');
+    if(!row) return;
+    const lic = row.dataset.lic;
+    if(typeof window._openPlayerDashboard === 'function'){
+      window._openPlayerDashboard(lic);
+    }
+  });
+  // Lien "Voir tous les classements mensuels" → bascule sur l'onglet Stats
+  document.addEventListener('click', function(e){
+    const a = e.target.closest('.home-stats-link[data-target-tab]');
+    if(!a) return;
+    e.preventDefault();
+    const tab = a.dataset.targetTab;
+    const btn = document.querySelector('.tab-btn[data-tab="' + tab + '"]');
+    if(btn) btn.click();
+  });
+})();
+</script>
+</div><div class="tab-panel" data-tab="joueurs">
 <style>
 .players-tab-wrap { padding: 0 8px; }
 .players-tab-wrap .muted { color: var(--fg-mute, #5b6573); padding: 16px; }
@@ -10167,7 +10568,7 @@ document.addEventListener('click', (e)=>{
 // PWA: service worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function(){
-    navigator.serviceWorker.register('./service-worker.js?v=20260503160607');
+    navigator.serviceWorker.register('./service-worker.js?v=20260503170325');
   });
 }
 </script>
@@ -10482,10 +10883,55 @@ if ('serviceWorker' in navigator) {
     var pName = match.player_name;
     if(!pName){
       var titleEl = document.getElementById('playerModalTitle');
-      if(titleEl) pName = (titleEl.textContent||'').trim();
+      if(titleEl){
+        // Le titre contient maintenant un avatar (initiales) + un span
+        // dédié au nom. textContent du titre entier concatènerait les
+        // initiales avec le nom (ex: "ATADRIANO Toni"). On préfère donc
+        // extraire le nom UNIQUEMENT depuis le span .pmodal-title-name.
+        var nameSpan = titleEl.querySelector('.pmodal-title-name');
+        if(nameSpan){
+          pName = (nameSpan.textContent||'').trim();
+        } else {
+          // Fallback : textContent direct (ancien comportement, peut
+          // contenir l'avatar collé)
+          pName = (titleEl.textContent||'').trim();
+        }
+      }
     }
     if(!pName) pName = 'Match';
     pName = pName.replace(/\s*\(\d+\)\s*$/, '').trim();  // ex: "Joris (9443354)" → "Joris"
+    // Filet de sécurité : si pour une raison quelconque le nom commence par
+    // les initiales de l'avatar concaténées (ex: "ATADRIANO Toni" où "AT"
+    // sont les initiales), on les retire.
+    // Heuristique : on essaie de retirer 1, 2 ou 3 lettres de tête si les
+    // initiales (1ères lettres de chaque mot) du reste correspondent.
+    pName = (function(name){
+      // Si le nom contient au moins 2 mots, on calcule les initiales
+      // potentielles en prenant les N premières lettres
+      var words = name.split(/\s+/).filter(Boolean);
+      if(words.length < 2) return name;
+      // Essai pour 1, 2, 3 lettres de préfixe
+      for(var n = 3; n >= 1; n--){
+        if(name.length <= n) continue;
+        var prefix = name.slice(0, n);
+        var rest = name.slice(n);
+        // Vérifier que prefix est tout en majuscules (lettres uniquement)
+        if(!/^[A-ZÀ-Ý]+$/.test(prefix)) continue;
+        // Le reste doit ressembler à un vrai nom (commence par lettre)
+        if(!/^[A-ZÀ-Ýa-zà-ÿ]/.test(rest)) continue;
+        var restWords = rest.trim().split(/\s+/).filter(Boolean);
+        if(restWords.length < 1) continue;
+        // Calculer les initiales du reste : 1ère lettre de chaque mot
+        // (max 3 mots pour rester cohérent avec _initials côté js_base_v9)
+        var computedIni = restWords.slice(0, n).map(function(w){
+          return w.charAt(0).toUpperCase();
+        }).join('');
+        if(computedIni === prefix){
+          return rest;
+        }
+      }
+      return name;
+    })(pName);
 
     // ── Bloc joueurs : nom + points FFTT ─────────────────────────────────
     // Les deux noms ont la même taille de police pour visuel équilibré.
@@ -10990,7 +11436,12 @@ if ('serviceWorker' in navigator) {
         btn.textContent = '📤';
         btn.addEventListener('click', function(e){
           e.stopPropagation();
-          // Nom du joueur depuis le titre de la modale (sans la licence)
+          // Nom du joueur depuis le titre de la modale (sans la licence).
+          // ⚠️ Le titre composite contient maintenant un avatar (initiales)
+          // suivi du nom dans un <span class="pmodal-title-name">.
+          // textContent du titre entier concatène l'avatar + le nom (ex:
+          // "ATADRIANO Toni"). On extrait donc le nom UNIQUEMENT depuis
+          // le span dédié.
           var playerName = '';
           var titleEl = document.getElementById('playerModalTitle');
           if(!titleEl){
@@ -11002,7 +11453,16 @@ if ('serviceWorker' in navigator) {
                      || modal.querySelector('h3');
             }
           }
-          if(titleEl) playerName = (titleEl.textContent||'').trim();
+          if(titleEl){
+            // Préférence : le span dédié au nom (qui exclut l'avatar)
+            var nameSpan = titleEl.querySelector('.pmodal-title-name');
+            if(nameSpan){
+              playerName = (nameSpan.textContent||'').trim();
+            } else {
+              // Fallback : textContent direct (ancien comportement)
+              playerName = (titleEl.textContent||'').trim();
+            }
+          }
           if(!playerName){
             var hdr = document.querySelector('#playerModal .card-h .card-title');
             if(hdr) playerName = (hdr.textContent||'').trim();
@@ -11985,7 +12445,11 @@ if ('serviceWorker' in navigator) {
     const last3 = tl.slice(-3).reverse();
     const cards = last3.map(m => {
       const win = !!m.win;
-      const score = fmt0(m.sets_for) + '-' + fmt0(m.sets_against);
+      // Si le détail des sets est absent (sets_for & sets_against à 0 ou
+      // null), on affiche juste V ou D au lieu d'un trompeur "0-0".
+      const sf = m.sets_for, sa = m.sets_against;
+      const hasSetDetail = (sf != null && sa != null && (sf > 0 || sa > 0));
+      const score = hasSetDetail ? (fmt0(sf) + '-' + fmt0(sa)) : (win ? 'V' : 'D');
       const oppName = (m.opp_name||'?').split('/')[0].trim();
       const ptsDelta = m.pointres != null ? fmtSigned(m.pointres, 1) : null;
       const meta = [safeText(m.date||''), safeText(m.segment_nom||'')].filter(Boolean).join(' · ');
