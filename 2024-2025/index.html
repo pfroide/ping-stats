@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <link rel="manifest" href="./manifest.webmanifest"/>
 <meta name="theme-color" content="#0b0e14"/>
-<meta name="build-id" content="20260503124308"/>
+<meta name="build-id" content="20260503134809"/>
 <link rel="icon" href="./assets/icons/icon-192.png"/>
 <link rel="apple-touch-icon" href="./assets/icons/icon-180.png"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
@@ -247,7 +247,11 @@ th.sortable[data-dir="desc"]::after{content:" ▼";color:var(--muted);font-size:
 .playermodal-h{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--line);gap:10px}
 .playermodal-title{font-weight:900;font-size:14px;line-height:1.2;flex:1;display:flex;align-items:center;gap:10px}
 .playermodal-title .pmodal-avatar{
-  width:32px;height:32px;border-radius:50%;
+  height:56px;
+  /* largeur auto : respecte le ratio naturel de l'image (souvent portrait) */
+  width:auto;
+  min-width:42px;
+  border-radius:12px;
   background:linear-gradient(135deg,#1b2433,#0f1620);
   border:1px solid var(--line);
   flex:0 0 auto;
@@ -256,13 +260,16 @@ th.sortable[data-dir="desc"]::after{content:" ▼";color:var(--muted);font-size:
   position:relative;
 }
 .playermodal-title .pmodal-avatar img{
-  width:100%;height:100%;object-fit:cover;object-position:top center;display:block;
+  height:100%;
+  width:auto;
+  display:block;
 }
 .playermodal-title .pmodal-avatar-init{
-  width:100%;height:100%;
+  /* En l'absence de photo, on bascule sur un carré 56x56 */
+  width:56px;height:100%;
   align-items:center;justify-content:center;
   font-family:var(--skin-mono,ui-monospace,monospace);
-  font-weight:700;font-size:11px;
+  font-weight:700;font-size:18px;
   color:var(--accent);
   letter-spacing:0.02em;
 }
@@ -1356,7 +1363,7 @@ html[data-skin="P"] .sr-bar-bg{background:#0a0118;border-radius:0;border:1px sol
   <div class="skin-l3 skin-l3-C statusbar"><span>● PING-STATS [v8] · CONNECTED</span><span class="blink">_</span></div>
   <div class="header">
     <div class="h1">BREVANNAISE AS • Stats</div>
-    <div class="h2">Export mobile • 2026-05-03 12:43</div>
+    <div class="h2">Export mobile • 2026-05-03 13:48</div>
     <div class="tabs"><button class="tab-btn" type="button" data-tab="accueil">🏠 Accueil</button><button class="tab-btn" type="button" data-tab="joueurs">👤 Joueurs</button><button class="tab-btn" type="button" data-tab="equipe">🏓 Équipe</button><button class="tab-btn" type="button" data-tab="stats">📊 Stats avancées</button><button class="tab-btn" type="button" data-tab="tools">🎯 Outils</button><button class="tab-btn" type="button" data-tab="scoreboards">🏆 Scoreboards</button><button class="tab-btn" type="button" data-tab="settings">⚙️ Réglages</button></div>
   </div>
   <div class="season-bar" id="season-bar" role="navigation" aria-label="Sélection de saison"><span class="season-bar-label">📅 Saison :</span><span class="season-bar-pills"><a class="season-pill" href="../index.html">Cumul</a><a class="season-pill" href="../2022-2023/index.html">2022-2023</a><a class="season-pill" href="../2023-2024/index.html">2023-2024</a><span class="season-pill is-active">2024-2025</span><a class="season-pill" href="../2025-2026/index.html">2025-2026</a></span><span class="season-bar-info">Saison 2024-2025</span></div>
@@ -11091,7 +11098,7 @@ document.addEventListener('click', (e)=>{
 // PWA: service worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function(){
-    navigator.serviceWorker.register('./service-worker.js?v=20260503124308');
+    navigator.serviceWorker.register('./service-worker.js?v=20260503134809');
   });
 }
 </script>
@@ -12132,7 +12139,10 @@ if ('serviceWorker' in navigator) {
   pointer-events: none;
 }
 .dashboard-overlay .avatar {
-  width: 56px; height: 56px;
+  height: 56px;
+  /* width auto : respecte le ratio naturel de l'image (souvent portrait).
+     Pour les initiales (fallback sans photo), on bascule sur 56x56 carré. */
+  width: 56px;
   border-radius: 12px;
   border: 1px solid var(--dbo-border);
   background: linear-gradient(135deg, #1b2433, #0f1620);
@@ -12146,16 +12156,21 @@ if ('serviceWorker' in navigator) {
   position: relative;
 }
 .dashboard-overlay .avatar.avatar-photo {
+  /* En présence d'une photo, on libère la largeur pour respecter le ratio
+     naturel de l'image (portrait si l'image est plus haute que large). */
+  width: auto;
+  min-width: 42px;
   padding: 0;
 }
 .dashboard-overlay .avatar.avatar-photo img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-  object-position: top center;
+  height: 100%;
+  width: auto;
   display: block;
 }
 .dashboard-overlay .dbo-avatar-init {
-  width: 100%; height: 100%;
+  /* Le fallback initiales force un format carré 56x56 lisible */
+  width: 56px;
+  height: 100%;
   align-items: center; justify-content: center;
   font-family: var(--dbo-mono);
   font-weight: 700;
@@ -12537,7 +12552,10 @@ if ('serviceWorker' in navigator) {
 }
 .dashboard-overlay .rang-card.with-super .rang-grid-h,
 .dashboard-overlay .rang-card.with-super .rang-grid-r {
-  grid-template-columns: 1fr 100px 100px;
+  /* Colonnes des rangs : largeur auto pour s'adapter aux grands nombres
+     comme "17910 / 86885", évite le retour à la ligne */
+  grid-template-columns: 1fr minmax(95px, auto) minmax(95px, auto);
+  gap: 14px;
 }
 .dashboard-overlay .rang-grid-h {
   padding: 6px 0 8px;
@@ -12557,6 +12575,7 @@ if ('serviceWorker' in navigator) {
   text-transform: uppercase;
   color: var(--dbo-accent);
   text-align: right;
+  white-space: nowrap;
 }
 .dashboard-overlay .rang-col-h-sub {
   font-family: var(--dbo-mono);
@@ -12585,16 +12604,20 @@ if ('serviceWorker' in navigator) {
   font-family: var(--dbo-mono);
   text-align: right;
   color: var(--dbo-fg);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 .dashboard-overlay .rang-cell .rt-r {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   letter-spacing: -0.01em;
+  white-space: nowrap;
 }
 .dashboard-overlay .rang-cell .rt-of {
-  font-size: 11px;
+  font-size: 10px;
   color: var(--dbo-fg-mute);
   margin-left: 2px;
+  white-space: nowrap;
 }
 .dashboard-overlay .rang-cell .rt-na { color: var(--dbo-fg-mute); font-size: 14px; }
 .dashboard-overlay .rang-cell.good .rt-r { color: var(--dbo-good); }
@@ -12924,11 +12947,41 @@ if ('serviceWorker' in navigator) {
           {key:'national',      lbl:'National',    sub: 'France'},
         ];
 
-    const hasSuperCat = superCat && r.super;
+    // Détection des cas où la super-catégorie est REDONDANTE avec la catégorie
+    // précise. Cas typiques :
+    //   - Seniors : categorie="S", super_categorie="Seniors" → mêmes rangs
+    //     (tous les S sont des Seniors et inversement → 1:1)
+    //   - Poussins : categorie="P", super_categorie="Poussins" → idem
+    // Détection : si les rangs/totaux sont identiques entre cat précise et
+    // super pour TOUS les niveaux disponibles, on n'affiche qu'une colonne.
+    function _sameRanks(a, b){
+      if(!a || !b) return false;
+      return a.rang === b.rang && a.total === b.total;
+    }
+    let _isRedundant = false;
+    if(superCat && r.super){
+      // Comparer les niveaux qui ont des données
+      const _levels = ['departemental','regional','national'];
+      let _allSame = true;
+      let _hasAny = false;
+      for(const lvl of _levels){
+        const _cat = r[lvl];
+        const _sup = r.super[lvl];
+        if(_cat && _cat.rang != null && _sup && _sup.rang != null){
+          _hasAny = true;
+          if(!_sameRanks(_cat, _sup)){ _allSame = false; break; }
+        }
+      }
+      _isRedundant = _hasAny && _allSame;
+    }
+
+    const hasSuperCat = !!superCat && !!r.super && !_isRedundant;
     // Si on a la super_categorie mais pas le sous-bloc r.super (ex: CSV
-    // ancien sans rangs super calculés), on l'affiche quand même comme
-    // sous-titre sous la catégorie précise pour donner le contexte au lecteur.
-    const showSuperLabelOnly = !!superCat && !r.super;
+    // ancien sans rangs super calculés), on l'affiche comme sous-titre
+    // SAUF si le nom de cat == nom de super (cas Seniors, Poussins).
+    const _normCat = (s) => String(s||'').trim().toLowerCase();
+    const _nameRedundant = !!superCat && _normCat(cat) === _normCat(superCat);
+    const showSuperLabelOnly = !!superCat && !r.super && !_nameRedundant;
 
     let catHeader = '<div class="rang-col-h">' + safeText(cat);
     if(showSuperLabelOnly){
