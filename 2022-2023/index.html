@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <link rel="manifest" href="./manifest.webmanifest"/>
 <meta name="theme-color" content="#0b0e14"/>
-<meta name="build-id" content="20260503144100"/>
+<meta name="build-id" content="20260503155913"/>
 <link rel="icon" href="./assets/icons/icon-192.png"/>
 <link rel="apple-touch-icon" href="./assets/icons/icon-180.png"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
@@ -260,19 +260,23 @@ th.sortable[data-dir="desc"]::after{content:" ▼";color:var(--muted);font-size:
   position:relative;
 }
 .playermodal-title .pmodal-avatar.has-photo{
-  /* Avec photo : largeur auto pour respecter le ratio naturel de l'image.
-     Pas de bordure ni de fond pour éviter le liseré sombre. */
+  /* Avec photo : largeur auto avec min-width pour éviter les images
+     très portrait écrasées. Pas de bordure ni fond. */
   width:auto;
+  min-width:42px;
+  max-width:80px;
   display:block;
   border:none;
   background:transparent;
+  border-radius:12px;
+  overflow:hidden;
 }
 .playermodal-title .pmodal-avatar img{
+  width:100%;
   height:56px;
-  width:auto;
   display:block;
   object-fit:cover;
-  object-position:center;
+  object-position:center top;
 }
 .playermodal-title .pmodal-avatar-init{
   width:56px;
@@ -1373,7 +1377,7 @@ html[data-skin="P"] .sr-bar-bg{background:#0a0118;border-radius:0;border:1px sol
   <div class="skin-l3 skin-l3-C statusbar"><span>● PING-STATS [v8] · CONNECTED</span><span class="blink">_</span></div>
   <div class="header">
     <div class="h1">BREVANNAISE AS • Stats</div>
-    <div class="h2">Export mobile • 2026-05-03 14:41</div>
+    <div class="h2">Export mobile • 2026-05-03 15:59</div>
     <div class="tabs"><button class="tab-btn" type="button" data-tab="joueurs">👤 Joueurs</button><button class="tab-btn" type="button" data-tab="equipe">🏓 Équipe</button><button class="tab-btn" type="button" data-tab="stats">📊 Stats avancées</button><button class="tab-btn" type="button" data-tab="tools">🎯 Outils</button><button class="tab-btn" type="button" data-tab="scoreboards">🏆 Scoreboards</button><button class="tab-btn" type="button" data-tab="settings">⚙️ Réglages</button></div>
   </div>
   <div class="season-bar" id="season-bar" role="navigation" aria-label="Sélection de saison"><span class="season-bar-label">📅 Saison :</span><span class="season-bar-pills"><a class="season-pill" href="../index.html">Cumul</a><span class="season-pill is-active">2022-2023</span><a class="season-pill" href="../2023-2024/index.html">2023-2024</a><a class="season-pill" href="../2024-2025/index.html">2024-2025</a><a class="season-pill" href="../2025-2026/index.html">2025-2026</a></span><span class="season-bar-info">Saison 2022-2023</span></div>
@@ -7387,7 +7391,7 @@ document.addEventListener('click', (e)=>{
 // PWA: service worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function(){
-    navigator.serviceWorker.register('./service-worker.js?v=20260503144100');
+    navigator.serviceWorker.register('./service-worker.js?v=20260503155913');
   });
 }
 </script>
@@ -8427,54 +8431,55 @@ if ('serviceWorker' in navigator) {
   background: radial-gradient(400px 200px at 100% 0%, rgba(125,211,252,0.10), transparent 60%);
   pointer-events: none;
 }
+/* ─── Avatar (CSS identique à .pmodal-avatar de la modale Scoreboards) ───
+   Pour garantir un rendu strictement identique, on utilise les mêmes
+   propriétés CSS et les mêmes variables (--line, --accent, --skin-mono)
+   plutôt que les aliases --dbo-*. */
 .dashboard-overlay .avatar {
-  height: 56px;
-  /* Pour le fallback initiales : taille carrée 56x56 */
-  width: 56px;
-  border-radius: 12px;
-  border: 1px solid var(--dbo-border);
-  background: linear-gradient(135deg, #1b2433, #0f1620);
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--dbo-mono);
-  font-weight: 700;
-  font-size: 18px;
-  color: var(--dbo-accent);
-  letter-spacing: 0.02em;
-  overflow: hidden;
-  position: relative;
-  flex: 0 0 auto;
+  height:56px;
+  /* Pour le fallback initiales : carré 56x56 */
+  width:56px;
+  min-width:42px;
+  border-radius:12px;
+  background:linear-gradient(135deg,#1b2433,#0f1620);
+  border:1px solid var(--line);
+  flex:0 0 auto;
+  overflow:hidden;
+  display:inline-flex;align-items:center;justify-content:center;
+  position:relative;
+  font-family:var(--skin-mono,ui-monospace,monospace);
+  font-weight:700;
+  font-size:18px;
+  color:var(--accent);
+  letter-spacing:0.02em;
 }
 .dashboard-overlay .avatar.avatar-photo {
-  /* Avec photo : ne pas contraindre la largeur. L'image va définir la
-     largeur du conteneur via son ratio naturel (height:56px → width:auto).
-     On retire la bordure et le fond pour éviter le liseré sombre autour
-     de la photo (l'image remplit tout l'espace). */
-  width: auto;
-  min-width: 42px;
-  display: block;
-  padding: 0;
-  border: none;
-  background: transparent;
+  /* Avec photo : largeur auto avec min-width pour éviter les images
+     très portrait écrasées. Pas de bordure ni fond. */
+  width:auto;
+  min-width:42px;
+  max-width:80px;
+  display:block;
+  border:none;
+  background:transparent;
+  border-radius:12px;
+  overflow:hidden;
 }
-.dashboard-overlay .avatar.avatar-photo img {
-  /* L'image définit elle-même la largeur du conteneur.
-     object-fit:cover pour remplir tout l'espace sans laisser
-     de bande de fond visible (au cas où la hauteur native diffère). */
-  height: 56px;
-  width: auto;
-  display: block;
-  object-fit: cover;
-  object-position: center;
+.dashboard-overlay .avatar img {
+  width:100%;
+  height:56px;
+  display:block;
+  object-fit:cover;
+  object-position:center top;
 }
 .dashboard-overlay .dbo-avatar-init {
-  /* Fallback initiales : carré 56x56 lisible */
-  width: 56px;
-  height: 56px;
-  align-items: center; justify-content: center;
-  font-family: var(--dbo-mono);
-  font-weight: 700;
-  font-size: 18px;
-  color: var(--dbo-accent);
+  width:56px;
+  height:56px;
+  align-items:center;justify-content:center;
+  font-family:var(--skin-mono,ui-monospace,monospace);
+  font-weight:700;font-size:18px;
+  color:var(--accent);
+  letter-spacing:0.02em;
 }
 .dashboard-overlay .ident { min-width: 0; }
 .dashboard-overlay .nm {
@@ -9037,12 +9042,12 @@ if ('serviceWorker' in navigator) {
       "}})(this)"
     );
     const avatarHtml = lic
-      ? ('<div class="avatar avatar-photo">' +
+      ? ('<span class="avatar avatar-photo">' +
            '<img src="images_joueurs/' + encodeURIComponent(lic) + '.webp" ' +
                 'data-fi="0" onerror="' + onerr + '" loading="lazy" alt="">' +
            '<span class="dbo-avatar-init" style="display:none">' + safeIni + '</span>' +
-         '</div>')
-      : ('<div class="avatar">' + safeIni + '</div>');
+         '</span>')
+      : ('<span class="avatar">' + safeIni + '</span>');
 
     return (
       '<div class="hdr">' +
