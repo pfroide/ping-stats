@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <link rel="manifest" href="./manifest.webmanifest"/>
 <meta name="theme-color" content="#0b0e14"/>
-<meta name="build-id" content="20260504181414"/>
+<meta name="build-id" content="20260504214736"/>
 <link rel="icon" href="./assets/icons/icon-192.png"/>
 <link rel="apple-touch-icon" href="./assets/icons/icon-180.png"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
@@ -1377,7 +1377,7 @@ html[data-skin="P"] .sr-bar-bg{background:#0a0118;border-radius:0;border:1px sol
   <div class="skin-l3 skin-l3-C statusbar"><span>● PING-STATS [v8] · CONNECTED</span><span class="blink">_</span></div>
   <div class="header">
     <div class="h1">BREVANNAISE AS • Stats</div>
-    <div class="h2">Export mobile • 2026-05-04 18:14</div>
+    <div class="h2">Export mobile • 2026-05-04 21:47</div>
     <div class="tabs"><button class="tab-btn" type="button" data-tab="accueil">🏠 Accueil</button><button class="tab-btn" type="button" data-tab="joueurs">👤 Joueurs</button><button class="tab-btn" type="button" data-tab="equipe">🏓 Équipe</button><button class="tab-btn" type="button" data-tab="stats">📊 Stats avancées</button><button class="tab-btn" type="button" data-tab="tools">🎯 Outils</button><button class="tab-btn" type="button" data-tab="scoreboards">🏆 Scoreboards</button><button class="tab-btn" type="button" data-tab="settings">⚙️ Réglages</button></div>
   </div>
   <div class="season-bar" id="season-bar" role="navigation" aria-label="Sélection de saison"><span class="season-bar-label">📅 Saison :</span><span class="season-bar-pills"><a class="season-pill" href="../index.html">Cumul</a><a class="season-pill" href="../2022-2023/index.html">2022-2023</a><a class="season-pill" href="../2023-2024/index.html">2023-2024</a><span class="season-pill is-active">2024-2025</span><a class="season-pill" href="../2025-2026/index.html">2025-2026</a></span><span class="season-bar-info">Saison 2024-2025</span></div>
@@ -11391,7 +11391,7 @@ document.addEventListener('click', (e)=>{
 // PWA: service worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function(){
-    navigator.serviceWorker.register('./service-worker.js?v=20260504181414');
+    navigator.serviceWorker.register('./service-worker.js?v=20260504214736');
   });
 }
 </script>
@@ -13060,25 +13060,56 @@ if ('serviceWorker' in navigator) {
 }
 
 /* ─── Popup historique des rangs ─────────────────────────────────────── */
-.dashboard-overlay .rang-history-popup {
+/* ═══════════════════════════════════════════════════════════════════════
+   Popup historique des rangs.
+   ⚠️ Ces sélecteurs sont volontairement HORS du scope .dashboard-overlay
+   car la popup est attachée à document.body (et non à .dashboard-overlay)
+   pour éviter les bugs où `position: fixed` se réfère à un parent
+   transformé/scrollable au lieu du viewport (cf. .dashboard-overlay
+   qui a `overflow-y: auto` → casse position:fixed sur certains navigateurs,
+   notamment WebView Android).
+
+   Pour conserver la cohérence visuelle (couleurs, fonts), on redéfinit les
+   variables locales sur le conteneur de la popup, en les liant aux variables
+   du site (qui sont globales sur :root).
+   ═══════════════════════════════════════════════════════════════════════ */
+.rang-history-popup {
+  --rhp-bg          : var(--card, #0f1620);
+  --rhp-bg-deep     : rgba(0,0,0,0.2);
+  --rhp-border      : var(--line, rgba(125,211,252,0.12));
+  --rhp-border-soft : rgba(255,255,255,0.06);
+  --rhp-fg          : var(--txt, #e6e9ef);
+  --rhp-fg-dim      : var(--muted, #9aa4b2);
+  --rhp-fg-mute     : var(--muted, #5b6573);
+  --rhp-accent      : var(--accent, #7dd3fc);
+  --rhp-warn        : var(--mid, #fbbf24);
+  --rhp-mono        : var(--skin-mono, ui-monospace, "JetBrains Mono", monospace);
+  --rhp-display     : var(--skin-display, "Inter Tight", system-ui, sans-serif);
+
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.75);
   display: none;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 100000; /* au-dessus de .dashboard-overlay (z=10000) */
   padding: 20px;
   -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
+  font-family: var(--rhp-display);
+  color: var(--rhp-fg);
+  box-sizing: border-box;
 }
-.dashboard-overlay .rang-history-popup.active {
+.rang-history-popup *,
+.rang-history-popup *::before,
+.rang-history-popup *::after { box-sizing: border-box; }
+.rang-history-popup.active {
   display: flex;
 }
-.dashboard-overlay .rhp-card {
-  background: var(--dbo-bg-card);
-  border: 1px solid var(--dbo-border);
-  border-radius: var(--dbo-radius-l);
+.rang-history-popup .rhp-card {
+  background: var(--rhp-bg);
+  border: 1px solid var(--rhp-border);
+  border-radius: 14px;
   width: 100%;
   max-width: 600px;
   max-height: 90vh;
@@ -13086,96 +13117,103 @@ if ('serviceWorker' in navigator) {
   padding: 18px;
   position: relative;
 }
-.dashboard-overlay .rhp-header {
+.rang-history-popup .rhp-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 12px;
   padding-bottom: 10px;
-  border-bottom: 1px solid var(--dbo-border-soft);
+  border-bottom: 1px solid var(--rhp-border-soft);
+  gap: 12px;
 }
-.dashboard-overlay .rhp-title {
-  font-family: var(--dbo-mono);
+.rang-history-popup .rhp-title {
+  font-family: var(--rhp-mono);
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--dbo-accent);
+  color: var(--rhp-accent);
+  flex: 1;
+  min-width: 0;
+  word-break: break-word;
 }
-.dashboard-overlay .rhp-close {
+.rang-history-popup .rhp-close {
   background: transparent;
-  border: 1px solid var(--dbo-border);
-  color: var(--dbo-fg);
+  border: 1px solid var(--rhp-border);
+  color: var(--rhp-fg);
   width: 30px;
   height: 30px;
+  min-width: 30px;
   border-radius: 50%;
   cursor: pointer;
   font-size: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
+  padding: 0;
+  line-height: 1;
 }
-.dashboard-overlay .rhp-close:hover {
-  background: var(--dbo-border-soft);
+.rang-history-popup .rhp-close:hover {
+  background: var(--rhp-border-soft);
 }
-.dashboard-overlay .rhp-svg-wrap {
+.rang-history-popup .rhp-svg-wrap {
   width: 100%;
-  background: var(--dbo-bg-deep, rgba(0,0,0,0.2));
+  background: var(--rhp-bg-deep);
   border-radius: 10px;
   padding: 10px;
   margin-bottom: 12px;
 }
-.dashboard-overlay .rhp-svg {
+.rang-history-popup .rhp-svg {
   display: block;
   width: 100%;
   height: auto;
-  background: var(--dbo-bg-deep, rgba(0,0,0,0.2));
+  background: var(--rhp-bg-deep);
   border-radius: 10px;
   padding: 8px;
-  box-sizing: border-box;
   margin-bottom: 8px;
 }
-.dashboard-overlay .rhp-legend {
+.rang-history-popup .rhp-legend {
   display: flex;
   gap: 16px;
   justify-content: center;
   margin-bottom: 8px;
   flex-wrap: wrap;
 }
-.dashboard-overlay .rhp-legend-item {
+.rang-history-popup .rhp-legend-item {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-family: var(--dbo-mono);
+  font-family: var(--rhp-mono);
   font-size: 10px;
   letter-spacing: 0.06em;
-  color: var(--dbo-fg);
+  color: var(--rhp-fg);
 }
-.dashboard-overlay .rhp-legend-color {
+.rang-history-popup .rhp-legend-color {
   display: inline-block;
   width: 12px;
   height: 3px;
   border-radius: 2px;
 }
-.dashboard-overlay .rhp-empty {
+.rang-history-popup .rhp-empty {
   text-align: center;
-  color: var(--dbo-fg-mute);
-  font-family: var(--dbo-mono);
+  color: var(--rhp-fg-mute);
+  font-family: var(--rhp-mono);
   font-size: 11px;
   padding: 30px;
 }
 
 /* ─── Bloc série (1 graph + tableau, par catégorie/super) ───────────── */
-.dashboard-overlay .rhp-series {
+.rang-history-popup .rhp-series {
   margin-bottom: 18px;
   padding-bottom: 14px;
-  border-bottom: 1px solid var(--dbo-border-soft);
+  border-bottom: 1px solid var(--rhp-border-soft);
 }
-.dashboard-overlay .rhp-series:last-child {
+.rang-history-popup .rhp-series:last-child {
   border-bottom: none;
   margin-bottom: 0;
 }
-.dashboard-overlay .rhp-series-h {
+.rang-history-popup .rhp-series-h {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -13183,19 +13221,19 @@ if ('serviceWorker' in navigator) {
   margin-bottom: 8px;
   padding: 0 4px;
 }
-.dashboard-overlay .rhp-series-name {
-  font-family: var(--dbo-mono);
+.rang-history-popup .rhp-series-name {
+  font-family: var(--rhp-mono);
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.10em;
   text-transform: uppercase;
-  color: var(--dbo-fg);
+  color: var(--rhp-fg);
 }
-.dashboard-overlay .rhp-cat-change {
-  font-family: var(--dbo-mono);
+.rang-history-popup .rhp-cat-change {
+  font-family: var(--rhp-mono);
   font-size: 9px;
   font-weight: 600;
-  color: var(--dbo-warn, #f59e0b);
+  color: var(--rhp-warn);
   background: rgba(245, 158, 11, 0.12);
   padding: 2px 6px;
   border-radius: 4px;
@@ -13203,31 +13241,30 @@ if ('serviceWorker' in navigator) {
 }
 
 /* ─── Tableau chiffré ───────────────────────────────────────────────── */
-.dashboard-overlay .rhp-table {
+.rang-history-popup .rhp-table {
   width: 100%;
   max-height: 200px;
   overflow-y: auto;
-  border: 1px solid var(--dbo-border-soft);
+  border: 1px solid var(--rhp-border-soft);
   border-radius: 6px;
-  font-family: var(--dbo-mono);
+  font-family: var(--rhp-mono);
   font-size: 10px;
-  background: var(--dbo-bg-deep, rgba(0,0,0,0.15));
+  background: var(--rhp-bg-deep);
 }
-.dashboard-overlay .rhp-tr {
+.rang-history-popup .rhp-tr {
   display: grid;
   grid-template-columns: 1fr 1.4fr;
   gap: 8px;
   padding: 4px 8px;
-  border-bottom: 1px solid var(--dbo-border-soft);
+  border-bottom: 1px solid var(--rhp-border-soft);
   align-items: center;
 }
-.dashboard-overlay .rhp-tr:has(.rhp-td-cat) {
+.rang-history-popup .rhp-tr:has(.rhp-td-cat) {
   grid-template-columns: 1fr 1.2fr 0.8fr;
 }
-/* Fallback navigateurs sans :has() — on cible via un attribut/colonne */
-.dashboard-overlay .rhp-tr-h {
+.rang-history-popup .rhp-tr-h {
   font-weight: 700;
-  color: var(--dbo-fg-mute);
+  color: var(--rhp-fg-mute);
   background: rgba(255,255,255,0.03);
   position: sticky;
   top: 0;
@@ -13235,25 +13272,25 @@ if ('serviceWorker' in navigator) {
   text-transform: uppercase;
   font-size: 9px;
 }
-.dashboard-overlay .rhp-tr:last-child {
+.rang-history-popup .rhp-tr:last-child {
   border-bottom: none;
 }
-.dashboard-overlay .rhp-td {
-  color: var(--dbo-fg);
+.rang-history-popup .rhp-td {
+  color: var(--rhp-fg);
 }
-.dashboard-overlay .rhp-td-ym {
+.rang-history-popup .rhp-td-ym {
   font-weight: 600;
 }
-.dashboard-overlay .rhp-td-rt {
+.rang-history-popup .rhp-td-rt {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
-.dashboard-overlay .rhp-td-cat {
+.rang-history-popup .rhp-td-cat {
   text-align: right;
-  color: var(--dbo-fg-mute);
+  color: var(--rhp-fg-mute);
 }
-.dashboard-overlay .rhp-td-cat-changed {
-  color: var(--dbo-warn, #f59e0b);
+.rang-history-popup .rhp-td-cat-changed {
+  color: var(--rhp-warn);
   font-weight: 700;
 }
 
@@ -13873,19 +13910,25 @@ if ('serviceWorker' in navigator) {
           }
           return;
         }
-        // Fermeture popup historique
-        const btnClose = e.target.closest('.rhp-close');
-        if(btnClose){
-          e.preventDefault();
-          _closeHistoryPopup();
-          return;
-        }
-        // Click hors carte = fermer la popup
-        if(e.target.classList && e.target.classList.contains('rang-history-popup')){
-          _closeHistoryPopup();
-        }
       });
     }
+
+    // ⚠️ Handlers de FERMETURE de la popup attachés au document
+    // (et non à overlayRoot) car la popup est maintenant un enfant de <body>,
+    // donc les clics dedans ne remontent pas à .dashboard-overlay.
+    document.addEventListener('click', function(e){
+      // Bouton ✕
+      const btnClose = e.target.closest('.rhp-close');
+      if(btnClose){
+        e.preventDefault();
+        _closeHistoryPopup();
+        return;
+      }
+      // Clic en dehors de la carte (sur le fond noir de la popup)
+      if(e.target.classList && e.target.classList.contains('rang-history-popup')){
+        _closeHistoryPopup();
+      }
+    });
 
     // ─── Popup historique des rangs ─────────────────────────────────────
     function _openHistoryPopup(){
@@ -13958,7 +14001,13 @@ if ('serviceWorker' in navigator) {
       const catChanges = _detectCatChanges('cat');
       const superChanges = _detectCatChanges('super_cat');
 
-      // Créer ou récupérer l'élément popup
+      // Créer ou récupérer l'élément popup.
+      // ⚠️ IMPORTANT : on l'attache à <body> (PAS à .dashboard-overlay)
+      // car .dashboard-overlay a `overflow-y: auto` qui casse `position: fixed`
+      // sur certains navigateurs (notamment WebView Android) : la popup se
+      // positionnerait alors dans le flow scrollable au lieu de l'overlay
+      // fixe attendu. Le CSS de la popup n'utilise PAS le scope
+      // .dashboard-overlay pour fonctionner depuis n'importe où.
       let popup = document.getElementById('rang-history-popup');
       if(!popup){
         popup = document.createElement('div');
