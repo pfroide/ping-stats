@@ -1,5 +1,5 @@
 {
-  "rows_total": 2656,
+  "rows_total": 2676,
   "segment_id_dtype_raw": "int64",
   "segment_id_unique_raw_sample": [
     "1",
@@ -21,6 +21,6 @@
     7,
     8
   ],
-  "count_segment_1": 140,
+  "count_segment_1": 143,
   "bad_values_top": {}
 }
