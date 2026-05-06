@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <link rel="manifest" href="./manifest.webmanifest"/>
 <meta name="theme-color" content="#0b0e14"/>
-<meta name="build-id" content="20260505230254"/>
+<meta name="build-id" content="20260506110320"/>
 <link rel="icon" href="./assets/icons/icon-192.png"/>
 <link rel="apple-touch-icon" href="./assets/icons/icon-180.png"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
@@ -1377,7 +1377,7 @@ html[data-skin="P"] .sr-bar-bg{background:#0a0118;border-radius:0;border:1px sol
   <div class="skin-l3 skin-l3-C statusbar"><span>● PING-STATS [v8] · CONNECTED</span><span class="blink">_</span></div>
   <div class="header">
     <div class="h1">BREVANNAISE AS • Stats</div>
-    <div class="h2">Export mobile • 2026-05-05 23:02</div>
+    <div class="h2">Export mobile • 2026-05-06 11:03</div>
     <div class="tabs"><button class="tab-btn" type="button" data-tab="accueil">🏠 Accueil</button><button class="tab-btn" type="button" data-tab="joueurs">👤 Joueurs</button><button class="tab-btn" type="button" data-tab="equipe">🏓 Équipe</button><button class="tab-btn" type="button" data-tab="stats">📊 Stats avancées</button><button class="tab-btn" type="button" data-tab="tools">🎯 Outils</button><button class="tab-btn" type="button" data-tab="scoreboards">🏆 Scoreboards</button><button class="tab-btn" type="button" data-tab="settings">⚙️ Réglages</button></div>
   </div>
   <div class="season-bar" id="season-bar" role="navigation" aria-label="Sélection de saison"><span class="season-bar-label">📅 Saison :</span><span class="season-bar-pills"><a class="season-pill" href="../index.html">Cumul</a><span class="season-pill is-active">2022-2023</span><a class="season-pill" href="../2023-2024/index.html">2023-2024</a><a class="season-pill" href="../2024-2025/index.html">2024-2025</a><a class="season-pill" href="../2025-2026/index.html">2025-2026</a></span><span class="season-bar-info">Saison 2022-2023</span></div>
@@ -1822,37 +1822,45 @@ table.players-table tbody td {
   width: 32px;
   font-variant-numeric: tabular-nums;
 }
-.players-avatar { width: 48px; padding: 6px 4px !important; }
+/* Avatars de l'onglet Joueurs — même format que .avatar du dashboard
+   (carré arrondi, pas rond, image entière non rognée pour les portraits) */
+.players-avatar { width: 56px; padding: 6px 4px !important; }
 .avatar-mini {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  /* Fallback initiales : carré 42x42 */
   width: 42px; height: 42px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, rgba(125,211,252,0.15), rgba(125,211,252,0.05));
-  border: 1px solid rgba(125,211,252,0.20);
+  min-width: 42px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #1b2433, #0f1620);
+  border: 1px solid var(--line, rgba(125,211,252,0.20));
   color: var(--accent, #7dd3fc);
+  font-family: var(--skin-mono, ui-monospace, monospace);
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.02em;
   overflow: hidden;
   position: relative;
   flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
-/* Avec photo : on retire la bordure et le fond (l'image les recouvre).
-   On garde border-radius:50% sur le conteneur ET sur l'image pour
-   garantir la forme ronde même si l'image n'est pas carrée. */
+/* Avec photo : largeur auto (comme dashboard) avec min-width pour éviter
+   les portraits trop étroits écrasés. Pas de bordure ni fond. */
 .avatar-mini.has-photo {
+  width: auto;
+  min-width: 42px;
+  max-width: 56px;
+  display: block;
   background: transparent;
   border: none;
+  border-radius: 12px;
 }
 .avatar-mini img {
-  width: 42px;
+  width: 100%;
   height: 42px;
-  border-radius: 50%;
-  object-fit: cover;
-  object-position: center 25%;
   display: block;
+  object-fit: cover;
+  object-position: center top;
 }
 .avatar-mini-init {
   display: flex;
@@ -7807,7 +7815,7 @@ document.addEventListener('click', (e)=>{
 // PWA: service worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function(){
-    navigator.serviceWorker.register('./service-worker.js?v=20260505230254');
+    navigator.serviceWorker.register('./service-worker.js?v=20260506110320');
   });
 }
 </script>
