@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <link rel="manifest" href="./manifest.webmanifest"/>
 <meta name="theme-color" content="#0b0e14"/>
-<meta name="build-id" content="20260506110320"/>
+<meta name="build-id" content="20260506124726"/>
 <link rel="icon" href="./assets/icons/icon-192.png"/>
 <link rel="apple-touch-icon" href="./assets/icons/icon-180.png"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
@@ -1377,7 +1377,7 @@ html[data-skin="P"] .sr-bar-bg{background:#0a0118;border-radius:0;border:1px sol
   <div class="skin-l3 skin-l3-C statusbar"><span>● PING-STATS [v8] · CONNECTED</span><span class="blink">_</span></div>
   <div class="header">
     <div class="h1">BREVANNAISE AS • Stats</div>
-    <div class="h2">Export mobile • 2026-05-06 11:03</div>
+    <div class="h2">Export mobile • 2026-05-06 12:47</div>
     <div class="tabs"><button class="tab-btn" type="button" data-tab="accueil">🏠 Accueil</button><button class="tab-btn" type="button" data-tab="joueurs">👤 Joueurs</button><button class="tab-btn" type="button" data-tab="equipe">🏓 Équipe</button><button class="tab-btn" type="button" data-tab="stats">📊 Stats avancées</button><button class="tab-btn" type="button" data-tab="tools">🎯 Outils</button><button class="tab-btn" type="button" data-tab="scoreboards">🏆 Scoreboards</button><button class="tab-btn" type="button" data-tab="settings">⚙️ Réglages</button></div>
   </div>
   <div class="season-bar" id="season-bar" role="navigation" aria-label="Sélection de saison"><span class="season-bar-label">📅 Saison :</span><span class="season-bar-pills"><a class="season-pill" href="../index.html">Cumul</a><span class="season-pill is-active">2022-2023</span><a class="season-pill" href="../2023-2024/index.html">2023-2024</a><a class="season-pill" href="../2024-2025/index.html">2024-2025</a><a class="season-pill" href="../2025-2026/index.html">2025-2026</a></span><span class="season-bar-info">Saison 2022-2023</span></div>
@@ -7815,7 +7815,7 @@ document.addEventListener('click', (e)=>{
 // PWA: service worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function(){
-    navigator.serviceWorker.register('./service-worker.js?v=20260506110320');
+    navigator.serviceWorker.register('./service-worker.js?v=20260506124726');
   });
 }
 </script>
@@ -9689,12 +9689,18 @@ if ('serviceWorker' in navigator) {
 .rang-history-popup .rhp-tr-h {
   font-weight: 700;
   color: var(--rhp-fg-mute);
-  background: rgba(255,255,255,0.03);
+  /* Fond OPAQUE (pas rgba) pour que la 1ère ligne ne transparaisse pas
+     à travers le header sticky. On utilise --rhp-bg qui est défini sur
+     la popup et correspond à --card du site. */
+  background: var(--rhp-bg, #0f1620);
   position: sticky;
   top: 0;
+  z-index: 2;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   font-size: 9px;
+  /* Petit border-bottom plus marqué pour bien séparer du contenu */
+  border-bottom: 1px solid var(--rhp-border, rgba(125,211,252,0.15));
 }
 .rang-history-popup .rhp-tr:last-child {
   border-bottom: none;
