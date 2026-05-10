@@ -572,14 +572,19 @@
   // ══════════════════════════════════════════════════════════════════════════
   function buildClassement(container, evolution, classement, segments) {
 
-    // pts du segment précédant le dernier (avant-dernier segment avec une valeur)
+    // pts du segment courant (= dernier non-null dans ep.values).
+    // Patch #11 : précédemment on retournait l'avant-dernier segment (=
+    // début du segment précédent). On retourne désormais le DERNIER segment
+    // non-null (= pts_start du segment courant) pour cohérence avec
+    // "Mensuel" qui affiche maintenant pts_actuel du dernier segment (=
+    // live anticipé). Sémantique : Mensuel - Seg. préc. = gain du mois
+    // courant (au lieu du gain du mois précédent).
     function getPrevSegPts(row) {
       const ep = evolution.find(p => p.licence === row.licence);
       if (!ep) return null;
-      // prendre l'avant-dernière valeur non nulle
       const nonNull = ep.values.map((v,i) => v != null ? {v,i} : null).filter(Boolean);
-      if (nonNull.length < 2) return null;
-      return nonNull[nonNull.length - 2].v;
+      if (nonNull.length < 1) return null;
+      return nonNull[nonNull.length - 1].v;
     }
 
     function offPts(row, offKey) {
@@ -594,7 +599,7 @@
 
     const infoClass = document.createElement('div');
     infoClass.className = 'info';
-    infoClass.textContent = 'Forme = Mensuel − Segment précédent. ▲ vert ≥ +10 pts, ▼ rouge ≤ −10 pts, jaune sinon.';
+    infoClass.textContent = 'Forme = Mensuel − Début du segment. Gain cumulé sur le segment en cours. ▲ vert ≥ +10 pts, ▼ rouge ≤ −10 pts, jaune sinon.';
 
     // Bouton export PDF
     const classExportRow = document.createElement('div');
