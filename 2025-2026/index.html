@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <link rel="manifest" href="./manifest.webmanifest"/>
 <meta name="theme-color" content="#0b0e14"/>
-<meta name="build-id" content="20260511162457"/>
+<meta name="build-id" content="20260511170515"/>
 <link rel="icon" href="./assets/icons/icon-192.png"/>
 <link rel="apple-touch-icon" href="./assets/icons/icon-180.png"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
@@ -1377,7 +1377,7 @@ html[data-skin="P"] .sr-bar-bg{background:#0a0118;border-radius:0;border:1px sol
   <div class="skin-l3 skin-l3-C statusbar"><span>● PING-STATS [v8] · CONNECTED</span><span class="blink">_</span></div>
   <div class="header">
     <div class="h1">BREVANNAISE AS • Stats</div>
-    <div class="h2">Export mobile • 2026-05-11 16:24</div>
+    <div class="h2">Export mobile • 2026-05-11 17:05</div>
     <div class="tabs"><button class="tab-btn" type="button" data-tab="accueil">🏠 Accueil</button><button class="tab-btn" type="button" data-tab="joueurs">👤 Joueurs</button><button class="tab-btn" type="button" data-tab="equipe">🏓 Équipe</button><button class="tab-btn" type="button" data-tab="stats">📊 Stats avancées</button><button class="tab-btn" type="button" data-tab="tools">🎯 Outils</button><button class="tab-btn" type="button" data-tab="scoreboards">🏆 Scoreboards</button><button class="tab-btn" type="button" data-tab="settings">⚙️ Réglages</button></div>
   </div>
   <div class="season-bar" id="season-bar" role="navigation" aria-label="Sélection de saison"><span class="season-bar-label">📅 Saison :</span><span class="season-bar-pills"><a class="season-pill" href="../index.html">Cumul</a><a class="season-pill" href="../2022-2023/index.html">2022-2023</a><a class="season-pill" href="../2023-2024/index.html">2023-2024</a><a class="season-pill" href="../2024-2025/index.html">2024-2025</a><span class="season-pill is-active">2025-2026</span></span><span class="season-bar-info">Saison 2025-2026</span></div>
@@ -2643,21 +2643,42 @@ table.players-table tbody td {
       console.error('[match-day] data-share-match invalide :', err);
       return;
     }
-    // Adapter au format attendu par PingShare.shareMatch
+    // Adapter au format attendu par PingShare.shareMatch (cf. share_v9.py
+    // _decorateScoreboardRows : signature {player_name, opp_name, player_pts,
+    // opp_pts, win:bool, sets:str, pointres:num, score:str, is_perf, is_contre, ...})
+    const isWin = (data.won === 'V');
+    // Calculer le score sets (X-Y) depuis la liste des sets "11-9 9-11..."
+    let setsW = 0, setsL = 0;
+    if(data.sets){
+      String(data.sets).split(/\s+/).forEach(s => {
+        const m = s.trim().match(/^(\d+)\s*[-:]\s*(\d+)$/);
+        if(m){
+          const a = parseInt(m[1], 10), b = parseInt(m[2], 10);
+          if(a > b) setsW++; else if(b > a) setsL++;
+        }
+      });
+    }
+    const diffPts = (data.opp_pts != null && data.player_pts != null)
+      ? (Number(data.opp_pts) - Number(data.player_pts)) : null;
+    const isClean03 = (setsW === 0 && setsL === 3);
+    const isPerf   = isWin  && diffPts != null && diffPts > 0;
+    const isContre = !isWin && diffPts != null && diffPts < 0;
+    const isCouac  = !isWin && isClean03 && diffPts != null && diffPts < 0;
+
     const matchData = {
-      player_name:    data.player_name || '',
-      opp_name:       data.opp_name || '',
-      // pts attendus en strings/numbers, on garde tels quels
-      pts_for:        data.player_pts,
-      pts_against:    data.opp_pts,
-      vd:             data.won || '',
-      pointres:       data.pointres,
-      sets_str:       data.sets || '',
-      date:           data.date || '',
-      division:       data.div || '',
-      team_name:      data.team || '',
-      adv_team_name:  data.team_adv || '',
-      idpartie:       data.idpartie || '',
+      player_name:  data.player_name || '',
+      opp_name:     data.opp_name || '',
+      opp_club:     data.team_adv || '',
+      player_pts:   data.player_pts,
+      opp_pts:      data.opp_pts,
+      date:         data.date || '',
+      win:          isWin,
+      sets:         data.sets || '',
+      pointres:     data.pointres,
+      score:        setsW + '-' + setsL,
+      is_perf:      isPerf,
+      is_contre:    isContre && !isCouac,
+      is_couac:     isCouac,
     };
     try {
       window.PingShare.shareMatch(matchData);
@@ -11132,7 +11153,7 @@ document.addEventListener('click', (e)=>{
 // PWA: service worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function(){
-    navigator.serviceWorker.register('./service-worker.js?v=20260511162457');
+    navigator.serviceWorker.register('./service-worker.js?v=20260511170515');
   });
 }
 </script>
