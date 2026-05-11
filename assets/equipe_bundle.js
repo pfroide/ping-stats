@@ -379,10 +379,11 @@
       ctx.fillText('Aucune donnée pour cette phase.', 20, h / 2); return;
     }
 
-    // Ajouter le point "Segment en cours" (pts_actuel du dernier segment filtré)
-    const lastSeg = filteredSegs[filteredSegs.length - 1];
-    const lastSegOrigIdx = segments.findIndex(s => s.nom === lastSeg.nom);
-    const labels = [...filteredSegs.map(s => s.nom), 'En cours'];
+    // L'ancien point "Segment en cours" (qui ajoutait pts_actuel du dernier
+    // segment comme un point supplémentaire à droite) a été supprimé : il
+    // créait une duplication d'info car le dernier segment lui-même affiche
+    // désormais pts_actuel via le carry-forward côté Python.
+    const labels = filteredSegs.map(s => s.nom);
 
     // Construire les séries
     const series = [];
@@ -394,8 +395,6 @@
         const origIdx = segments.findIndex(os => os.nom === s.nom);
         return origIdx >= 0 ? p.values[origIdx] : null;
       });
-      const actVal = (lastSegOrigIdx >= 0 && p.pts_actuel) ? (p.pts_actuel[lastSegOrigIdx] ?? null) : null;
-      values.push(actVal);
 
       // Mode relatif : soustraction par rapport à première valeur non nulle
       if (chartMode === 'relatif') {
@@ -445,13 +444,8 @@
       }
     }
 
-    // Colonne "En cours" surlignée
-    const curIdx = n - 1;
-    const halfGap = n > 1 ? (x(1) - x(0)) / 2 : 20;
-    ctx.save();
-    ctx.fillStyle = 'rgba(125,211,252,0.07)'; ctx.strokeStyle = 'rgba(125,211,252,0.28)'; ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.rect(x(curIdx) - halfGap, top, halfGap * 2 + 2, bottom - top);
-    ctx.fill(); ctx.stroke(); ctx.restore();
+    // Plus de colonne "En cours" surlignée (point retiré).
+    const curIdx = -1;  // utilisé plus bas pour le style des labels, sans effet
 
     // Labels X
     labels.forEach((lbl, i) => {
@@ -572,19 +566,16 @@
   // ══════════════════════════════════════════════════════════════════════════
   function buildClassement(container, evolution, classement, segments) {
 
-    // pts du segment courant (= dernier non-null dans ep.values).
-    // Patch #11 : précédemment on retournait l'avant-dernier segment (=
-    // début du segment précédent). On retourne désormais le DERNIER segment
-    // non-null (= pts_start du segment courant) pour cohérence avec
-    // "Mensuel" qui affiche maintenant pts_actuel du dernier segment (=
-    // live anticipé). Sémantique : Mensuel - Seg. préc. = gain du mois
-    // courant (au lieu du gain du mois précédent).
+    // pts du segment précédant le dernier (avant-dernier segment avec une valeur).
+    // Avec MENSUEL = pts_start segment courant, Forme = MENSUEL - Seg.préc.
+    // = gain entre début segment précédent et début segment courant
+    // = gain réalisé pendant tout le segment précédent (mois clos).
     function getPrevSegPts(row) {
       const ep = evolution.find(p => p.licence === row.licence);
       if (!ep) return null;
       const nonNull = ep.values.map((v,i) => v != null ? {v,i} : null).filter(Boolean);
-      if (nonNull.length < 1) return null;
-      return nonNull[nonNull.length - 1].v;
+      if (nonNull.length < 2) return null;
+      return nonNull[nonNull.length - 2].v;
     }
 
     function offPts(row, offKey) {
@@ -599,7 +590,7 @@
 
     const infoClass = document.createElement('div');
     infoClass.className = 'info';
-    infoClass.textContent = 'Forme = Mensuel − Début du segment. Gain cumulé sur le segment en cours. ▲ vert ≥ +10 pts, ▼ rouge ≤ −10 pts, jaune sinon.';
+    infoClass.textContent = 'Forme = Mensuel − Segment précédent. ▲ vert ≥ +10 pts, ▼ rouge ≤ −10 pts, jaune sinon.';
 
     // Bouton export PDF
     const classExportRow = document.createElement('div');
