@@ -580,11 +580,20 @@
       return nonNull[nonNull.length - 2].v;
     }
 
+    // Plancher officiel FFTT pour les classements adultes : 500 pts.
+    // Les valeurs publiées en début de phase ne descendent jamais en dessous.
+    // On clamp ici quelle que soit la source (row direct OU fallback evolution).
+    const FFTT_PTS_FLOOR = 500;
     function offPts(row, offKey) {
-      if (row[offKey] != null) return row[offKey];
-      const ep = evolution.find(p => p.licence === row.licence);
-      if (ep) for (const v of ep.values) if (v != null) return v;
-      return null;
+      let v = null;
+      if (row[offKey] != null) {
+        v = row[offKey];
+      } else {
+        const ep = evolution.find(p => p.licence === row.licence);
+        if (ep) for (const x of ep.values) if (x != null) { v = x; break; }
+      }
+      if (v == null) return null;
+      return Math.max(v, FFTT_PTS_FLOOR);
     }
 
     const tableWrap = document.createElement('div');
@@ -737,10 +746,16 @@
     const sortState = { col: 'progres', asc: false };
 
     function offP1(row) {
-      if (row.pts_officiel_p1 != null) return row.pts_officiel_p1;
-      const ep = evolution.find(p => p.licence === row.licence);
-      if (ep) for (const v of ep.values) if (v != null) return v;
-      return null;
+      // Plancher FFTT 500 (cf. offPts plus haut pour le même comportement).
+      let v = null;
+      if (row.pts_officiel_p1 != null) {
+        v = row.pts_officiel_p1;
+      } else {
+        const ep = evolution.find(p => p.licence === row.licence);
+        if (ep) for (const x of ep.values) if (x != null) { v = x; break; }
+      }
+      if (v == null) return null;
+      return Math.max(v, 500);
     }
 
     function getProgres(row) {
