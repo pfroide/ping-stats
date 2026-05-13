@@ -122,7 +122,9 @@
     ctx.setTransform(dpr(), 0, 0, dpr(), 0, 0);
     return { ctx, w: rect.width, h: rect.height };
   }
-  const fmtPts = v => v == null ? '' : Number.isInteger(v) ? String(v) : v.toFixed(2).replace('.', ',');
+  // Formatage des points de classement : arrondi à l'entier (les points
+  // FFTT sont publiés en entiers, on suit la convention officielle).
+  const fmtPts = v => v == null ? '' : String(Math.round(v));
   const fmtDelta = v => v == null ? '' : (v > 0 ? '+' : '') + fmtPts(v);
 
   // ── Données ───────────────────────────────────────────────────────────────
@@ -615,10 +617,12 @@
         const p2   = offPts(r, 'pts_officiel_p2');
         const prev = getPrevSegPts(r);
         const curr = r.pts_mensuel;
-        const forme   = (curr != null && prev != null) ? Math.round((curr - prev) * 100) / 100 : null;
-        const progres = (p1   != null && curr != null) ? Math.round((curr - p1)   * 100) / 100 : null;
-        function s(v)  { return v != null ? (Number.isInteger(v) ? v : v.toFixed(2)) : '—'; }
-        function sp(v) { return v == null ? '—' : (v >= 0 ? '+' + s(v) : s(v)); }
+        // Toutes les valeurs de la table sont arrondies à l'entier (cohérent
+        // avec la convention FFTT et l'affichage HTML).
+        const forme   = (curr != null && prev != null) ? Math.round(curr - prev) : null;
+        const progres = (p1   != null && curr != null) ? Math.round(curr - p1)   : null;
+        function s(v)  { return v != null ? String(Math.round(v)) : '—'; }
+        function sp(v) { return v == null ? '—' : (v >= 0 ? '+' + v : String(v)); }
         return [r.name || '—', s(p1), s(p2), s(prev), s(curr), sp(forme), sp(progres)];
       });
       doc.autoTable({
@@ -700,13 +704,11 @@
         const curr = row.pts_mensuel;
         let formeHtml = '<span style="color:#6e7681">—</span>';
         if (prev != null && curr != null) {
-          const delta = Math.round((curr - prev) * 100) / 100;
+          const delta = Math.round(curr - prev);  // entier (cohérent avec colonnes pts)
           const col   = delta > 0 ? '#4ade80' : delta < 0 ? '#f87171' : '#9aa4b2';
           const sign  = delta > 0 ? '+' : '';
           const arrow = delta > 0 ? '▲' : delta < 0 ? '▼' : '▶';
-          const abs   = Math.abs(delta);
-          const str   = Number.isInteger(abs) ? abs : abs.toFixed(2);
-          formeHtml = `<span style="background:${col}22;color:${col};border:1px solid ${col}55;border-radius:8px;padding:3px 10px;font-weight:700;font-size:13px;white-space:nowrap">${arrow} ${sign}${delta < 0 ? '-' : ''}${str}</span>`;
+          formeHtml = `<span style="background:${col}22;color:${col};border:1px solid ${col}55;border-radius:8px;padding:3px 10px;font-weight:700;font-size:13px;white-space:nowrap">${arrow} ${sign}${delta}</span>`;
         }
 
         tr.innerHTML = `
@@ -745,12 +747,13 @@
       const p1 = offP1(row);
       const men = row.pts_mensuel;
       if (p1 == null || men == null) return null;
-      return Math.round((men - p1) * 100) / 100;
+      // Arrondi entier (cohérent avec la convention FFTT et l'affichage).
+      return Math.round(men - p1);
     }
 
     function fmtPts(v) {
       if (v == null) return '—';
-      return Number.isInteger(v) ? v : v.toFixed(2);
+      return String(Math.round(v));
     }
 
     function fmtDiff(v) {
@@ -758,9 +761,8 @@
       const col = v > 0 ? '#4ade80' : v < 0 ? '#f87171' : '#9aa4b2';
       const sign = v > 0 ? '+' : '';
       const arrow = v > 0 ? '▲' : v < 0 ? '▼' : '▶';
-      const abs = Math.abs(v);
-      const str = Number.isInteger(abs) ? abs : abs.toFixed(2);
-      return `<span style="background:${col}22;color:${col};border:1px solid ${col}55;border-radius:8px;padding:3px 10px;font-weight:700;font-size:13px;white-space:nowrap">${arrow} ${sign}${v < 0 ? '-' : ''}${str}</span>`;
+      const rounded = Math.round(v);
+      return `<span style="background:${col}22;color:${col};border:1px solid ${col}55;border-radius:8px;padding:3px 10px;font-weight:700;font-size:13px;white-space:nowrap">${arrow} ${sign}${rounded}</span>`;
     }
 
     const tableWrap = document.createElement('div');
