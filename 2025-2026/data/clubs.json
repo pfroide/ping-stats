@@ -8,5 +8,25 @@
     "seasons": [],
     "season_data_urls": {},
     "season_completeness": {}
+  },
+  {
+    "id": "8940458",
+    "name": "AL VILLECRESNES",
+    "slug": "8940458",
+    "default": true,
+    "data_url": "data/club_8940458.json",
+    "seasons": [],
+    "season_data_urls": {},
+    "season_completeness": {}
+  },
+  {
+    "id": "8911083",
+    "name": "YERRES ATT",
+    "slug": "8911083",
+    "default": true,
+    "data_url": "data/club_8911083.json",
+    "seasons": [],
+    "season_data_urls": {},
+    "season_completeness": {}
   }
 ]
