@@ -1,30 +1,16 @@
 {
-  "rows_total": 1924,
+  "rows_total": 5,
   "segment_id_dtype_raw": "int64",
   "segment_id_unique_raw_sample": [
     "1",
-    "2",
-    "3",
-    "4",
     "5",
-    "6",
-    "7",
-    "8",
-    "9",
-    "10"
+    "8"
   ],
   "segment_id_unique_num": [
     1,
-    2,
-    3,
-    4,
     5,
-    6,
-    7,
-    8,
-    9,
-    10
+    8
   ],
-  "count_segment_1": 134,
+  "count_segment_1": 3,
   "bad_values_top": {}
 }
