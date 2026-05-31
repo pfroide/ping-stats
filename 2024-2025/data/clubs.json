@@ -8,15 +8,5 @@
     "seasons": [],
     "season_data_urls": {},
     "season_completeness": {}
-  },
-  {
-    "id": "8940458",
-    "name": "AL VILLECRESNES",
-    "slug": "8940458",
-    "default": false,
-    "data_url": "data/club_8940458.json",
-    "seasons": [],
-    "season_data_urls": {},
-    "season_completeness": {}
   }
 ]
