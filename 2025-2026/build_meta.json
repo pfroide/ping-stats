@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-06-07T11:48:15",
+  "generated_at": "2026-06-08T13:02:46",
   "csv": "C:\\Users\\tonyc\\Mon Drive\\ping\\python\\ping_mobile_v9\\all_seasons_from_api.csv",
   "clubs": [
     "8940866"
   ],
   "n_cards_segments": 10,
   "n_blocs_tabs": 3,
-  "n_score_players": 70,
+  "n_score_players": 71,
   "n_score_gallery_tabs": 0,
   "player_pngs": false
 }
