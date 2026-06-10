@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <link rel="manifest" href="./manifest.webmanifest"/>
 <meta name="theme-color" content="#0b0e14"/>
-<meta name="build-id" content="20260610094701"/>
+<meta name="build-id" content="20260610163510"/>
 <link rel="icon" href="./assets/icons/icon-192.png"/>
 <link rel="apple-touch-icon" href="./assets/icons/icon-180.png"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
@@ -1377,7 +1377,7 @@ html[data-skin="P"] .sr-bar-bg{background:#0a0118;border-radius:0;border:1px sol
   <div class="skin-l3 skin-l3-C statusbar"><span>● PING-STATS [v8] · CONNECTED</span><span class="blink">_</span></div>
   <div class="header">
     <div class="h1">BREVANNAISE AS • Stats</div>
-    <div class="h2">Export mobile • 2026-06-10 09:47</div>
+    <div class="h2">Export mobile • 2026-06-10 16:35</div>
     <div class="tabs"><button class="tab-btn" type="button" data-tab="accueil">🏠 Accueil</button><button class="tab-btn" type="button" data-tab="joueurs">👤 Joueurs</button><button class="tab-btn" type="button" data-tab="equipe">🏓 Équipe</button><button class="tab-btn" type="button" data-tab="stats">📊 Stats avancées</button><button class="tab-btn" type="button" data-tab="tools">🎯 Outils</button><button class="tab-btn" type="button" data-tab="scoreboards">🏆 Scoreboards</button><button class="tab-btn" type="button" data-tab="settings">⚙️ Réglages</button></div>
   </div>
   <div class="season-bar" id="season-bar" role="navigation" aria-label="Sélection de saison"><span class="season-bar-label">📅 Saison :</span><span class="season-bar-pills"><a class="season-pill" href="../index.html">Cumul</a><a class="season-pill" href="../2022-2023/index.html">2022-2023</a><a class="season-pill" href="../2023-2024/index.html">2023-2024</a><a class="season-pill" href="../2024-2025/index.html">2024-2025</a><span class="season-pill is-active">2025-2026</span></span><span class="season-bar-info">Saison 2025-2026</span></div>
@@ -11672,7 +11672,7 @@ document.addEventListener('click', (e)=>{
 // PWA: service worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function(){
-    navigator.serviceWorker.register('./service-worker.js?v=20260610094701');
+    navigator.serviceWorker.register('./service-worker.js?v=20260610163510');
   });
 }
 </script>
@@ -13499,9 +13499,10 @@ if ('serviceWorker' in navigator) {
   overflow-y: auto;
 }
 .rang-history-popup .rhp-tr {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
+  gap: 8px;
   padding: 6px 12px;
   font-family: var(--dbo-mono);
   font-size: 12px;
@@ -13514,19 +13515,14 @@ if ('serviceWorker' in navigator) {
   letter-spacing: 0.5px;
   color: var(--dbo-fg-mute);
 }
-.rang-history-popup .rhp-td-ym { font-weight: 700; color: var(--dbo-fg); }
-.rang-history-popup .rhp-td-rang { font-weight: 800; color: var(--dbo-fg); font-variant-numeric: tabular-nums; }
-.rang-history-popup .rhp-tr-cat {
-  display: flex;
-  justify-content: center;
-  padding: 1px 12px 5px;
-  background: rgba(255,255,255,0.015);
-}
+.rang-history-popup .rhp-td-ym { font-weight: 700; color: var(--dbo-fg); text-align: left; }
+.rang-history-popup .rhp-td-rang { font-weight: 800; color: var(--dbo-fg); font-variant-numeric: tabular-nums; text-align: right; }
 .rang-history-popup .rhp-td-cat {
   font-family: var(--dbo-mono);
   font-size: 10px;
   font-weight: 700;
   color: var(--dbo-fg-mute);
+  text-align: center;
 }
 .rang-history-popup .rhp-td-cat.rhp-cat-changed {
   color: #f87171;
@@ -13891,7 +13887,6 @@ if ('serviceWorker' in navigator) {
         : [
             {key:'departemental', lbl:'Département', sub: sourceObj.departemental && sourceObj.departemental.scope},
             {key:'regional',      lbl:'Région',      sub: sourceObj.regional     && sourceObj.regional.scope},
-            {key:'national',      lbl:'National',    sub: 'France'},
           ];
 
       // Détection redondance super (Seniors=S, Poussins=P)
@@ -13941,7 +13936,7 @@ if ('serviceWorker' in navigator) {
       }).join('');
 
       const partialHint = isPartial
-        ? '<div class="rang-hint">Régional &amp; national en cours de calcul</div>'
+        ? '<div class="rang-hint">Classement régional en cours de calcul</div>'
         : '';
 
       return {
@@ -14231,6 +14226,22 @@ if ('serviceWorker' in navigator) {
         popup.id = 'rang-history-popup';
         popup.className = 'rang-history-popup';
         document.body.appendChild(popup);
+        // IMPORTANT : le popup est attaché à document.body (PAS dans
+        // .dashboard-overlay, car son overflow casse position:fixed). Le handler
+        // de clic de l'overlay ne capte donc pas les clics ici → on attache un
+        // handler dédié sur le popup lui-même (une seule fois, à la création).
+        popup.addEventListener('click', function(ev){
+          // Croix de fermeture
+          if(ev.target.closest('.rhp-close')){
+            ev.preventDefault();
+            _closeHistoryPopup();
+            return;
+          }
+          // Clic sur le fond (hors carte) = fermer
+          if(ev.target === popup){
+            _closeHistoryPopup();
+          }
+        });
       }
 
       const playerName = (_currentPlayerData.name || '?').replace(/\s*\(\d+\)\s*$/, '').trim();
@@ -14247,16 +14258,14 @@ if ('serviceWorker' in navigator) {
                      (history.length ? (history[history.length-1].departement || '') : '');
       var _regName = (r.regional && r.regional.scope) ||
                      (history.length ? (history[history.length-1].region || '') : '');
-      var _natName = '';
 
       var _sup = showSuperLine ? superCat : null;
 
-      // Empiler les 3 scopes (Département, Région, National), chacun avec
-      // badge + bandeau de changements de catégorie + graphe + tableau.
+      // Empiler les scopes Département et Région (le National est abandonné :
+      // non calculé, non affiché — peu pertinent pour un club et coûteux).
       var sections =
         _renderScopeSection(history, 'dep', _mode, cat, _sup, _depName) +
-        _renderScopeSection(history, 'reg', _mode, cat, _sup, _regName) +
-        _renderScopeSection(history, 'nat', _mode, cat, _sup, _natName);
+        _renderScopeSection(history, 'reg', _mode, cat, _sup, _regName);
 
       const modeLabel = (_mode === 'men') ? 'MENSUEL' : 'OFFICIEL';
 
@@ -14436,7 +14445,7 @@ if ('serviceWorker' in navigator) {
                    '</span>' + badge + banner +
                  '</div>';
 
-      // Tableau MOIS / RANG, avec la catégorie intercalée (rouge au changement).
+      // Tableau MOIS / CATÉGORIE / RANG sur une seule ligne (3 colonnes).
       var rows = '';
       var prevCat = null;
       for(var i = 0; i < history.length; i++){
@@ -14445,24 +14454,19 @@ if ('serviceWorker' in navigator) {
         var tot  = e[K.total]; if(tot == null) tot = e.total_cat;
         var cur  = (e.categorie || '').trim();
         var rangTxt = (rang != null ? rang : '–') + ' / ' + (tot != null ? tot : '–');
+        var changed = (cur && prevCat !== null && prevCat !== cur);
+        var catCls = 'rhp-td-cat' + (changed ? ' rhp-cat-changed' : '');
         rows += '<div class="rhp-tr">' +
                   '<span class="rhp-td-ym">' + safeText(e.ym) + '</span>' +
+                  '<span class="' + catCls + '">' + safeText(cur || '') + '</span>' +
                   '<span class="rhp-td-rang">' + safeText(rangTxt) + '</span>' +
                 '</div>';
-        // Ligne catégorie : affichée quand elle change (en rouge), sinon discrète
-        if(cur){
-          var changed = (prevCat !== null && prevCat !== cur);
-          rows += '<div class="rhp-tr-cat">' +
-                    '<span class="rhp-td-cat' + (changed ? ' rhp-cat-changed' : '') + '">' +
-                      safeText(cur) +
-                    '</span>' +
-                  '</div>';
-          prevCat = cur;
-        }
+        if(cur) prevCat = cur;
       }
       var table = '<div class="rhp-table">' +
                     '<div class="rhp-tr rhp-th">' +
                       '<span class="rhp-td-ym">MOIS</span>' +
+                      '<span class="rhp-td-cat">CAT.</span>' +
                       '<span class="rhp-td-rang">RANG</span>' +
                     '</div>' +
                     '<div class="rhp-table-body">' + rows + '</div>' +
