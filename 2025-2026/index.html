@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <link rel="manifest" href="./manifest.webmanifest"/>
 <meta name="theme-color" content="#0b0e14"/>
-<meta name="build-id" content="20260609232842"/>
+<meta name="build-id" content="20260610022529"/>
 <link rel="icon" href="./assets/icons/icon-192.png"/>
 <link rel="apple-touch-icon" href="./assets/icons/icon-180.png"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
@@ -1377,7 +1377,7 @@ html[data-skin="P"] .sr-bar-bg{background:#0a0118;border-radius:0;border:1px sol
   <div class="skin-l3 skin-l3-C statusbar"><span>● PING-STATS [v8] · CONNECTED</span><span class="blink">_</span></div>
   <div class="header">
     <div class="h1">BREVANNAISE AS • Stats</div>
-    <div class="h2">Export mobile • 2026-06-09 23:28</div>
+    <div class="h2">Export mobile • 2026-06-10 02:25</div>
     <div class="tabs"><button class="tab-btn" type="button" data-tab="accueil">🏠 Accueil</button><button class="tab-btn" type="button" data-tab="joueurs">👤 Joueurs</button><button class="tab-btn" type="button" data-tab="equipe">🏓 Équipe</button><button class="tab-btn" type="button" data-tab="stats">📊 Stats avancées</button><button class="tab-btn" type="button" data-tab="tools">🎯 Outils</button><button class="tab-btn" type="button" data-tab="scoreboards">🏆 Scoreboards</button><button class="tab-btn" type="button" data-tab="settings">⚙️ Réglages</button></div>
   </div>
   <div class="season-bar" id="season-bar" role="navigation" aria-label="Sélection de saison"><span class="season-bar-label">📅 Saison :</span><span class="season-bar-pills"><a class="season-pill" href="../index.html">Cumul</a><a class="season-pill" href="../2022-2023/index.html">2022-2023</a><a class="season-pill" href="../2023-2024/index.html">2023-2024</a><a class="season-pill" href="../2024-2025/index.html">2024-2025</a><span class="season-pill is-active">2025-2026</span></span><span class="season-bar-info">Saison 2025-2026</span></div>
@@ -1916,7 +1916,7 @@ table.players-table tbody td {
   });
 })();
 </script>
-</div><div class="tab-panel" data-tab="equipe"><div class="subtabs"><button type="button" class="subtab-btn active" data-group="equipe_subtabs" data-subtab="evol">📈 Évolution &amp; Classement</button><button type="button" class="subtab-btn" data-group="equipe_subtabs" data-subtab="jour">📅 Journée</button><button type="button" class="subtab-btn" data-group="equipe_subtabs" data-subtab="pred">🔮 Prédictions</button><button type="button" class="subtab-btn" data-group="equipe_subtabs" data-subtab="lb">🏆 Classements thématiques</button><button type="button" class="subtab-btn" data-group="equipe_subtabs" data-subtab="jr">📰 Journal</button></div><div class="subtab-panel active" data-group="equipe_subtabs" data-subtab="evol"><section class="card"><div class="card-h"><div class="card-title">Équipe</div><div class="card-sub">Évolution mensuelle des classements et tableau des classements. 100% offline.</div></div><div style="padding:10px"><div id="equipe-root"></div></div></section></div><div class="subtab-panel" data-group="equipe_subtabs" data-subtab="jour"><section class="card"><div class="card-h"><div class="card-title">📅 Journée</div><div class="card-sub">Erreur d'intégration</div></div><div class="muted" style="padding:16px">NameError("name 'df' is not defined")</div></section></div><div class="subtab-panel" data-group="equipe_subtabs" data-subtab="pred"><style>
+</div><div class="tab-panel" data-tab="equipe"><div class="subtabs"><button type="button" class="subtab-btn active" data-group="equipe_subtabs" data-subtab="evol">📈 Évolution &amp; Classement</button><button type="button" class="subtab-btn" data-group="equipe_subtabs" data-subtab="jour">📅 Journée</button><button type="button" class="subtab-btn" data-group="equipe_subtabs" data-subtab="pred">🔮 Prédictions</button><button type="button" class="subtab-btn" data-group="equipe_subtabs" data-subtab="lb">🏆 Classements thématiques</button><button type="button" class="subtab-btn" data-group="equipe_subtabs" data-subtab="jr">📰 Journal</button></div><div class="subtab-panel active" data-group="equipe_subtabs" data-subtab="evol"><section class="card"><div class="card-h"><div class="card-title">Équipe</div><div class="card-sub">Évolution mensuelle des classements et tableau des classements. 100% offline.</div></div><div style="padding:10px"><div id="equipe-root"></div></div></section></div><div class="subtab-panel" data-group="equipe_subtabs" data-subtab="jour"><section class="card"><div class="card-h"><div class="card-title">📅 Journée</div><div class="card-sub">Erreur d'intégration</div></div><div class="muted" style="padding:16px">NameError("name 'score_mod' is not defined")</div></section></div><div class="subtab-panel" data-group="equipe_subtabs" data-subtab="pred"><style>
 .predictions-root{
   --bg: var(--bg, #fafafa);
   --bg-card: var(--card, #ffffff);
@@ -11761,7 +11761,7 @@ document.addEventListener('click', (e)=>{
 // PWA: service worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function(){
-    navigator.serviceWorker.register('./service-worker.js?v=20260609232842');
+    navigator.serviceWorker.register('./service-worker.js?v=20260610022529');
   });
 }
 </script>
@@ -13430,56 +13430,25 @@ if ('serviceWorker' in navigator) {
 }
 
 /* ─── Popup historique des rangs ─────────────────────────────────────── */
-/* ═══════════════════════════════════════════════════════════════════════
-   Popup historique des rangs.
-   ⚠️ Ces sélecteurs sont volontairement HORS du scope .dashboard-overlay
-   car la popup est attachée à document.body (et non à .dashboard-overlay)
-   pour éviter les bugs où `position: fixed` se réfère à un parent
-   transformé/scrollable au lieu du viewport (cf. .dashboard-overlay
-   qui a `overflow-y: auto` → casse position:fixed sur certains navigateurs,
-   notamment WebView Android).
-
-   Pour conserver la cohérence visuelle (couleurs, fonts), on redéfinit les
-   variables locales sur le conteneur de la popup, en les liant aux variables
-   du site (qui sont globales sur :root).
-   ═══════════════════════════════════════════════════════════════════════ */
-.rang-history-popup {
-  --rhp-bg          : var(--card, #0f1620);
-  --rhp-bg-deep     : rgba(0,0,0,0.2);
-  --rhp-border      : var(--line, rgba(125,211,252,0.12));
-  --rhp-border-soft : rgba(255,255,255,0.06);
-  --rhp-fg          : var(--txt, #e6e9ef);
-  --rhp-fg-dim      : var(--muted, #9aa4b2);
-  --rhp-fg-mute     : var(--muted, #5b6573);
-  --rhp-accent      : var(--accent, #7dd3fc);
-  --rhp-warn        : var(--mid, #fbbf24);
-  --rhp-mono        : var(--skin-mono, ui-monospace, "JetBrains Mono", monospace);
-  --rhp-display     : var(--skin-display, "Inter Tight", system-ui, sans-serif);
-
+.dashboard-overlay .rang-history-popup {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.75);
   display: none;
   align-items: center;
   justify-content: center;
-  z-index: 100000; /* au-dessus de .dashboard-overlay (z=10000) */
+  z-index: 1000;
   padding: 20px;
   -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
-  font-family: var(--rhp-display);
-  color: var(--rhp-fg);
-  box-sizing: border-box;
 }
-.rang-history-popup *,
-.rang-history-popup *::before,
-.rang-history-popup *::after { box-sizing: border-box; }
-.rang-history-popup.active {
+.dashboard-overlay .rang-history-popup.active {
   display: flex;
 }
-.rang-history-popup .rhp-card {
-  background: var(--rhp-bg);
-  border: 1px solid var(--rhp-border);
-  border-radius: 14px;
+.dashboard-overlay .rhp-card {
+  background: var(--dbo-bg-card);
+  border: 1px solid var(--dbo-border);
+  border-radius: var(--dbo-radius-l);
   width: 100%;
   max-width: 600px;
   max-height: 90vh;
@@ -13487,202 +13456,169 @@ if ('serviceWorker' in navigator) {
   padding: 18px;
   position: relative;
 }
-.rang-history-popup .rhp-header {
+.dashboard-overlay .rhp-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 12px;
   padding-bottom: 10px;
-  border-bottom: 1px solid var(--rhp-border-soft);
-  gap: 12px;
+  border-bottom: 1px solid var(--dbo-border-soft);
 }
-.rang-history-popup .rhp-title {
-  font-family: var(--rhp-mono);
+.dashboard-overlay .rhp-title {
+  font-family: var(--dbo-mono);
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--rhp-accent);
-  flex: 1;
-  min-width: 0;
-  word-break: break-word;
+  color: var(--dbo-accent);
 }
-.rang-history-popup .rhp-close {
+.dashboard-overlay .rhp-close {
   background: transparent;
-  border: 1px solid var(--rhp-border);
-  color: var(--rhp-fg);
+  border: 1px solid var(--dbo-border);
+  color: var(--dbo-fg);
   width: 30px;
   height: 30px;
-  min-width: 30px;
   border-radius: 50%;
   cursor: pointer;
   font-size: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
-  padding: 0;
-  line-height: 1;
 }
-.rang-history-popup .rhp-close:hover {
-  background: var(--rhp-border-soft);
+.dashboard-overlay .rhp-close:hover {
+  background: var(--dbo-border-soft);
 }
-.rang-history-popup .rhp-svg-wrap {
+.dashboard-overlay .rhp-svg-wrap {
   width: 100%;
-  background: var(--rhp-bg-deep);
+  background: var(--dbo-bg-deep, rgba(0,0,0,0.2));
   border-radius: 10px;
   padding: 10px;
   margin-bottom: 12px;
 }
-.rang-history-popup .rhp-svg {
+.dashboard-overlay .rhp-svg {
   display: block;
   width: 100%;
   height: auto;
-  background: var(--rhp-bg-deep);
-  border-radius: 10px;
-  padding: 8px;
-  margin-bottom: 8px;
 }
-.rang-history-popup .rhp-legend {
+.dashboard-overlay .rhp-legend {
   display: flex;
   gap: 16px;
   justify-content: center;
   margin-bottom: 8px;
   flex-wrap: wrap;
 }
-.rang-history-popup .rhp-legend-item {
+.dashboard-overlay .rhp-legend-item {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-family: var(--rhp-mono);
+  font-family: var(--dbo-mono);
   font-size: 10px;
   letter-spacing: 0.06em;
-  color: var(--rhp-fg);
+  color: var(--dbo-fg);
 }
-.rang-history-popup .rhp-legend-color {
+.dashboard-overlay .rhp-legend-color {
   display: inline-block;
   width: 12px;
   height: 3px;
   border-radius: 2px;
 }
-.rang-history-popup .rhp-empty {
+.dashboard-overlay .rhp-empty {
   text-align: center;
-  color: var(--rhp-fg-mute);
-  font-family: var(--rhp-mono);
+  color: var(--dbo-fg-mute);
+  font-family: var(--dbo-mono);
   font-size: 11px;
   padding: 30px;
 }
 
-/* ─── Bloc série (1 graph + tableau, par catégorie/super) ───────────── */
-.rang-history-popup .rhp-series {
-  margin-bottom: 18px;
-  padding-bottom: 14px;
-  border-bottom: 1px solid var(--rhp-border-soft);
+/* Sections par scope géographique (Département / Région / National) */
+.dashboard-overlay .rhp-mode {
+  font-family: var(--dbo-mono);
+  font-size: 11px;
+  color: var(--dbo-fg-mute);
+  font-weight: 600;
 }
-.rang-history-popup .rhp-series:last-child {
-  border-bottom: none;
-  margin-bottom: 0;
+.dashboard-overlay .rhp-scope-section {
+  margin-bottom: 22px;
 }
-.rang-history-popup .rhp-series-h {
+.dashboard-overlay .rhp-scope-head {
   display: flex;
   align-items: center;
-  gap: 8px;
   flex-wrap: wrap;
-  margin-bottom: 8px;
-  padding: 0 4px;
-}
-.rang-history-popup .rhp-series-name {
-  font-family: var(--rhp-mono);
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.10em;
-  text-transform: uppercase;
-  color: var(--rhp-fg);
-}
-/* Sous-libellé scope (Département 94, Région IDF, National France) :
-   affiché à côté du nom de série pour distinguer les 6 graphiques. */
-.rang-history-popup .rhp-series-scope {
-  display: inline-block;
-  margin-left: 8px;
-  font-family: var(--rhp-mono);
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--rhp-fg-mute, rgba(255, 255, 255, 0.55));
-  background: rgba(255, 255, 255, 0.05);
-  padding: 2px 6px;
-  border-radius: 4px;
-}
-.rang-history-popup .rhp-cat-change {
-  font-family: var(--rhp-mono);
-  font-size: 9px;
-  font-weight: 600;
-  color: var(--rhp-warn);
-  background: rgba(245, 158, 11, 0.12);
-  padding: 2px 6px;
-  border-radius: 4px;
-  letter-spacing: 0.04em;
-}
-
-/* ─── Tableau chiffré ───────────────────────────────────────────────── */
-.rang-history-popup .rhp-table {
-  width: 100%;
-  max-height: 200px;
-  overflow-y: auto;
-  border: 1px solid var(--rhp-border-soft);
-  border-radius: 6px;
-  font-family: var(--rhp-mono);
-  font-size: 10px;
-  background: var(--rhp-bg-deep);
-}
-.rang-history-popup .rhp-tr {
-  display: grid;
-  grid-template-columns: 1fr 1.4fr;
   gap: 8px;
-  padding: 4px 8px;
-  border-bottom: 1px solid var(--rhp-border-soft);
+  margin: 6px 0 4px;
+}
+.dashboard-overlay .rhp-scope-cat {
+  display: inline-flex;
   align-items: center;
+  gap: 6px;
+  font-family: var(--dbo-mono);
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--dbo-fg);
 }
-.rang-history-popup .rhp-tr:has(.rhp-td-cat) {
-  grid-template-columns: 1fr 1.2fr 0.8fr;
-}
-.rang-history-popup .rhp-tr-h {
+.dashboard-overlay .rhp-scope-badge {
+  font-family: var(--dbo-mono);
+  font-size: 10px;
   font-weight: 700;
-  color: var(--rhp-fg-mute);
-  /* Fond OPAQUE (pas rgba) pour que la 1ère ligne ne transparaisse pas
-     à travers le header sticky. On utilise --rhp-bg qui est défini sur
-     la popup et correspond à --card du site. */
-  background: var(--rhp-bg, #0f1620);
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  font-size: 9px;
-  /* Petit border-bottom plus marqué pour bien séparer du contenu */
-  border-bottom: 1px solid var(--rhp-border, rgba(125,211,252,0.15));
+  letter-spacing: 0.5px;
+  color: var(--dbo-fg-mute);
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 6px;
+  padding: 3px 8px;
 }
-.rang-history-popup .rhp-tr:last-child {
-  border-bottom: none;
-}
-.rang-history-popup .rhp-td {
-  color: var(--rhp-fg);
-}
-.rang-history-popup .rhp-td-ym {
-  font-weight: 600;
-}
-.rang-history-popup .rhp-td-rt {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-.rang-history-popup .rhp-td-cat {
-  text-align: right;
-  color: var(--rhp-fg-mute);
-}
-.rang-history-popup .rhp-td-cat-changed {
-  color: var(--rhp-warn);
+.dashboard-overlay .rhp-cat-banner {
+  font-family: var(--dbo-mono);
+  font-size: 10px;
   font-weight: 700;
+  color: #facc15;
+  background: rgba(250,204,21,0.10);
+  border: 1px solid rgba(250,204,21,0.30);
+  border-radius: 6px;
+  padding: 3px 8px;
+}
+.dashboard-overlay .rhp-table {
+  margin-top: 8px;
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.dashboard-overlay .rhp-table-body {
+  max-height: 180px;
+  overflow-y: auto;
+}
+.dashboard-overlay .rhp-tr {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 12px;
+  font-family: var(--dbo-mono);
+  font-size: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.dashboard-overlay .rhp-th {
+  background: rgba(255,255,255,0.05);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: var(--dbo-fg-mute);
+}
+.dashboard-overlay .rhp-td-ym { font-weight: 700; color: var(--dbo-fg); }
+.dashboard-overlay .rhp-td-rang { font-weight: 800; color: var(--dbo-fg); font-variant-numeric: tabular-nums; }
+.dashboard-overlay .rhp-tr-cat {
+  display: flex;
+  justify-content: center;
+  padding: 1px 12px 5px;
+  background: rgba(255,255,255,0.015);
+}
+.dashboard-overlay .rhp-td-cat {
+  font-family: var(--dbo-mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--dbo-fg-mute);
+}
+.dashboard-overlay .rhp-td-cat.rhp-cat-changed {
+  color: #f87171;
 }
 
 .dashboard-overlay .placeholder {
@@ -13755,40 +13691,12 @@ if ('serviceWorker' in navigator) {
       const lastMatch = tl[tl.length - 1];
       const lastSegId = lastMatch.segment_id;
       const lastPhase = lastMatch.phase;
-
-      // ── MENSUEL ────────────────────────────────────────────────────
-      // Sémantique : "ce que sera la prochaine valeur officielle FFTT".
-      // - Si le joueur a au moins un match dans le mois courant
-      //   → MENSUEL = pts_start du segment courant (= valeur en début de mois,
-      //     car les matchs en cours seront validés au mois suivant).
-      // - Si pas de match dans le mois courant
-      //   → MENSUEL = LIVE (= pts_actuel du dernier segment terminé), car
-      //     plus rien ne va changer ce mois-ci.
-      // Exemples :
-      //   TIGAIZIN (matchs mai non validés) → MENSUEL = pts_start mai = 958
-      //   Toni (pas de matchs mai) → MENSUEL = LIVE = 950
-      let lastMatchInCurrentMonth = false;
-      const dateStr = String(lastMatch.date || '');
-      const parts = dateStr.split('/');
-      if (parts.length === 3) {
-        const lastY = +parts[2];
-        const lastM = +parts[1];
-        const today = new Date();
-        lastMatchInCurrentMonth = (lastY === today.getFullYear() && lastM === today.getMonth() + 1);
-      }
-
-      if (lastMatchInCurrentMonth) {
-        for(const m of tl){
-          if(m.segment_id === lastSegId && m.pts_start != null){
-            ptsMensuel = +m.pts_start;
-            break;
-          }
+      for(const m of tl){
+        if(m.segment_id === lastSegId && m.pts_start != null){
+          ptsMensuel = +m.pts_start;
+          break;
         }
-      } else {
-        ptsMensuel = ptsLive;
       }
-
-      // OFFICIEL = pts_start du début de la phase (P1 = sept, P2 = janv).
       for(const m of tl){
         if(m.phase === lastPhase && m.pts_start != null){
           ptsOfficiel = +m.pts_start;
@@ -14232,14 +14140,9 @@ if ('serviceWorker' in navigator) {
   }
 
   // ─── API publique ─────────────────────────────────────────────────
-  window._openPlayerDashboard = function(lic, cid){
+  window._openPlayerDashboard = function(lic){
     if(!lic) return;
-    // cid optionnel : club du joueur déterminé depuis le DOM (cf.
-    // players_tab_v9). On réaligne localStorage pour que le chargement
-    // du JSON joueur cible le bon dossier players_<cid>/.
-    if(cid){
-      try{ localStorage.setItem('ping_selected_club', cid); }catch(_){}
-    }
+    // Mettre à jour le hash → déclenche handleHashChange
     if(parseHash() === lic){
       // Déjà ouvert sur ce joueur, rien à faire
       return;
@@ -14319,128 +14222,49 @@ if ('serviceWorker' in navigator) {
           allBtns.forEach(function(b){
             b.classList.toggle('active', b === btnToggle);
           });
+          // Si le popup historique est ouvert, le rafraîchir pour refléter le
+          // nouveau mode (officiel / mensuel).
+          var _hp = document.getElementById('rang-history-popup');
+          if(_hp && _hp.classList.contains('active')){
+            _openHistoryPopup();
+          }
           return;
         }
         // Bouton "📈 Historique" : ouvre la popup graphique
         const btnHistory = e.target.closest('.rang-history-btn');
         if(btnHistory){
           e.preventDefault();
-          console.log('[rang-history] Clic sur bouton Historique');
-          try {
-            _openHistoryPopup();
-          } catch(err) {
-            console.error('[rang-history] Erreur dans _openHistoryPopup:', err);
-            alert('Erreur popup historique: ' + err.message);
-          }
+          _openHistoryPopup();
           return;
+        }
+        // Fermeture popup historique
+        const btnClose = e.target.closest('.rhp-close');
+        if(btnClose){
+          e.preventDefault();
+          _closeHistoryPopup();
+          return;
+        }
+        // Click hors carte = fermer la popup
+        if(e.target.classList && e.target.classList.contains('rang-history-popup')){
+          _closeHistoryPopup();
         }
       });
     }
 
-    // ⚠️ Handlers de FERMETURE de la popup attachés au document
-    // (et non à overlayRoot) car la popup est maintenant un enfant de <body>,
-    // donc les clics dedans ne remontent pas à .dashboard-overlay.
-    document.addEventListener('click', function(e){
-      // Bouton ✕
-      const btnClose = e.target.closest('.rhp-close');
-      if(btnClose){
-        e.preventDefault();
-        _closeHistoryPopup();
-        return;
-      }
-      // Clic en dehors de la carte (sur le fond noir de la popup)
-      if(e.target.classList && e.target.classList.contains('rang-history-popup')){
-        _closeHistoryPopup();
-      }
-    });
-
     // ─── Popup historique des rangs ─────────────────────────────────────
     function _openHistoryPopup(){
-      console.log('[rang-history] _openHistoryPopup appelé');
-      console.log('[rang-history] _currentPlayerData:', _currentPlayerData);
-      if(!_currentPlayerData){
-        console.warn('[rang-history] _currentPlayerData est null/undefined');
-        alert('Données joueur non disponibles');
+      if(!_currentPlayerData || !_currentPlayerData.rang || !_currentPlayerData.rang.history){
         return;
       }
-      if(!_currentPlayerData.rang){
-        console.warn('[rang-history] _currentPlayerData.rang est manquant');
-        alert('Bloc rang absent dans les données joueur');
-        return;
-      }
-      if(!_currentPlayerData.rang.history){
-        console.warn('[rang-history] _currentPlayerData.rang.history est manquant');
-        console.log('[rang-history] Clés de rang:', Object.keys(_currentPlayerData.rang));
-        alert("Pas d'historique mensuel pour ce joueur (rang.history vide)");
-        return;
-      }
-      console.log('[rang-history] history:', _currentPlayerData.rang.history.length, 'entrées');
       const r = _currentPlayerData.rang;
-      const fullHistory = r.history;
-
-      // Lire le mode d'affichage (Officiel/Mensuel) depuis le bouton actif
-      // dans le bloc Rang catégoriel du dashboard. Ce mode détermine :
-      //  - quelle série de rangs afficher (rang_cat vs rang_cat_off, etc.)
-      //  - quels mois garder (mensuel = tous, officiel = sept + janv uniquement)
-      let _mode = 'm'; // défaut : mensuel
-      try {
-        const _card = document.querySelector('.dashboard-overlay .rang-card');
-        if (_card) {
-          _mode = _card.getAttribute('data-rang-mode') || 'off';
-        }
-      } catch(e) { _mode = 'm'; }
-      const _isOfficial = (_mode === 'off');
-
-      // Filtrer l'historique selon le mode :
-      //   - Mensuel : on garde tout (1 point par mois)
-      //   - Officiel : 2 points par saison (sept = phase 1, janv = phase 2)
-      // Pour le mode officiel, on remappe les 6 champs de rang (cat × 3 scopes)
-      // + les 2 champs super × 3 scopes + points sur les valeurs officielles
-      // pour que les graphiques et tableaux lisent les bonnes données sans
-      // toucher au reste du code.
-      let history;
-      if (_isOfficial) {
-        history = fullHistory
-          .filter(function(e){
-            // Format YYYY-MM, on garde si MM == 09 ou 01
-            const ym = e.ym || '';
-            const mm = ym.length >= 7 ? ym.slice(5,7) : '';
-            return mm === '09' || mm === '01';
-          })
-          .map(function(e){
-            // Remapper TOUS les champs de rang sur leur version officielle.
-            // Helper : retourne off si non null, sinon men, sinon null.
-            function _pick(off, men){ return off != null ? off : men; }
-            return Object.assign({}, e, {
-              // Catégorie précise — rétrocompat
-              rang_cat:        _pick(e.rang_cat_off,        e.rang_cat),
-              // Catégorie précise — 3 scopes
-              rang_cat_dept:   _pick(e.rang_cat_dept_off,   e.rang_cat_dept),
-              rang_cat_reg:    _pick(e.rang_cat_reg_off,    e.rang_cat_reg),
-              rang_cat_nat:    _pick(e.rang_cat_nat_off,    e.rang_cat_nat),
-              // Super-catégorie — rétrocompat
-              rang_super:      _pick(e.rang_super_off,      e.rang_super),
-              // Super-catégorie — 3 scopes
-              rang_super_dept: _pick(e.rang_super_dept_off, e.rang_super_dept),
-              rang_super_reg:  _pick(e.rang_super_reg_off,  e.rang_super_reg),
-              rang_super_nat:  _pick(e.rang_super_nat_off,  e.rang_super_nat),
-              // Points
-              points:          _pick(e.points_off,          e.points),
-            });
-          });
-      } else {
-        history = fullHistory;
-      }
-
-      // On utilise les valeurs ACTUELLES comme libellés par défaut, mais on
-      // détecte aussi les changements dans l'historique pour les afficher.
-      const catCurrent = r.categorie || '?';
-      const superCurrent = r.super_categorie || null;
+      const history = r.history;
+      const cat = r.categorie || '?';
+      const superCat = r.super_categorie || null;
 
       // Détecter si super est redondant (Seniors=S, Poussins=P) en regardant
       // les rangs actuels (pas l'historique)
       let _isRedundant = false;
-      if(superCurrent && r.super){
+      if(superCat && r.super){
         const _levels = ['departemental','regional','national'];
         let _allSame = true, _hasAny = false;
         for(const lvl of _levels){
@@ -14454,39 +14278,10 @@ if ('serviceWorker' in navigator) {
         }
         _isRedundant = _hasAny && _allSame;
       }
-      const showSuperBlock = !!superCurrent && !_isRedundant
-                             && history.some(function(e){ return e.rang_super != null; });
+      const showSuperLine = !!superCat && !_isRedundant
+                            && history.some(function(e){ return e.rang_super != null; });
 
-      // Détection des changements de catégorie au fil de l'historique
-      // (utilise les nouveaux champs e.cat et e.super_cat injectés depuis le cache).
-      // Renvoie un objet {firstChanges, lastByPos} décrivant les bornes utiles.
-      function _detectCatChanges(field){
-        // field = "cat" ou "super_cat"
-        const seq = history.map(function(e){ return e[field] || null; });
-        // Index des changements (i tel que seq[i] != seq[i-1])
-        const changes = [];
-        let prev = null;
-        for(let i = 0; i < seq.length; i++){
-          const v = seq[i];
-          if(v != null && v !== prev){
-            if(prev != null){
-              changes.push({ idx: i, from: prev, to: v });
-            }
-            prev = v;
-          }
-        }
-        return changes;
-      }
-      const catChanges = _detectCatChanges('cat');
-      const superChanges = _detectCatChanges('super_cat');
-
-      // Créer ou récupérer l'élément popup.
-      // ⚠️ IMPORTANT : on l'attache à <body> (PAS à .dashboard-overlay)
-      // car .dashboard-overlay a `overflow-y: auto` qui casse `position: fixed`
-      // sur certains navigateurs (notamment WebView Android) : la popup se
-      // positionnerait alors dans le flow scrollable au lieu de l'overlay
-      // fixe attendu. Le CSS de la popup n'utilise PAS le scope
-      // .dashboard-overlay pour fonctionner depuis n'importe où.
+      // Créer ou récupérer l'élément popup
       let popup = document.getElementById('rang-history-popup');
       if(!popup){
         popup = document.createElement('div');
@@ -14497,189 +14292,39 @@ if ('serviceWorker' in navigator) {
 
       const playerName = (_currentPlayerData.name || '?').replace(/\s*\(\d+\)\s*$/, '').trim();
 
-      // Helper : libellé du dernier label connu pour la série donnée
-      // (utilisé en titre de graphique, pour refléter la cat actuelle)
-      function _lastLabelOf(field, fallback){
-        for(let i = history.length - 1; i >= 0; i--){
-          const v = history[i] && history[i][field];
-          if(v) return v;
-        }
-        return fallback;
-      }
+      // Mode actuel (officiel / mensuel) : lu sur la carte rang si présente.
+      var _mode = 'off';
+      try {
+        var _card = document.querySelector('.rang-card');
+        if(_card && _card.getAttribute('data-rang-mode') === 'mensuel') _mode = 'men';
+      } catch(_e){}
 
-      // Construire le HTML : 1 bloc par série
-      function _buildSeriesBlock(opts){
-        // opts: {label, sublabel?, color, rangField, totalField, catField, changes, currentLabel}
-        // sublabel : libellé scope optionnel (ex: "Département · 94", "Région · IDF").
-        //            S'affiche sous le nom de série pour distinguer les 6 graphiques.
-        const label = opts.label;
-        const sublabel = opts.sublabel;
-        const color = opts.color;
-        const rangField = opts.rangField;
-        const totalField = opts.totalField;
-        const catField = opts.catField;
-        const changes = opts.changes || [];
-        const currentLabel = opts.currentLabel;
+      // Noms de scope (94, IDF) tirés des données courantes ou de l'history.
+      var _depName = (r.departemental && r.departemental.scope) ||
+                     (history.length ? (history[history.length-1].departement || '') : '');
+      var _regName = (r.regional && r.regional.scope) ||
+                     (history.length ? (history[history.length-1].region || '') : '');
+      var _natName = '';
 
-        // Bandeau d'en-tête : libellé + sublabel scope + changements éventuels
-        let header = '<div class="rhp-series-h">' +
-          '<span class="rhp-legend-color" style="background:' + color + '"></span>' +
-          '<span class="rhp-series-name">' + safeText(currentLabel);
-        if (sublabel) {
-          header += '<span class="rhp-series-scope">' + safeText(sublabel) + '</span>';
-        }
-        header += '</span>';
-        if(changes.length > 0){
-          // Compose un texte du genre "V40 → V45"
-          const parts = changes.map(function(c){
-            return safeText(c.from) + ' → ' + safeText(c.to);
-          });
-          header += '<span class="rhp-cat-change">⚠ Changement : ' +
-                    parts.join(', ') + '</span>';
-        }
-        header += '</div>';
+      var _sup = showSuperLine ? superCat : null;
 
-        // SVG
-        const svg = _renderSingleSeriesSvg(history, rangField, color);
+      // Empiler les 3 scopes (Département, Région, National), chacun avec
+      // badge + bandeau de changements de catégorie + graphe + tableau.
+      var sections =
+        _renderScopeSection(history, 'dep', _mode, cat, _sup, _depName) +
+        _renderScopeSection(history, 'reg', _mode, cat, _sup, _regName) +
+        _renderScopeSection(history, 'nat', _mode, cat, _sup, _natName);
 
-        // Tableau chiffré
-        const table = _renderSeriesTable(history, rangField, totalField, catField);
-
-        return '<div class="rhp-series">' + header + svg + table + '</div>';
-      }
-
-      // Détection : a-t-on des données pour les scopes regional/national ?
-      // Sur les anciens snapshots (cache v4 et antérieurs), seul dept était
-      // stocké → reg/nat seront null. Dans ce cas on retombe sur 2 blocs comme
-      // avant (1 cat dept, 1 super dept) pour ne pas afficher des graphes vides.
-      const _hasRegData = history.some(function(e){
-        return e.rang_cat_reg != null || e.rang_super_reg != null;
-      });
-      const _hasNatData = history.some(function(e){
-        return e.rang_cat_nat != null || e.rang_super_nat != null;
-      });
-
-      // Définition des 6 séries possibles (cat × {dept, reg, nat} + super × idem).
-      // L'ordre suit l'image 2 du dashboard : Département → Région → National.
-      // - color : pastel cohérent avec le toggle Officiel/Mensuel actuel
-      // - scopeLabel : libellé court pour le sous-titre (94 / IDF / France)
-      // - rangField/totalField : nom des champs dans `history` (post-remapping
-      //                          officiel/mensuel via le map() ci-dessus)
-      // Chaque scope hérite de la couleur de sa catégorie (cat = bleu, super =
-      // jaune) avec une nuance d'opacité décroissante dept → nat pour signaler
-      // visuellement le scope sans multiplier les couleurs.
-      const _catScopeMeta = [
-        { key: 'dept', label: 'Département',
-          scopeLabel: (r.departemental && r.departemental.scope) || '—',
-          color: '#7dd3fc' },
-        { key: 'reg',  label: 'Région',
-          scopeLabel: (r.regional && r.regional.scope) || '—',
-          color: '#38bdf8' },
-        { key: 'nat',  label: 'National',
-          scopeLabel: (r.national && r.national.scope) || 'France',
-          color: '#0ea5e9' },
-      ];
-      const _superScopeMeta = [
-        { key: 'dept', label: 'Département',
-          scopeLabel: (r.super && r.super.departemental && r.super.departemental.scope)
-                       || (r.departemental && r.departemental.scope) || '—',
-          color: '#facc15' },
-        { key: 'reg',  label: 'Région',
-          scopeLabel: (r.super && r.super.regional && r.super.regional.scope)
-                       || (r.regional && r.regional.scope) || '—',
-          color: '#eab308' },
-        { key: 'nat',  label: 'National',
-          scopeLabel: (r.super && r.super.national && r.super.national.scope)
-                       || 'France',
-          color: '#ca8a04' },
-      ];
-
-      // Helper : ajouter un bloc à la liste si la série a au moins une valeur
-      // non-null (sinon le graphique serait vide).
-      const blocks = [];
-      function _pushBlockIfData(rangField, totalField, color, label, sublabel,
-                                catField, changes, currentLabel){
-        const hasAny = history.some(function(e){ return e[rangField] != null; });
-        if (!hasAny) return;
-        blocks.push(_buildSeriesBlock({
-          label: label,
-          sublabel: sublabel,
-          color: color,
-          rangField: rangField,
-          totalField: totalField,
-          catField: catField,
-          changes: changes,
-          currentLabel: currentLabel,
-        }));
-      }
-
-      // ── Blocs catégorie précise (V40, S, etc.) — 1 par scope si dispo ──
-      const _catCurrentLabel = _lastLabelOf('cat', catCurrent);
-      _catScopeMeta.forEach(function(m){
-        // Skip reg/nat si pas de données historiques pour ce scope (vieux cache)
-        if (m.key === 'reg' && !_hasRegData) return;
-        if (m.key === 'nat' && !_hasNatData) return;
-        _pushBlockIfData(
-          m.key === 'dept' ? 'rang_cat_dept'
-          : m.key === 'reg'  ? 'rang_cat_reg'
-          : 'rang_cat_nat',
-          m.key === 'dept' ? 'total_cat_dept'
-          : m.key === 'reg'  ? 'total_cat_reg'
-          : 'total_cat_nat',
-          m.color,
-          catCurrent,
-          m.label + ' · ' + m.scopeLabel,
-          'cat', catChanges, _catCurrentLabel
-        );
-      });
-
-      // ── Blocs super-catégorie (Vétérans, Seniors, etc.) — 1 par scope ──
-      if (showSuperBlock) {
-        const _superCurrentLabel = _lastLabelOf('super_cat', superCurrent);
-        _superScopeMeta.forEach(function(m){
-          if (m.key === 'reg' && !_hasRegData) return;
-          if (m.key === 'nat' && !_hasNatData) return;
-          _pushBlockIfData(
-            m.key === 'dept' ? 'rang_super_dept'
-            : m.key === 'reg'  ? 'rang_super_reg'
-            : 'rang_super_nat',
-            m.key === 'dept' ? 'total_super_dept'
-            : m.key === 'reg'  ? 'total_super_reg'
-            : 'total_super_nat',
-            m.color,
-            superCurrent,
-            m.label + ' · ' + m.scopeLabel,
-            'super_cat', superChanges, _superCurrentLabel
-          );
-        });
-      }
-
-      // Fallback rétrocompat : si AUCUN bloc n'a été généré (cache v4 sans
-      // reg/nat ET les nouveaux champs *_dept aussi vides), on retombe sur
-      // les anciens champs rang_cat / rang_super pour ne pas avoir une popup
-      // vide. C'est le comportement v4.
-      if (blocks.length === 0) {
-        _pushBlockIfData(
-          'rang_cat', 'total_cat', '#7dd3fc',
-          catCurrent, null, 'cat', catChanges, _catCurrentLabel
-        );
-        if (showSuperBlock) {
-          const _superCurrentLabel = _lastLabelOf('super_cat', superCurrent);
-          _pushBlockIfData(
-            'rang_super', 'total_super', '#facc15',
-            superCurrent, null, 'super_cat', superChanges, _superCurrentLabel
-          );
-        }
-      }
+      const modeLabel = (_mode === 'men') ? 'MENSUEL' : 'OFFICIEL';
 
       popup.innerHTML =
         '<div class="rhp-card">' +
           '<div class="rhp-header">' +
             '<div class="rhp-title">📈 ' + safeText(playerName) + ' — Évolution du rang ' +
-            '<span style="opacity:0.65;font-weight:600">(' + (_isOfficial ? 'officiel' : 'mensuel') + ')</span></div>' +
+              '<span class="rhp-mode">(' + modeLabel + ')</span></div>' +
             '<button type="button" class="rhp-close" aria-label="Fermer">✕</button>' +
           '</div>' +
-          blocks.join('') +
+          sections +
         '</div>';
       popup.classList.add('active');
     }
@@ -14689,50 +14334,74 @@ if ('serviceWorker' in navigator) {
       if(popup) popup.classList.remove('active');
     }
 
-    // Rend un seul graphique SVG pour une série donnée (rang vs mois).
-    // L'échelle Y est calculée uniquement sur cette série, ce qui permet
-    // de zoomer correctement même si une autre série a une plage très
-    // différente.
-    function _renderSingleSeriesSvg(history, rangField, color){
+    function _histKeys(scope, mode){
+      // Retourne les clés (cat, super) à lire dans l'history pour un scope
+      // ('dep'|'reg'|'nat') et un mode ('off'|'men').
+      var sfx = (mode === 'men') ? '_m' : '';
+      return {
+        cat:   'rang_' + scope + sfx,
+        total: 'total_' + scope + sfx,
+        catS:  'rang_' + scope + '_super' + sfx,
+        totalS:'total_' + scope + '_super' + sfx
+      };
+    }
+
+    function _renderHistorySvg(history, catLabel, superLabel, scope, mode){
+      // Trace 2 lignes : rang de la catégorie (toujours) + rang super (si superLabel)
+      // pour un SCOPE donné ('dep'|'reg'|'nat') et un MODE ('off'|'men').
+      // Axe Y : rang DÉCROISSANT (1 en haut = meilleur). Axe X : mois (ym).
+      scope = scope || 'dep';
+      mode = mode || 'off';
+      var K = _histKeys(scope, mode);
       if(!history || history.length < 2){
-        return '<div class="rhp-empty">Pas assez de données.</div>';
+        return '<div class="rhp-empty">Pas assez de données historiques.</div>';
       }
-      const W = 540, H = 200;
-      const PAD_L = 50, PAD_R = 16, PAD_T = 12, PAD_B = 32;
+      const W = 540, H = 240;
+      const PAD_L = 50, PAD_R = 20, PAD_T = 16, PAD_B = 36;
       const plotW = W - PAD_L - PAD_R;
       const plotH = H - PAD_T - PAD_B;
 
+      // Données (selon scope/mode, avec repli sur rang_cat/rang_super legacy)
       const xs = history.map(function(e){ return e.ym; });
-      const vals = history.map(function(e){ return e[rangField]; });
+      const cats = history.map(function(e){
+        var v = e[K.cat]; if(v == null) v = e.rang_cat; return v;
+      });
+      const supers = superLabel ? history.map(function(e){
+        var v = e[K.catS]; if(v == null) v = e.rang_super; return v;
+      }) : [];
 
-      const valid = vals.filter(function(v){ return v != null; });
-      if(valid.length === 0){
-        return '<div class="rhp-empty">Aucun rang valide.</div>';
+      // Échelle Y : on prend le min/max des rangs (en ignorant null)
+      const allRanks = cats.concat(supers).filter(function(v){ return v != null; });
+      if(allRanks.length === 0){
+        return '<div class="rhp-empty">Aucun rang valide à tracer.</div>';
       }
-      const minR = Math.min.apply(null, valid);
-      const maxR = Math.max.apply(null, valid);
+      const minR = Math.min.apply(null, allRanks);
+      const maxR = Math.max.apply(null, allRanks);
+      // Marge visuelle 10%
       const margin = Math.max(1, Math.round((maxR - minR) * 0.1));
       const yMin = Math.max(1, minR - margin);
-      const yMax = (maxR === minR) ? maxR + margin : maxR + margin;
+      const yMax = maxR + margin;
 
-      function xPos(i){
-        return PAD_L + (xs.length === 1 ? plotW / 2 : (i / (xs.length - 1)) * plotW);
-      }
+      // Helpers
+      function xPos(i){ return PAD_L + (xs.length === 1 ? plotW / 2 : (i / (xs.length - 1)) * plotW); }
       function yPos(rang){
-        const span = (yMax - yMin) || 1;
-        const t = (rang - yMin) / span;
+        // Inverser : rang 1 (meilleur) = en haut
+        const t = (rang - yMin) / (yMax - yMin);
         return PAD_T + t * plotH;
       }
+
+      // Génère un path "M x y L x y..." en sautant les valeurs null
       function makePath(values){
         let d = '';
         for(let i = 0; i < values.length; i++){
           const v = values[i];
           if(v == null) continue;
-          d += (d === '' ? 'M' : 'L') + xPos(i).toFixed(1) + ' ' + yPos(v).toFixed(1) + ' ';
+          const cmd = (d === '') ? 'M' : 'L';
+          d += cmd + xPos(i).toFixed(1) + ' ' + yPos(v).toFixed(1) + ' ';
         }
         return d;
       }
-      function makeDots(values){
+      function makeDots(values, color){
         let dots = '';
         for(let i = 0; i < values.length; i++){
           const v = values[i];
@@ -14743,7 +14412,7 @@ if ('serviceWorker' in navigator) {
         return dots;
       }
 
-      // Grille horizontale 5 niveaux
+      // Lignes de grille horizontales (5 niveaux)
       let grid = '';
       for(let k = 0; k <= 4; k++){
         const y = PAD_T + (k / 4) * plotH;
@@ -14755,72 +14424,110 @@ if ('serviceWorker' in navigator) {
                 rangVal + '</text>';
       }
 
-      // Labels X
+      // Labels axe X (mois)
       let xLabels = '';
       const stepX = Math.max(1, Math.ceil(xs.length / 8));
       for(let i = 0; i < xs.length; i += stepX){
-        xLabels += '<text x="' + xPos(i).toFixed(1) + '" y="' + (H - 10) +
+        xLabels += '<text x="' + xPos(i).toFixed(1) + '" y="' + (H - 12) +
                    '" text-anchor="middle" font-family="ui-monospace,monospace" font-size="9" fill="#9aa4b2">' +
                    safeText(xs[i]) + '</text>';
       }
 
-      const path = makePath(vals);
-      const dots = makeDots(vals);
+      // Tracés
+      const pathCat = makePath(cats);
+      const dotsCat = makeDots(cats, '#7dd3fc');
+      const pathSuper = superLabel ? makePath(supers) : '';
+      const dotsSuper = superLabel ? makeDots(supers, '#facc15') : '';
 
       return '<svg class="rhp-svg" viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg">' +
         grid +
+        // Axe Y label
         '<text x="' + (PAD_L - 36) + '" y="' + (PAD_T + plotH / 2) +
           '" text-anchor="middle" font-family="ui-monospace,monospace" font-size="9" fill="#9aa4b2" ' +
           'transform="rotate(-90 ' + (PAD_L - 36) + ' ' + (PAD_T + plotH / 2) + ')">RANG</text>' +
         xLabels +
-        '<path d="' + path + '" fill="none" stroke="' + color + '" stroke-width="2.5" stroke-linejoin="round"/>' +
-        dots +
+        // Lignes (super en arrière-plan, cat au premier plan)
+        (pathSuper ? '<path d="' + pathSuper + '" fill="none" stroke="#facc15" stroke-width="2" stroke-linejoin="round"/>' : '') +
+        (dotsSuper) +
+        '<path d="' + pathCat + '" fill="none" stroke="#7dd3fc" stroke-width="2.5" stroke-linejoin="round"/>' +
+        dotsCat +
       '</svg>';
     }
 
-    // Rend un tableau chiffré sous le graphique : 1 ligne par mois,
-    // colonnes [Mois, Rang/Total, Cat éventuelle si elle change].
-    // Pour limiter la hauteur, on affiche dans un conteneur scrollable.
-    function _renderSeriesTable(history, rangField, totalField, catField){
-      if(!history || history.length === 0) return '';
-      // Détecter si la cat change (sinon on n'affiche pas la colonne)
-      let _catVaries = false;
-      let _firstSeen = null;
-      for(let i = 0; i < history.length; i++){
-        const c = history[i] && history[i][catField];
-        if(c){
-          if(_firstSeen == null) _firstSeen = c;
-          else if(c !== _firstSeen){ _catVaries = true; break; }
+    // Libellés humains des scopes
+    function _scopeLabel(scope){
+      return scope === 'dep' ? 'DÉPARTEMENT'
+           : scope === 'reg' ? 'RÉGION'
+           : scope === 'nat' ? 'NATIONAL' : scope;
+    }
+
+    // Bandeau "Changement : B1 → B2, …" en lisant la catégorie de chaque ligne.
+    function _buildCatChangeBanner(history){
+      if(!history || !history.length) return '';
+      var seq = [];
+      for(var i = 0; i < history.length; i++){
+        var c = (history[i].categorie || '').trim();
+        if(!c) continue;
+        if(seq.length === 0 || seq[seq.length - 1] !== c) seq.push(c);
+      }
+      if(seq.length < 2) return '';
+      var parts = [];
+      for(var j = 0; j < seq.length - 1; j++){
+        parts.push(safeText(seq[j]) + ' → ' + safeText(seq[j + 1]));
+      }
+      return '<span class="rhp-cat-banner">⚠️ Changement : ' + parts.join(', ') + '</span>';
+    }
+
+    // Section complète d'un scope : en-tête (cat + badge + bandeau), graphe, tableau.
+    function _renderScopeSection(history, scope, mode, catLabel, superLabel, scopeName){
+      var K = _histKeys(scope, mode);
+      var svg = _renderHistorySvg(history, catLabel, superLabel, scope, mode);
+
+      // En-tête : libellé catégorie + badge scope + bandeau changements
+      var badge = '<span class="rhp-scope-badge">' + safeText(_scopeLabel(scope)) +
+                  (scopeName ? ' · ' + safeText(scopeName) : '') + '</span>';
+      var banner = _buildCatChangeBanner(history);
+      var head = '<div class="rhp-scope-head">' +
+                   '<span class="rhp-scope-cat">' +
+                     '<span class="rhp-legend-color" style="background:#7dd3fc"></span> ' + safeText(catLabel) +
+                   '</span>' + badge + banner +
+                 '</div>';
+
+      // Tableau MOIS / RANG, avec la catégorie intercalée (rouge au changement).
+      var rows = '';
+      var prevCat = null;
+      for(var i = 0; i < history.length; i++){
+        var e = history[i];
+        var rang = e[K.cat]; if(rang == null) rang = e.rang_cat;
+        var tot  = e[K.total]; if(tot == null) tot = e.total_cat;
+        var cur  = (e.categorie || '').trim();
+        var rangTxt = (rang != null ? rang : '–') + ' / ' + (tot != null ? tot : '–');
+        rows += '<div class="rhp-tr">' +
+                  '<span class="rhp-td-ym">' + safeText(e.ym) + '</span>' +
+                  '<span class="rhp-td-rang">' + safeText(rangTxt) + '</span>' +
+                '</div>';
+        // Ligne catégorie : affichée quand elle change (en rouge), sinon discrète
+        if(cur){
+          var changed = (prevCat !== null && prevCat !== cur);
+          rows += '<div class="rhp-tr-cat">' +
+                    '<span class="rhp-td-cat' + (changed ? ' rhp-cat-changed' : '') + '">' +
+                      safeText(cur) +
+                    '</span>' +
+                  '</div>';
+          prevCat = cur;
         }
       }
-      const headerRow = '<div class="rhp-tr rhp-tr-h">' +
-        '<div class="rhp-td rhp-td-ym">Mois</div>' +
-        '<div class="rhp-td rhp-td-rt">Rang</div>' +
-        (_catVaries ? '<div class="rhp-td rhp-td-cat">Catégorie</div>' : '') +
-      '</div>';
-      const rows = history.map(function(e, i){
-        const r = e[rangField];
-        const t = e[totalField];
-        const rt = (r != null && t != null) ? (r + ' / ' + t)
-                  : (r != null ? r + '' : '—');
-        const c = e[catField] || '';
-        // Marquer en gras si changement par rapport au mois précédent
-        let catCellExtra = '';
-        if(_catVaries && i > 0){
-          const prev = history[i-1] && history[i-1][catField];
-          if(c && prev && c !== prev){
-            catCellExtra = ' rhp-td-cat-changed';
-          }
-        }
-        return '<div class="rhp-tr">' +
-          '<div class="rhp-td rhp-td-ym">' + safeText(e.ym) + '</div>' +
-          '<div class="rhp-td rhp-td-rt">' + safeText(rt) + '</div>' +
-          (_catVaries
-            ? '<div class="rhp-td rhp-td-cat' + catCellExtra + '">' + safeText(c) + '</div>'
-            : '') +
-        '</div>';
-      }).join('');
-      return '<div class="rhp-table">' + headerRow + rows + '</div>';
+      var table = '<div class="rhp-table">' +
+                    '<div class="rhp-tr rhp-th">' +
+                      '<span class="rhp-td-ym">MOIS</span>' +
+                      '<span class="rhp-td-rang">RANG</span>' +
+                    '</div>' +
+                    '<div class="rhp-table-body">' + rows + '</div>' +
+                  '</div>';
+
+      return '<div class="rhp-scope-section">' + head +
+               '<div class="rhp-svg-wrap">' + svg + '</div>' + table +
+             '</div>';
     }
 
     // Fermeture popup avec Escape (réutilise le keydown existant pour overlay
