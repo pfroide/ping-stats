@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <link rel="manifest" href="./manifest.webmanifest"/>
 <meta name="theme-color" content="#0b0e14"/>
-<meta name="build-id" content="20260610011732"/>
+<meta name="build-id" content="20260610093945"/>
 <link rel="icon" href="./assets/icons/icon-192.png"/>
 <link rel="apple-touch-icon" href="./assets/icons/icon-180.png"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
@@ -1377,7 +1377,7 @@ html[data-skin="P"] .sr-bar-bg{background:#0a0118;border-radius:0;border:1px sol
   <div class="skin-l3 skin-l3-C statusbar"><span>● PING-STATS [v8] · CONNECTED</span><span class="blink">_</span></div>
   <div class="header">
     <div class="h1">BREVANNAISE AS • Stats</div>
-    <div class="h2">Export mobile • 2026-06-10 01:17</div>
+    <div class="h2">Export mobile • 2026-06-10 09:39</div>
     <div class="tabs"><button class="tab-btn" type="button" data-tab="accueil">🏠 Accueil</button><button class="tab-btn" type="button" data-tab="joueurs">👤 Joueurs</button><button class="tab-btn" type="button" data-tab="equipe">🏓 Équipe</button><button class="tab-btn" type="button" data-tab="stats">📊 Stats avancées</button><button class="tab-btn" type="button" data-tab="tools">🎯 Outils</button><button class="tab-btn" type="button" data-tab="scoreboards">🏆 Scoreboards</button><button class="tab-btn" type="button" data-tab="settings">⚙️ Réglages</button></div>
   </div>
   <div class="season-bar" id="season-bar" role="navigation" aria-label="Sélection de saison"><span class="season-bar-label">📅 Saison :</span><span class="season-bar-pills"><a class="season-pill" href="../index.html">Cumul</a><a class="season-pill" href="../2022-2023/index.html">2022-2023</a><span class="season-pill is-active">2023-2024</span><a class="season-pill" href="../2024-2025/index.html">2024-2025</a><a class="season-pill" href="../2025-2026/index.html">2025-2026</a></span><span class="season-bar-info">Saison 2023-2024</span></div>
@@ -8640,28 +8640,14 @@ window._qzReload = function(){
     try { if (typeof window._qzReload === 'function') window._qzReload(); } catch(_) {}
     try { if (typeof window._equipeReload === 'function') window._equipeReload(); } catch(_) {}
   };
-  // Appliquer le filtre initial au chargement.
-  // IMPORTANT : on l'appelle TOUJOURS (pas seulement si localStorage existe),
-  // sinon au tout premier chargement les onglets multi-club (Accueil,
-  // Prédictions, etc.) restent figés sur le club codé en dur (i==0) et le
-  // sélecteur paraît ne rien faire tant qu'on n'a pas cliqué.
+  // Appliquer le filtre initial depuis localStorage si disponible
   (function() {
-    var target = null;
     try {
       var saved = localStorage.getItem('ping_selected_club');
       if (saved && document.querySelectorAll('.club-section[data-club-id="' + saved + '"]').length > 0) {
-        target = saved;
+        window._applyClubFilter(saved);
       }
     } catch(_) {}
-    // Pas de club sauvé → prendre le 1er data-club-id présent dans le DOM
-    // (= club par défaut, celui rendu visible côté Python).
-    if (!target) {
-      var firstCs = document.querySelector('.club-section[data-club-id]');
-      if (firstCs) target = firstCs.dataset.clubId;
-    }
-    if (target && typeof window._applyClubFilter === 'function') {
-      window._applyClubFilter(target);
-    }
   })();
 
   document.addEventListener('click', (e)=>{
@@ -9573,134 +9559,16 @@ window.openPlayerByLic = function(lic){
 // ─── Classement interne du club ─────────────────────────────────────
 // Charge data/club.json et remplit #club-leaderboard-mount avec le top 5
 // par catégorie. Lecture JSON simple, asynchrone, fail-safe.
-//
-// Le leaderboard supporte un filtre par phase (P1 / P2 / Toutes) via
-// un toggle au-dessus de la grille. Les données contiennent 3 jeux de
-// stats pré-calculés côté Python : leaderboard.all, leaderboard.phase_1,
-// leaderboard.phase_2. Le toggle change juste la clé lue.
-
-// État du filtre, conservé dans localStorage pour persistance entre visites
-let _clubLbPhaseKey = (function(){
-  try { return localStorage.getItem('clubLbPhase') || 'all'; }
-  catch(e) { return 'all'; }
-})();
-
-let _clubLbDataCache = null; // dict {all, phase_1, phase_2}
-
-function _renderClubLeaderboardGrid(){
-  const mount = document.getElementById('club-leaderboard-mount');
-  if(!mount || !_clubLbDataCache) return;
-
-  // Récupérer le bon jeu de stats selon le toggle
-  let lb = _clubLbDataCache[_clubLbPhaseKey];
-  // Fallback : si la phase choisie est vide (cas extrême), retomber sur 'all'
-  if(!lb || (Array.isArray(lb.matchs) && lb.matchs.length === 0)){
-    lb = _clubLbDataCache.all || lb;
-  }
-  if(!lb || typeof lb !== 'object') return;
-
-  // Catégories affichées (label + clé + suffixe). La métrique "Pts/match"
-  // donne la performance moyenne (points FFTT par match), avec un seuil
-  // minimal de 5 matchs côté Python pour être éligible.
-  // La catégorie "Plus solides" a été retirée (peu lisible : la plupart
-  // des joueurs ont 0 contre, donc le classement n'est pas informatif).
-  const CATS = [
-    {key: 'perfs',         label: '🏆 Perfs',          suffix: 'perfs'},
-    {key: 'larrons',       label: '🦊 Larrons',        suffix: 'larrons'},
-    {key: 'victoires_5e',  label: '💪 Vict. 5e set',   suffix: 'V'},
-    {key: 'matchs',        label: '⚔️ Matchs',         suffix: 'matchs'},
-    {key: 'victoires',     label: '✅ Victoires',      suffix: 'V'},
-    {key: 'pts_avg',       label: '📈 Pts/match',      suffix: 'pts',  isAvg: true},
-  ];
-  const html = [];
-  // Toggle phase (segmented control)
-  html.push('<div class="lb-phase-toggle" style="display:flex;gap:6px;margin:0 0 12px 0;flex-wrap:wrap;">');
-  const phases = [
-    {key: 'all',     label: 'Toutes phases'},
-    {key: 'phase_1', label: 'Phase 1'},
-    {key: 'phase_2', label: 'Phase 2'},
-  ];
-  phases.forEach(p => {
-    const active = (p.key === _clubLbPhaseKey);
-    html.push(
-      '<button class="lb-phase-btn" data-phase="' + p.key + '"'
-      + ' style="padding:6px 12px;border-radius:6px;border:1px solid '
-      + (active ? '#27d28d' : '#444') + ';background:'
-      + (active ? '#27d28d22' : 'transparent') + ';color:'
-      + (active ? '#27d28d' : '#999') + ';cursor:pointer;font-weight:'
-      + (active ? '600' : '400') + ';font-size:13px;">'
-      + p.label + '</button>'
-    );
-  });
-  html.push('</div>');
-  // Grille des catégories
-  html.push('<div class="lb-grid">');
-  for(const cat of CATS){
-    const list = lb[cat.key] || [];
-    if(list.length === 0) continue;
-    html.push('<div class="lb-cat">');
-    html.push('<div class="lb-cat-title">' + cat.label + '</div>');
-    html.push('<ol class="lb-list">');
-    list.slice(0, 5).forEach((item, i) => {
-      let valTxt;
-      if(cat.invert){
-        valTxt = (item.value === 0 ? 'aucun' : item.value + ' ' + cat.suffix);
-      } else if(cat.isAvg){
-        // Format "+1.36 pts" ou "-0.50 pts" (sign explicite, 2 décimales)
-        const v = Number(item.value);
-        const sign = v >= 0 ? '+' : '';
-        valTxt = sign + v.toFixed(2) + ' ' + cat.suffix;
-      } else {
-        valTxt = item.value + ' ' + cat.suffix;
-      }
-      const escapedName = (item.name || '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
-      html.push(
-        '<li class="lb-row">'
-        +   '<span class="lb-rank">' + (i+1) + '</span>'
-        +   '<span class="lb-name" data-lic="' + (item.lic||'') + '">' + escapedName + '</span>'
-        +   '<span class="lb-val">' + valTxt + '</span>'
-        + '</li>'
-      );
-    });
-    html.push('</ol></div>');
-  }
-  html.push('</div>');
-  mount.innerHTML = html.join('');
-
-  // Click sur un nom → ouvre la fiche joueur
-  mount.querySelectorAll('.lb-name[data-lic]').forEach(el => {
-    const lic = el.dataset.lic;
-    if(!lic) return;
-    el.style.cursor = 'pointer';
-    el.addEventListener('click', () => {
-      // Réaligner localStorage sur le club de la .club-section parente
-      // (le leaderboard est rendu par club) pour charger le bon JSON.
-      const sect = el.closest('.club-section[data-club-id]');
-      if(sect){
-        try{ localStorage.setItem('ping_selected_club', sect.dataset.clubId); }catch(_){}
-      }
-      if(typeof window.openPlayerByLic === 'function'){
-        window.openPlayerByLic(lic);
-      }
-    });
-  });
-
-  // Click sur un bouton de phase → re-render avec ce filtre
-  mount.querySelectorAll('.lb-phase-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      _clubLbPhaseKey = btn.dataset.phase || 'all';
-      try { localStorage.setItem('clubLbPhase', _clubLbPhaseKey); } catch(e) {}
-      _renderClubLeaderboardGrid();
-    });
-  });
-}
-
 async function _renderClubLeaderboard(){
   const mount = document.getElementById('club-leaderboard-mount');
   if(!mount) return;
+  // Cache la carte tant qu'on n'a pas chargé les données
   const card = document.getElementById('club-leaderboard-card');
   try {
+    // Détection du chemin club.json — multi-club ou non
     let url = './data/club.json';
+    // Si manifest.json indique un slug de club spécifique on peut s'y adapter
+    // Mais club.json marche dans les deux cas (écrit dans tous les setups)
     const resp = await fetch(url, {cache: 'no-cache'});
     if(!resp.ok) throw new Error('club.json HTTP ' + resp.status);
     const data = await resp.json();
@@ -9709,16 +9577,59 @@ async function _renderClubLeaderboard(){
       if(card) card.style.display = 'none';
       return;
     }
-
-    // Rétrocompatibilité : si l'ancien format est servi (pas de sous-clés
-    // 'all'/'phase_1'/'phase_2'), on l'enveloppe dans {all: lb}.
-    if(lb.all || lb.phase_1 || lb.phase_2){
-      _clubLbDataCache = lb;
-    } else {
-      _clubLbDataCache = { all: lb, phase_1: null, phase_2: null };
-      _clubLbPhaseKey = 'all';
+    // Définition des catégories (label + clé dans le leaderboard + suffixe valeur)
+    const CATS = [
+      {key: 'perfs',         label: '🏆 Perfs',        suffix: 'perfs'},
+      {key: 'pts_match',     label: '📈 Pts/match',    suffix: 'pts', decimal: true},
+      {key: 'larrons',       label: '🦊 Larrons',      suffix: 'larrons'},
+      {key: 'victoires_5e',  label: '💪 Vict. 5e set', suffix: 'V'},
+      {key: 'matchs',        label: '⚔️ Matchs',       suffix: 'matchs'},
+      {key: 'victoires',     label: '✅ Victoires',    suffix: 'V'},
+      {key: 'solides',       label: '🛡️ Plus solides', suffix: 'contres', invert: true},
+    ];
+    const html = [];
+    html.push('<div class="lb-grid">');
+    for(const cat of CATS){
+      const list = lb[cat.key] || [];
+      if(list.length === 0) continue;
+      html.push('<div class="lb-cat">');
+      html.push('<div class="lb-cat-title">' + cat.label + '</div>');
+      html.push('<ol class="lb-list">');
+      list.slice(0, 5).forEach((item, i) => {
+        let valTxt;
+        if(cat.decimal){
+          // Points moyens par match : format signé à 2 décimales (ex: +2.20 pts)
+          const num = Number(item.value || 0);
+          valTxt = (num >= 0 ? '+' : '') + num.toFixed(2) + ' ' + cat.suffix;
+        } else if(cat.invert){
+          valTxt = (item.value === 0 ? 'aucun' : item.value + ' ' + cat.suffix);
+        } else {
+          valTxt = item.value + ' ' + cat.suffix;
+        }
+        const escapedName = (item.name || '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+        html.push(
+          '<li class="lb-row">'
+          +   '<span class="lb-rank">' + (i+1) + '</span>'
+          +   '<span class="lb-name" data-lic="' + (item.lic||'') + '">' + escapedName + '</span>'
+          +   '<span class="lb-val">' + valTxt + '</span>'
+          + '</li>'
+        );
+      });
+      html.push('</ol></div>');
     }
-    _renderClubLeaderboardGrid();
+    html.push('</div>');
+    mount.innerHTML = html.join('');
+    // Click sur un nom → ouvre la fiche joueur (mécanique existante)
+    mount.querySelectorAll('.lb-name[data-lic]').forEach(el => {
+      const lic = el.dataset.lic;
+      if(!lic) return;
+      el.style.cursor = 'pointer';
+      el.addEventListener('click', () => {
+        if(typeof window.openPlayerByLic === 'function'){
+          window.openPlayerByLic(lic);
+        }
+      });
+    });
   } catch(e) {
     console.warn('[leaderboard] Erreur chargement club.json :', e);
     if(card) card.style.display = 'none';
@@ -10111,7 +10022,7 @@ document.addEventListener('click', (e)=>{
 // PWA: service worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function(){
-    navigator.serviceWorker.register('./service-worker.js?v=20260610011732');
+    navigator.serviceWorker.register('./service-worker.js?v=20260610093945');
   });
 }
 </script>
@@ -11795,7 +11706,7 @@ if ('serviceWorker' in navigator) {
 .dashboard-overlay .rang-history-popup.active {
   display: flex;
 }
-.dashboard-overlay .rhp-card {
+.rang-history-popup .rhp-card {
   background: var(--dbo-bg-card);
   border: 1px solid var(--dbo-border);
   border-radius: var(--dbo-radius-l);
@@ -11806,7 +11717,7 @@ if ('serviceWorker' in navigator) {
   padding: 18px;
   position: relative;
 }
-.dashboard-overlay .rhp-header {
+.rang-history-popup .rhp-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -11814,7 +11725,7 @@ if ('serviceWorker' in navigator) {
   padding-bottom: 10px;
   border-bottom: 1px solid var(--dbo-border-soft);
 }
-.dashboard-overlay .rhp-title {
+.rang-history-popup .rhp-title {
   font-family: var(--dbo-mono);
   font-size: 11px;
   font-weight: 800;
@@ -11822,7 +11733,7 @@ if ('serviceWorker' in navigator) {
   text-transform: uppercase;
   color: var(--dbo-accent);
 }
-.dashboard-overlay .rhp-close {
+.rang-history-popup .rhp-close {
   background: transparent;
   border: 1px solid var(--dbo-border);
   color: var(--dbo-fg);
@@ -11835,29 +11746,29 @@ if ('serviceWorker' in navigator) {
   align-items: center;
   justify-content: center;
 }
-.dashboard-overlay .rhp-close:hover {
+.rang-history-popup .rhp-close:hover {
   background: var(--dbo-border-soft);
 }
-.dashboard-overlay .rhp-svg-wrap {
+.rang-history-popup .rhp-svg-wrap {
   width: 100%;
   background: var(--dbo-bg-deep, rgba(0,0,0,0.2));
   border-radius: 10px;
   padding: 10px;
   margin-bottom: 12px;
 }
-.dashboard-overlay .rhp-svg {
+.rang-history-popup .rhp-svg {
   display: block;
   width: 100%;
   height: auto;
 }
-.dashboard-overlay .rhp-legend {
+.rang-history-popup .rhp-legend {
   display: flex;
   gap: 16px;
   justify-content: center;
   margin-bottom: 8px;
   flex-wrap: wrap;
 }
-.dashboard-overlay .rhp-legend-item {
+.rang-history-popup .rhp-legend-item {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -11866,13 +11777,13 @@ if ('serviceWorker' in navigator) {
   letter-spacing: 0.06em;
   color: var(--dbo-fg);
 }
-.dashboard-overlay .rhp-legend-color {
+.rang-history-popup .rhp-legend-color {
   display: inline-block;
   width: 12px;
   height: 3px;
   border-radius: 2px;
 }
-.dashboard-overlay .rhp-empty {
+.rang-history-popup .rhp-empty {
   text-align: center;
   color: var(--dbo-fg-mute);
   font-family: var(--dbo-mono);
@@ -11881,23 +11792,23 @@ if ('serviceWorker' in navigator) {
 }
 
 /* Sections par scope géographique (Département / Région / National) */
-.dashboard-overlay .rhp-mode {
+.rang-history-popup .rhp-mode {
   font-family: var(--dbo-mono);
   font-size: 11px;
   color: var(--dbo-fg-mute);
   font-weight: 600;
 }
-.dashboard-overlay .rhp-scope-section {
+.rang-history-popup .rhp-scope-section {
   margin-bottom: 22px;
 }
-.dashboard-overlay .rhp-scope-head {
+.rang-history-popup .rhp-scope-head {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 8px;
   margin: 6px 0 4px;
 }
-.dashboard-overlay .rhp-scope-cat {
+.rang-history-popup .rhp-scope-cat {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -11906,7 +11817,7 @@ if ('serviceWorker' in navigator) {
   font-weight: 800;
   color: var(--dbo-fg);
 }
-.dashboard-overlay .rhp-scope-badge {
+.rang-history-popup .rhp-scope-badge {
   font-family: var(--dbo-mono);
   font-size: 10px;
   font-weight: 700;
@@ -11917,7 +11828,7 @@ if ('serviceWorker' in navigator) {
   border-radius: 6px;
   padding: 3px 8px;
 }
-.dashboard-overlay .rhp-cat-banner {
+.rang-history-popup .rhp-cat-banner {
   font-family: var(--dbo-mono);
   font-size: 10px;
   font-weight: 700;
@@ -11927,17 +11838,17 @@ if ('serviceWorker' in navigator) {
   border-radius: 6px;
   padding: 3px 8px;
 }
-.dashboard-overlay .rhp-table {
+.rang-history-popup .rhp-table {
   margin-top: 8px;
   border: 1px solid rgba(255,255,255,0.10);
   border-radius: 8px;
   overflow: hidden;
 }
-.dashboard-overlay .rhp-table-body {
+.rang-history-popup .rhp-table-body {
   max-height: 180px;
   overflow-y: auto;
 }
-.dashboard-overlay .rhp-tr {
+.rang-history-popup .rhp-tr {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -11946,30 +11857,62 @@ if ('serviceWorker' in navigator) {
   font-size: 12px;
   border-bottom: 1px solid rgba(255,255,255,0.05);
 }
-.dashboard-overlay .rhp-th {
+.rang-history-popup .rhp-th {
   background: rgba(255,255,255,0.05);
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 0.5px;
   color: var(--dbo-fg-mute);
 }
-.dashboard-overlay .rhp-td-ym { font-weight: 700; color: var(--dbo-fg); }
-.dashboard-overlay .rhp-td-rang { font-weight: 800; color: var(--dbo-fg); font-variant-numeric: tabular-nums; }
-.dashboard-overlay .rhp-tr-cat {
+.rang-history-popup .rhp-td-ym { font-weight: 700; color: var(--dbo-fg); }
+.rang-history-popup .rhp-td-rang { font-weight: 800; color: var(--dbo-fg); font-variant-numeric: tabular-nums; }
+.rang-history-popup .rhp-tr-cat {
   display: flex;
   justify-content: center;
   padding: 1px 12px 5px;
   background: rgba(255,255,255,0.015);
 }
-.dashboard-overlay .rhp-td-cat {
+.rang-history-popup .rhp-td-cat {
   font-family: var(--dbo-mono);
   font-size: 10px;
   font-weight: 700;
   color: var(--dbo-fg-mute);
 }
-.dashboard-overlay .rhp-td-cat.rhp-cat-changed {
+.rang-history-popup .rhp-td-cat.rhp-cat-changed {
   color: #f87171;
 }
+
+/* ── Popup historique des rangs ─────────────────────────────────────────
+   IMPORTANT : ce popup est attaché à document.body (PAS dans .dashboard-overlay)
+   car .dashboard-overlay a overflow-y:auto, ce qui casse position:fixed sur
+   Android WebView (le popup s'afficherait dans le flux scrollé au lieu d'un
+   overlay plein écran). Les règles ci-dessous sont donc AUTONOMES (pas de
+   préfixe .dashboard-overlay) et redéclarent les variables --dbo-* nécessaires. */
+.rang-history-popup {
+  --dbo-bg-card     : var(--card, #0f1620);
+  --dbo-border      : var(--line, rgba(125,211,252,0.12));
+  --dbo-border-soft : var(--line, rgba(255,255,255,0.06));
+  --dbo-fg          : var(--txt, #e6e9ef);
+  --dbo-fg-dim      : var(--muted, #9aa4b2);
+  --dbo-fg-mute     : var(--muted, #5b6573);
+  --dbo-radius-l    : 14px;
+  --dbo-mono        : var(--skin-mono, ui-monospace, "JetBrains Mono", monospace);
+  --dbo-display     : var(--skin-display, "Inter Tight", system-ui, sans-serif);
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 100000;
+  padding: 20px;
+  color: var(--dbo-fg);
+  font-family: var(--dbo-display);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+.rang-history-popup.active { display: flex; }
+.rang-history-popup *, .rang-history-popup *::before, .rang-history-popup *::after { box-sizing: border-box; }
 
 .dashboard-overlay .placeholder {
   text-align: center;
