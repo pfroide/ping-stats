@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <link rel="manifest" href="./manifest.webmanifest"/>
 <meta name="theme-color" content="#0b0e14"/>
-<meta name="build-id" content="20260610224345"/>
+<meta name="build-id" content="20260611081911"/>
 <link rel="icon" href="./assets/icons/icon-192.png"/>
 <link rel="apple-touch-icon" href="./assets/icons/icon-180.png"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
@@ -1377,7 +1377,7 @@ html[data-skin="P"] .sr-bar-bg{background:#0a0118;border-radius:0;border:1px sol
   <div class="skin-l3 skin-l3-C statusbar"><span>● PING-STATS [v8] · CONNECTED</span><span class="blink">_</span></div>
   <div class="header">
     <div class="h1">BREVANNAISE AS • Stats</div>
-    <div class="h2">Export mobile • 2026-06-10 22:43</div>
+    <div class="h2">Export mobile • 2026-06-11 08:19</div>
     <div class="tabs"><button class="tab-btn" type="button" data-tab="accueil">🏠 Accueil</button><button class="tab-btn" type="button" data-tab="joueurs">👤 Joueurs</button><button class="tab-btn" type="button" data-tab="equipe">🏓 Équipe</button><button class="tab-btn" type="button" data-tab="stats">📊 Stats avancées</button><button class="tab-btn" type="button" data-tab="tools">🎯 Outils</button><button class="tab-btn" type="button" data-tab="scoreboards">🏆 Scoreboards</button><button class="tab-btn" type="button" data-tab="settings">⚙️ Réglages</button></div>
   </div>
   <div class="season-bar" id="season-bar" role="navigation" aria-label="Sélection de saison"><span class="season-bar-label">📅 Saison :</span><span class="season-bar-pills"><a class="season-pill" href="../index.html">Cumul</a><a class="season-pill" href="../2022-2023/index.html">2022-2023</a><a class="season-pill" href="../2023-2024/index.html">2023-2024</a><span class="season-pill is-active">2024-2025</span><a class="season-pill" href="../2025-2026/index.html">2025-2026</a></span><span class="season-bar-info">Saison 2024-2025</span></div>
@@ -11145,7 +11145,7 @@ document.addEventListener('click', (e)=>{
 // PWA: service worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function(){
-    navigator.serviceWorker.register('./service-worker.js?v=20260610224345');
+    navigator.serviceWorker.register('./service-worker.js?v=20260611081911');
   });
 }
 </script>
@@ -13720,10 +13720,13 @@ if ('serviceWorker' in navigator) {
       const playerName = (_currentPlayerData.name || '?').replace(/\s*\(\d+\)\s*$/, '').trim();
 
       // Mode actuel (officiel / mensuel) : lu sur la carte rang si présente.
+      // NB : le toggle écrit data-rang-mode="off"|"m" (valeurs des data-mode
+      // des boutons) — on teste donc 'm', pas 'mensuel' (bug historique :
+      // la popup restait bloquée en OFFICIEL quel que soit le toggle).
       var _mode = 'off';
       try {
-        var _card = document.querySelector('.rang-card');
-        if(_card && _card.getAttribute('data-rang-mode') === 'mensuel') _mode = 'men';
+        var _card = document.querySelector('.dashboard-overlay .rang-card');
+        if(_card && _card.getAttribute('data-rang-mode') === 'm') _mode = 'men';
       } catch(_e){}
 
       // Noms de scope (94, IDF) tirés des données courantes ou de l'history.
@@ -13771,12 +13774,16 @@ if ('serviceWorker' in navigator) {
       };
     }
 
-    function _renderHistorySvg(history, catLabel, superLabel, scope, mode){
-      // Trace 2 lignes : rang de la catégorie (toujours) + rang super (si superLabel)
-      // pour un SCOPE donné ('dep'|'reg'|'nat') et un MODE ('off'|'men').
+    function _renderHistorySvg(history, scope, mode, series, color){
+      // Trace UNE SEULE ligne pour un SCOPE ('dep'|'reg'|'nat'), un MODE
+      // ('off'|'men') et une SÉRIE ('cat' = catégorie, 'super' = super-cat).
+      // Un graphique par donnée : l'échelle Y est propre à la série tracée
+      // (plus de compression d'une courbe par l'autre).
       // Axe Y : rang DÉCROISSANT (1 en haut = meilleur). Axe X : mois (ym).
       scope = scope || 'dep';
       mode = mode || 'off';
+      series = series || 'cat';
+      color = color || '#7dd3fc';
       var K = _histKeys(scope, mode);
       if(!history || history.length < 2){
         return '<div class="rhp-empty">Pas assez de données historiques.</div>';
@@ -13786,17 +13793,17 @@ if ('serviceWorker' in navigator) {
       const plotW = W - PAD_L - PAD_R;
       const plotH = H - PAD_T - PAD_B;
 
-      // Données (selon scope/mode, avec repli sur rang_cat/rang_super legacy)
+      // Données (selon scope/mode/série, avec repli sur rang_cat/rang_super legacy)
       const xs = history.map(function(e){ return e.ym; });
-      const cats = history.map(function(e){
+      const vals = history.map(function(e){
+        if(series === 'super'){
+          var s = e[K.catS]; if(s == null) s = e.rang_super; return s;
+        }
         var v = e[K.cat]; if(v == null) v = e.rang_cat; return v;
       });
-      const supers = superLabel ? history.map(function(e){
-        var v = e[K.catS]; if(v == null) v = e.rang_super; return v;
-      }) : [];
 
-      // Échelle Y : on prend le min/max des rangs (en ignorant null)
-      const allRanks = cats.concat(supers).filter(function(v){ return v != null; });
+      // Échelle Y : min/max des rangs de CETTE série (en ignorant null)
+      const allRanks = vals.filter(function(v){ return v != null; });
       if(allRanks.length === 0){
         return '<div class="rhp-empty">Aucun rang valide à tracer.</div>';
       }
@@ -13826,13 +13833,13 @@ if ('serviceWorker' in navigator) {
         }
         return d;
       }
-      function makeDots(values, color){
+      function makeDots(values, c){
         let dots = '';
         for(let i = 0; i < values.length; i++){
           const v = values[i];
           if(v == null) continue;
           dots += '<circle cx="' + xPos(i).toFixed(1) + '" cy="' + yPos(v).toFixed(1) +
-                  '" r="3" fill="' + color + '"/>';
+                  '" r="3" fill="' + c + '"/>';
         }
         return dots;
       }
@@ -13858,11 +13865,9 @@ if ('serviceWorker' in navigator) {
                    safeText(xs[i]) + '</text>';
       }
 
-      // Tracés
-      const pathCat = makePath(cats);
-      const dotsCat = makeDots(cats, '#7dd3fc');
-      const pathSuper = superLabel ? makePath(supers) : '';
-      const dotsSuper = superLabel ? makeDots(supers, '#facc15') : '';
+      // Tracé (série unique)
+      const path = makePath(vals);
+      const dots = makeDots(vals, color);
 
       return '<svg class="rhp-svg" viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg">' +
         grid +
@@ -13871,12 +13876,33 @@ if ('serviceWorker' in navigator) {
           '" text-anchor="middle" font-family="ui-monospace,monospace" font-size="9" fill="#9aa4b2" ' +
           'transform="rotate(-90 ' + (PAD_L - 36) + ' ' + (PAD_T + plotH / 2) + ')">RANG</text>' +
         xLabels +
-        // Lignes (super en arrière-plan, cat au premier plan)
-        (pathSuper ? '<path d="' + pathSuper + '" fill="none" stroke="#facc15" stroke-width="2" stroke-linejoin="round"/>' : '') +
-        (dotsSuper) +
-        '<path d="' + pathCat + '" fill="none" stroke="#7dd3fc" stroke-width="2.5" stroke-linejoin="round"/>' +
-        dotsCat +
+        '<path d="' + path + '" fill="none" stroke="' + color + '" stroke-width="2.5" stroke-linejoin="round"/>' +
+        dots +
       '</svg>';
+    }
+
+    // En mode OFFICIEL, le classement FFTT ne change que 2 fois par saison
+    // (phase 1 : juillet→décembre, phase 2 : janvier→juin). Les snapshots
+    // mensuels sont donc redondants : on ne garde que le PREMIER snapshot
+    // disponible de chaque phase → 2 points par an, comme la réalité FFTT.
+    // (Le mode MENSUEL conserve tous les points : c'est sa raison d'être.)
+    function _filterOfficialHistory(history){
+      if(!history || !history.length) return history;
+      var seen = {};
+      var out = [];
+      for(var i = 0; i < history.length; i++){
+        var e = history[i];
+        var parts = String(e.ym || '').split('-');
+        var y = parseInt(parts[0], 10), m = parseInt(parts[1], 10);
+        if(isNaN(y) || isNaN(m)){ out.push(e); continue; }
+        var phase = (m >= 7) ? 1 : 2;
+        var seasonStart = (m >= 7) ? y : (y - 1);
+        var key = seasonStart + '-P' + phase;
+        if(seen[key]) continue;
+        seen[key] = true;
+        out.push(e);
+      }
+      return out;
     }
 
     // Libellés humains des scopes
@@ -13906,23 +13932,44 @@ if ('serviceWorker' in navigator) {
     // Section complète d'un scope : en-tête (cat + badge + bandeau), graphe, tableau.
     function _renderScopeSection(history, scope, mode, catLabel, superLabel, scopeName){
       var K = _histKeys(scope, mode);
-      var svg = _renderHistorySvg(history, catLabel, superLabel, scope, mode);
 
-      // En-tête : libellé catégorie + badge scope + bandeau changements
+      // OFFICIEL : 2 points par saison (un par phase). MENSUEL : tous les mois.
+      var hist = (mode === 'men') ? history : _filterOfficialHistory(history);
+
+      // En-tête : badge scope + bandeau changements (calculé sur les données affichées)
       var badge = '<span class="rhp-scope-badge">' + safeText(_scopeLabel(scope)) +
                   (scopeName ? ' · ' + safeText(scopeName) : '') + '</span>';
-      var banner = _buildCatChangeBanner(history);
-      var head = '<div class="rhp-scope-head">' +
-                   '<span class="rhp-scope-cat">' +
-                     '<span class="rhp-legend-color" style="background:#7dd3fc"></span> ' + safeText(catLabel) +
-                   '</span>' + badge + banner +
-                 '</div>';
+      var banner = _buildCatChangeBanner(hist);
+      var head = '<div class="rhp-scope-head">' + badge + banner + '</div>';
+
+      // Un graphique PAR donnée : d'abord la catégorie (bleu), puis — si
+      // pertinente — la super-catégorie (jaune) dans un graphique séparé,
+      // chacun avec sa propre légende et sa propre échelle Y.
+      var chartCat =
+        '<div class="rhp-scope-head">' +
+          '<span class="rhp-scope-cat">' +
+            '<span class="rhp-legend-color" style="background:#7dd3fc"></span> ' + safeText(catLabel) +
+          '</span>' +
+        '</div>' +
+        '<div class="rhp-svg-wrap">' + _renderHistorySvg(hist, scope, mode, 'cat', '#7dd3fc') + '</div>';
+
+      var chartSuper = '';
+      if(superLabel){
+        chartSuper =
+          '<div class="rhp-scope-head">' +
+            '<span class="rhp-scope-cat">' +
+              '<span class="rhp-legend-color" style="background:#facc15"></span> ' + safeText(superLabel) +
+            '</span>' +
+          '</div>' +
+          '<div class="rhp-svg-wrap">' + _renderHistorySvg(hist, scope, mode, 'super', '#facc15') + '</div>';
+      }
 
       // Tableau MOIS / CATÉGORIE / RANG sur une seule ligne (3 colonnes).
+      // Il suit le même filtrage que les graphiques (2 lignes/an en officiel).
       var rows = '';
       var prevCat = null;
-      for(var i = 0; i < history.length; i++){
-        var e = history[i];
+      for(var i = 0; i < hist.length; i++){
+        var e = hist[i];
         var rang = e[K.cat]; if(rang == null) rang = e.rang_cat;
         var tot  = e[K.total]; if(tot == null) tot = e.total_cat;
         var cur  = (e.categorie || '').trim();
@@ -13946,7 +13993,7 @@ if ('serviceWorker' in navigator) {
                   '</div>';
 
       return '<div class="rhp-scope-section">' + head +
-               '<div class="rhp-svg-wrap">' + svg + '</div>' + table +
+               chartCat + chartSuper + table +
              '</div>';
     }
 
