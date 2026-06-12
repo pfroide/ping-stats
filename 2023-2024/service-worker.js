@@ -1,6 +1,6 @@
 /* Simple PWA service worker (cache-first for assets, network-first for navigation) */
     // Bump cache version when the generated site structure changes.
-    const CACHE_VERSION = "20260612211900";
+    const CACHE_VERSION = "20260612224945";
     const CACHE_NAME = "ping-stats-" + CACHE_VERSION;
 
     // data/ est exclu du CORE : toujours récupéré depuis le réseau (network-only)

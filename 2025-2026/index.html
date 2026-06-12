@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <link rel="manifest" href="./manifest.webmanifest"/>
 <meta name="theme-color" content="#0b0e14"/>
-<meta name="build-id" content="20260612212451"/>
+<meta name="build-id" content="20260612225454"/>
 <link rel="icon" href="./assets/icons/icon-192.png"/>
 <link rel="apple-touch-icon" href="./assets/icons/icon-180.png"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
@@ -1377,7 +1377,7 @@ html[data-skin="P"] .sr-bar-bg{background:#0a0118;border-radius:0;border:1px sol
   <div class="skin-l3 skin-l3-C statusbar"><span>● PING-STATS [v8] · CONNECTED</span><span class="blink">_</span></div>
   <div class="header">
     <div class="h1">BREVANNAISE AS • Stats</div>
-    <div class="h2">Export mobile • 2026-06-12 21:24</div>
+    <div class="h2">Export mobile • 2026-06-12 22:54</div>
     <div class="tabs"><button class="tab-btn" type="button" data-tab="accueil">🏠 Accueil</button><button class="tab-btn" type="button" data-tab="joueurs">👤 Joueurs</button><button class="tab-btn" type="button" data-tab="equipe">🏓 Équipe</button><button class="tab-btn" type="button" data-tab="stats">📊 Stats avancées</button><button class="tab-btn" type="button" data-tab="tools">🎯 Outils</button><button class="tab-btn" type="button" data-tab="scoreboards">🏆 Scoreboards</button><button class="tab-btn" type="button" data-tab="settings">⚙️ Réglages</button></div>
   </div>
   <div class="season-bar" id="season-bar" role="navigation" aria-label="Sélection de saison"><span class="season-bar-label">📅 Saison :</span><span class="season-bar-pills"><a class="season-pill" href="../index.html">Cumul</a><a class="season-pill" href="../2022-2023/index.html">2022-2023</a><a class="season-pill" href="../2023-2024/index.html">2023-2024</a><a class="season-pill" href="../2024-2025/index.html">2024-2025</a><span class="season-pill is-active">2025-2026</span></span><span class="season-bar-info">Saison 2025-2026</span></div>
@@ -11478,7 +11478,8 @@ async function _renderClubLeaderboard(){
       {key: 'victoires_5e',  label: '💪 Vict. 5e set', suffix: 'V'},
       {key: 'matchs',        label: '⚔️ Matchs',       suffix: 'matchs'},
       {key: 'victoires',     label: '✅ Victoires',    suffix: 'V'},
-      {key: 'solides',       label: '🛡️ Plus solides', suffix: 'contres', invert: true},
+      // 'solides' (moins de contres) retiré : carte peu informative,
+      // la quasi-totalité du top affichait "aucun" contre.
     ];
     const html = [];
     html.push('<div class="lb-grid">');
@@ -11915,7 +11916,7 @@ document.addEventListener('click', (e)=>{
 // PWA: service worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function(){
-    navigator.serviceWorker.register('./service-worker.js?v=20260612212451');
+    navigator.serviceWorker.register('./service-worker.js?v=20260612225454');
   });
 }
 </script>
@@ -14566,10 +14567,21 @@ if ('serviceWorker' in navigator) {
       // Données (selon scope/mode/série, avec repli sur rang_cat/rang_super legacy)
       const xs = history.map(function(e){ return e.ym; });
       const vals = history.map(function(e){
+        // Repli SCOPE-AWARE : si la valeur du mode demandé manque (ex: _m
+        // absent sur les mois historiques), retomber d'abord sur l'OFFICIEL
+        // DU MÊME SCOPE, et seulement en dernier recours sur le legacy
+        // rang_cat/rang_super (qui sont des valeurs DÉPARTEMENTALES — les
+        // utiliser en section Région mélangeait dép. et région : bug 57 vs 539).
         if(series === 'super'){
-          var s = e[K.catS]; if(s == null) s = e.rang_super; return s;
+          var s = e[K.catS];
+          if(s == null) s = e['rang_' + scope + '_super'];
+          if(s == null) s = e.rang_super;
+          return s;
         }
-        var v = e[K.cat]; if(v == null) v = e.rang_cat; return v;
+        var v = e[K.cat];
+        if(v == null) v = e['rang_' + scope];
+        if(v == null) v = e.rang_cat;
+        return v;
       });
 
       // Échelle Y : min/max des rangs de CETTE série (en ignorant null)
@@ -14735,35 +14747,59 @@ if ('serviceWorker' in navigator) {
       }
 
       // Tableau MOIS / CATÉGORIE / RANG sur une seule ligne (3 colonnes).
-      // Il suit le même filtrage que les graphiques (2 lignes/an en officiel).
-      var rows = '';
-      var prevCat = null;
-      for(var i = 0; i < hist.length; i++){
-        var e = hist[i];
-        var rang = e[K.cat]; if(rang == null) rang = e.rang_cat;
-        var tot  = e[K.total]; if(tot == null) tot = e.total_cat;
-        var cur  = (e.categorie || '').trim();
-        var rangTxt = (rang != null ? rang : '–') + ' / ' + (tot != null ? tot : '–');
-        var changed = (cur && prevCat !== null && prevCat !== cur);
-        var catCls = 'rhp-td-cat' + (changed ? ' rhp-cat-changed' : '');
-        rows += '<div class="rhp-tr">' +
-                  '<span class="rhp-td-ym">' + safeText(e.ym) + '</span>' +
-                  '<span class="' + catCls + '">' + safeText(cur || '') + '</span>' +
-                  '<span class="rhp-td-rang">' + safeText(rangTxt) + '</span>' +
-                '</div>';
-        if(cur) prevCat = cur;
-      }
-      var table = '<div class="rhp-table">' +
-                    '<div class="rhp-tr rhp-th">' +
-                      '<span class="rhp-td-ym">MOIS</span>' +
-                      '<span class="rhp-td-cat">CAT.</span>' +
-                      '<span class="rhp-td-rang">RANG</span>' +
-                    '</div>' +
-                    '<div class="rhp-table-body">' + rows + '</div>' +
+      // Un tableau PAR série (catégorie ET super-catégorie), avec le même
+      // filtrage que les graphiques (2 lignes/an en officiel) et le même
+      // repli scope-aware que les courbes (mensuel manquant → officiel du
+      // même scope → legacy en dernier recours).
+      function _buildTable(kind){
+        var isSuper = (kind === 'super');
+        var rows = '';
+        var prevCat = null;
+        for(var i = 0; i < hist.length; i++){
+          var e = hist[i];
+          var rang, tot, cur;
+          if(isSuper){
+            rang = e[K.catS];
+            if(rang == null) rang = e['rang_' + scope + '_super'];
+            if(rang == null) rang = e.rang_super;
+            tot = e[K.totalS];
+            if(tot == null) tot = e['total_' + scope + '_super'];
+            cur = (e.super_categorie || '').trim();
+          } else {
+            rang = e[K.cat];
+            if(rang == null) rang = e['rang_' + scope];
+            if(rang == null) rang = e.rang_cat;
+            tot = e[K.total];
+            if(tot == null) tot = e['total_' + scope];
+            if(tot == null) tot = e.total_cat;
+            cur = (e.categorie || '').trim();
+          }
+          var rangTxt = (rang != null ? rang : '–') + ' / ' + (tot != null ? tot : '–');
+          var changed = (cur && prevCat !== null && prevCat !== cur);
+          var catCls = 'rhp-td-cat' + (changed ? ' rhp-cat-changed' : '');
+          rows += '<div class="rhp-tr">' +
+                    '<span class="rhp-td-ym">' + safeText(e.ym) + '</span>' +
+                    '<span class="' + catCls + '">' + safeText(cur || '') + '</span>' +
+                    '<span class="rhp-td-rang">' + safeText(rangTxt) + '</span>' +
                   '</div>';
+          if(cur) prevCat = cur;
+        }
+        return '<div class="rhp-table">' +
+                 '<div class="rhp-tr rhp-th">' +
+                   '<span class="rhp-td-ym">MOIS</span>' +
+                   '<span class="rhp-td-cat">CAT.</span>' +
+                   '<span class="rhp-td-rang">RANG</span>' +
+                 '</div>' +
+                 '<div class="rhp-table-body">' + rows + '</div>' +
+               '</div>';
+      }
+
+      // Un tableau sous chaque graphique : catégorie, puis super-catégorie.
+      var tableCat   = _buildTable('cat');
+      var tableSuper = superLabel ? _buildTable('super') : '';
 
       return '<div class="rhp-scope-section">' + head +
-               chartCat + chartSuper + table +
+               chartCat + tableCat + chartSuper + tableSuper +
              '</div>';
     }
 
