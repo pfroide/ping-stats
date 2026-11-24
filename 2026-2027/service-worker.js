@@ -1,6 +1,6 @@
 /* Simple PWA service worker (cache-first for assets, network-first for navigation) */
     // Bump cache version when the generated site structure changes.
-    const CACHE_VERSION = "20261124181112";
+    const CACHE_VERSION = "20261124184802";
     const CACHE_NAME = "ping-stats-" + CACHE_VERSION;
     // Saison en cours par défaut : non vide uniquement pour le site Cumul (racine).
     const SEASON_REDIRECT = "";
