@@ -1,7 +1,9 @@
 /* Simple PWA service worker (cache-first for assets, network-first for navigation) */
     // Bump cache version when the generated site structure changes.
-    const CACHE_VERSION = "20261017130759";
+    const CACHE_VERSION = "20261124175942";
     const CACHE_NAME = "ping-stats-" + CACHE_VERSION;
+    // Saison en cours par défaut : non vide uniquement pour le site Cumul (racine).
+    const SEASON_REDIRECT = "";
 
     // data/ est exclu du CORE : toujours récupéré depuis le réseau (network-only)
     const CORE = [
@@ -14,6 +16,8 @@
       "./assets/equipe_bundle.js",
       "./assets/icons/icon-192.png",
       "./assets/icons/icon-512.png",
+      "./assets/icons/icon-maskable-192.png",
+      "./assets/icons/icon-maskable-512.png",
       "./assets/icons/icon-180.png"
     ];
 
@@ -44,6 +48,20 @@
 
       // Navigations: network-first, fallback cache index.html
       if (req.mode === "navigate") {
+        // Racine du site sans ?cumul=1 → saison en cours (évite de charger le Cumul)
+        if (SEASON_REDIRECT) {
+          const scopePath = new URL("./", self.location.href).pathname;
+          const isRoot = (url.pathname === scopePath || url.pathname === scopePath + "index.html");
+          if (isRoot && !url.searchParams.has("cumul")) {
+            event.respondWith(Response.redirect(new URL(SEASON_REDIRECT, self.location.href).href, 302));
+            return;
+          }
+        }
+        // Le cache "./index.html" ne sert de secours hors-ligne qu'à la page
+        // de ce site : on n'y range pas les pages des sous-dossiers de saison.
+        const scopePath2 = new URL("./", self.location.href).pathname;
+        const isOwnIndex = (url.pathname === scopePath2 || url.pathname === scopePath2 + "index.html");
+        if (!isOwnIndex) { return; }
         event.respondWith(
           fetch(req)
             .then((res) => {
